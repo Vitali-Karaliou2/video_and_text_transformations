@@ -1,0 +1,19 @@
+cd "D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\loaded_videos"
+yt-dlp https://www.youtube.com/watch?v=RFCmlkVSEXk   05.07.
+yt-dlp https://www.youtube.com/watch?v=WLQMQgj8hZ0   07.07.
+
+yt-dlp https://www.youtube.com/watch?v=bWcmL4Az9Co   04.07.
+yt-dlp https://www.youtube.com/watch?v=EwHQrXB6ii8   05.07.
+yt-dlp https://www.youtube.com/watch?v=D6drUwtSmio   07.07.
+yt-dlp https://www.youtube.com/watch?v=Fs1dMfolsu0   06.07.
+****************
+yt-dlp https://www.youtube.com/watch?v=axk-zKJJ6zE   07.07.
+yt-dlp https://www.youtube.com/watch?v=5_DcoOJmq9k   07.07.
+
+yt-dlp https://www.youtube.com/watch?v=-35r1mwthTs   06.07.
+yt-dlp https://www.youtube.com/watch?v=mSYX3ovpKiU   03.07. 
+yt-dlp https://www.youtube.com/watch?v=osksrJRKbdU   06.07
+
+
+
+

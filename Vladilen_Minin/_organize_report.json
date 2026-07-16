@@ -1,0 +1,625 @@
+{
+  "folder": "D:\\Vitali\\Streams_from_Youtube_Channels\\yt-dlp\\Vladilen_Minin",
+  "channel_playlists_url": "https://www.youtube.com/@VladilenMinin/playlists",
+  "dry_run": false,
+  "order_mode": "courses",
+  "playlists": {
+    "it_v_epokhu_ai": {
+      "title": "IT в эпоху AI",
+      "id": "PLqKQF2ojwm3lHPJX7k2TO-gdss9_KerHz",
+      "folder": "it_v_epokhu_ai",
+      "video_count_in_playlist": 8,
+      "local_moved": 6
+    },
+    "frontend_roadmap_2025": {
+      "title": "Frontend Roadmap 2025",
+      "id": "PLqKQF2ojwm3mkPKGH4DRf3CZnmolnIALR",
+      "folder": "frontend_roadmap_2025",
+      "video_count_in_playlist": 14,
+      "local_moved": 13
+    },
+    "sekrety_programmirovaniya": {
+      "title": "Секреты программирования",
+      "id": "PLqKQF2ojwm3npIF8le4X057dUMhTPYMJi",
+      "folder": "sekrety_programmirovaniya",
+      "video_count_in_playlist": 5,
+      "local_moved": 5
+    },
+    "gaydy": {
+      "title": "Гайды",
+      "id": "PLqKQF2ojwm3lY64hI6TZQ-lxlIyPX9ODj",
+      "folder": "gaydy",
+      "video_count_in_playlist": 11,
+      "local_moved": 10
+    },
+    "start_it_karery_s_nulya_v_2025": {
+      "title": "Старт IT карьеры с НУЛЯ в 2025",
+      "id": "PLqKQF2ojwm3mkrycpzlPTHY0SjDBqBzzx",
+      "folder": "start_it_karery_s_nulya_v_2025",
+      "video_count_in_playlist": 8,
+      "local_moved": 2
+    },
+    "neyroseti_chatgpt_dall_e_3": {
+      "title": "Нейросети: ChatGPT, Dall-E 3",
+      "id": "PLqKQF2ojwm3lnAVs8YUFRY7X8C0RMi0xb",
+      "folder": "neyroseti_chatgpt_dall_e_3",
+      "video_count_in_playlist": 9,
+      "local_moved": 6
+    },
+    "prostymi_slovami": {
+      "title": "Простыми словами",
+      "id": "PLqKQF2ojwm3lbH6LyKwo0Gfk5-4_Ruf4I",
+      "folder": "prostymi_slovami",
+      "video_count_in_playlist": 8,
+      "local_moved": 7
+    },
+    "javascript_primery": {
+      "title": "JavaScript Примеры",
+      "id": "PLqKQF2ojwm3lPphwTfhT3ffqZbfkv07qt",
+      "folder": "javascript_primery",
+      "video_count_in_playlist": 3,
+      "local_moved": 0
+    },
+    "mysli_i_idei": {
+      "title": "Мысли и Идеи",
+      "id": "PLqKQF2ojwm3mfyutH5pb0BCIjb32GZSlP",
+      "folder": "mysli_i_idei",
+      "video_count_in_playlist": 10,
+      "local_moved": 8
+    },
+    "prakticheskie_rukovodstva": {
+      "title": "Практические руководства",
+      "id": "PLqKQF2ojwm3nskLXLYIIAgoy2JoACR6eG",
+      "folder": "prakticheskie_rukovodstva",
+      "video_count_in_playlist": 3,
+      "local_moved": 3
+    },
+    "podkasty_otvechayu_na_vashi_voprosy": {
+      "title": "Подкасты. Отвечаю на ваши вопросы",
+      "id": "PLqKQF2ojwm3kFMdYKo3EVtpcMppv2y18B",
+      "folder": "podkasty_otvechayu_na_vashi_voprosy",
+      "video_count_in_playlist": 2,
+      "local_moved": 2
+    },
+    "praktika_javascript": {
+      "title": "Практика JavaScript",
+      "id": "PLqKQF2ojwm3n-ufn3E-l6Y0VxDrj3hM5M",
+      "folder": "praktika_javascript",
+      "video_count_in_playlist": 7,
+      "local_moved": 5
+    },
+    "typescript": {
+      "title": "TypeScript",
+      "id": "PLqKQF2ojwm3nW-cQeSER79xdpK3vL5c-g",
+      "folder": "typescript",
+      "video_count_in_playlist": 4,
+      "local_moved": 1
+    },
+    "javascript": {
+      "title": "JavaScript",
+      "id": "PLqKQF2ojwm3llpxoP1rzoz7TE2Fpo4Zhp",
+      "folder": "javascript",
+      "video_count_in_playlist": 14,
+      "local_moved": 5
+    },
+    "rxjs": {
+      "title": "RxJS",
+      "id": "PLqKQF2ojwm3ksNegIZIz_AB0x6a9zqofx",
+      "folder": "rxjs",
+      "video_count_in_playlist": 4,
+      "local_moved": 0
+    },
+    "kursy": {
+      "title": "Курсы",
+      "id": "PLqKQF2ojwm3l6OE4-tjLBhUNtJXLebHXP",
+      "folder": "kursy",
+      "video_count_in_playlist": 18,
+      "local_moved": 13
+    },
+    "ne_uroki": {
+      "title": "Не уроки",
+      "id": "PLqKQF2ojwm3kqLu3Kentxw6fopfPv4Dgz",
+      "folder": "ne_uroki",
+      "video_count_in_playlist": 1,
+      "local_moved": 1
+    },
+    "fullstack_chat_na_vue_socket_io_nuxt_vuetify_express": {
+      "title": "Fullstack чат на Vue, Socket.io, Nuxt, Vuetify, Express",
+      "id": "PLqKQF2ojwm3ktTvzYonkjMp7khGwvdp-n",
+      "folder": "fullstack_chat_na_vue_socket_io_nuxt_vuetify_express",
+      "video_count_in_playlist": 10,
+      "local_moved": 0
+    },
+    "slozhnyy_javascript_prostym_yazykom": {
+      "title": "Сложный JavaScript простым языком",
+      "id": "PLqKQF2ojwm3l4oPjsB9chrJmlhZ-zOzWT",
+      "folder": "slozhnyy_javascript_prostym_yazykom",
+      "video_count_in_playlist": 17,
+      "local_moved": 16
+    },
+    "reshenie_zadach_na_sobesedovaniya": {
+      "title": "Решение задач на собеседования",
+      "id": "PLqKQF2ojwm3l7NP0SVit92Nljncf9wOyk",
+      "folder": "reshenie_zadach_na_sobesedovaniya",
+      "video_count_in_playlist": 2,
+      "local_moved": 0
+    },
+    "sveltejs": {
+      "title": "SvelteJS",
+      "id": "PLqKQF2ojwm3mgL-JymBaquJItb0eP0MTR",
+      "folder": "sveltejs",
+      "video_count_in_playlist": 9,
+      "local_moved": 0
+    },
+    "bystrye_kursy": {
+      "title": "Быстрые курсы",
+      "id": "PLqKQF2ojwm3lrzkYrqnxh6qywB99dCyCt",
+      "folder": "bystrye_kursy",
+      "video_count_in_playlist": 19,
+      "local_moved": 12
+    }
+  },
+  "moved": {
+    "bystrye_kursy": [
+      "Angular 14 - Быстрый Курс [2022] [yCIti018Srw].mp4",
+      "Astro. Теперь сайты моментальные. Быстрый курс [-Jdk0bTh2-I].mp4",
+      "Deno - Быстрый Курс (Замена NodeJS？) [5tkDUN8xAMw].mp4",
+      "ExpressJS Быстрый Курс [9EtkpCzqZu0].mp4",
+      "JavaScript： Взгляд изнутри за 60 минут [2JSl1e4vBTY].mp4",
+      "NestJS Быстрый Курс. Express на максималках [abdgy72csaA].mp4",
+      "Next.js с Нуля - полный курс для начинающих (2025) [KZb53sf-PEg].mp4",
+      "NextJS Быстрый Курс - SSR на React JS [_EOrSmjdOZQ].mp4",
+      "Nuxt JS - Vue + SSR (быстрый курс за 70 минут) [lm9olMCRCIc].mp4",
+      "React JS Быстрый Курс [xJZa2_aldDs].mp4",
+      "Vue JS - Быстрый курс за 50 минут [OlnwgS-gk8Y].mp4",
+      "WebStorm – Полный Курс [WlBrhM1_t5k].mp4"
+    ],
+    "frontend_roadmap_2025": [
+      "CSS для Начинающих - Практический Курс [SpCUuyZZTp8].mp4",
+      "Docker для Начинающих – Полный Курс [n9uCgUzfeRQ].mp4",
+      "Git и GitHub Курс Для Новичков [zZBiln_2FhM].mp4",
+      "JavaScript c Нуля - Курс для начинающих С ПРАКТИКОЙ (2025) [fcMcf_4PjfI].mp4",
+      "Node JS – Быстрый Курс за 1 час [3aGSqasVPsI].mp4",
+      "React JS c Нуля – ПОЛНЫЙ Курс для начинающих (2025) [kz23xxukY5s].mp4",
+      "React и TypeScript – Быстрый Курс [OJ16BaPC6VI].mp4",
+      "React стек 2022. TypeScript, Redux Toolkit, RTKQuery, Tailwind [lkbm-zlcFvs].mp4",
+      "Redux Полный Курс [YdYyYMFPa44].mp4",
+      "TypeScript – Быстрый Курс за 70 минут [nyIpDs2DJ_c].mp4",
+      "Выучи React JS с Этим Одним Проектом! [S4HOy6yTclU].mp4",
+      "Начни учить HTML с этого курса (Понятно даже чайнику) [DOEtVdkKwcU].mp4",
+      "Самый БЫСТРЫЙ путь до работы Frontend. Frontend Roadmap 2025 [DhleEgRmWF8].mp4"
+    ],
+    "gaydy": [
+      "5 ДНЕЙ = 5 ПРОЕКТОВ (JS, html, css - от простого к сложному) [my3gzdnD_OQ].mp4",
+      "ВСЁ Что Нужно Знать Программисту О НЕЙРОСЕТЯХ (Гайд 2025) [9cd576I1qPE].mp4",
+      "ВСЁ Что нужно знать о БЕЗОПАСНОСТИ Фронтенд разработчику (XSS, CSRF) [ZFzn2AQPwRA].mp4",
+      "ГАЙД НА ОТДЫХ. Как программисту не выгорать, не болеть и не загнать себя？ [f2J6Dj4DCao].mp4",
+      "Из-за ЭТИХ 3 Проектов Я бы ТОЧНО Взял тебя на работу [aJJU0788kTI].mp4",
+      "Как стать программистом и развиться до Middle+ уровня. Полный пошаговый гайд [fhYd20oLYlE].mp4",
+      "Как учиться самостоятельно ЭФФЕКТИВНО [6FKtVHHypg0].mp4",
+      "НЕ Останься ДЖУНОМ В 2025 (ЗП Будет только ниже...) [5KbqEiiwT9E].mp4",
+      "Основы нетворкинга для айтишников. Улучши карьеру через общение! [-mTzK_rMLlM].mp4",
+      "Полный гайд на Резюме в IT - Как Правильно составить резюме программисту？ [mU-MghntMxg].mp4"
+    ],
+    "it_v_epokhu_ai": [
+      "12 Cursor-лайфхаков, которые делают тебя быстрее на 10× [NyZQ31Q_L_Y].mp4",
+      "ChatGPT. Как пользоваться и получить от него максимум. Полный курс. [poskcK2fhkU].mp4",
+      "Вайбкодинг с Cursor： сайт с нуля за 60 минут [76Awxqb_eBo].mp4",
+      "Забудь VS Code — Вот Почему Все Переходят на Cursor AI [vBEpOuTDgWc].mp4",
+      "Как ИИ Меняет IT Уже сейчас (Рабочие места, Vibe Coding, ИИ Агенты) [XFidyFSIbTg].mp4",
+      "Как сделать личного ИИ-ассистента у себя на компьютере (без цензуры и подписок) [jdi6g3Tj5vM].mp4"
+    ],
+    "javascript": [
+      "18 способов сократить JavaScript код [ReE8k-SHnbM].mp4",
+      "JavaScript Основы для Начинающих - Полный Курс за 6 часов [Bluxbh9CaQ0].mp4",
+      "Jest. Unit Тестирование в JavaScript [IEDe8jl5efU].mp4",
+      "SOLID Принципы в JavaScript [xq13wiqvcTc].mp4",
+      "Как дебажить JavaScript. Chrome DevTools [20UsCQzUOIE].mp4"
+    ],
+    "kursy": [
+      "Angular Основы. Полный Курс для начинающих [Rf54BH35yrY].mp4",
+      "Github Actions - Введение в CI⧸CD [e0A2hDObLmg].mp4",
+      "JavaScript ES6 - Полный курс за 2 часа [Ti2Q4sQkNdU].mp4",
+      "REST API - что это？ Создаем API с нуля на Express [lzQIhjElV_g].mp4",
+      "React Hooks - Полный Курс (Про Все Хуки в 1 видео!) [9KJxaFHotqI].mp4",
+      "VS Code Полный Курс для JavaScript разработчиков [QeUp3CahkQw].mp4",
+      "Vue 3 Основы для Начинающих - Полный Курс [2021] [p059z-0JTFg].mp4",
+      "Webpack - Полный курс за 3 часа [eSaF8NXeNsA].mp4",
+      "ВТОРОЙ МОЗГ： Obsidian простым языком для НЕ технарей. Как вести заметки и упорядочить жизнь [m2zxCTuRJWE].mp4",
+      "Курс React Native. Пишем Мобильное Приложение на JavaScript [7KwtXNoYQEY].mp4",
+      "Полный гайд по JavaScript собеседованию. Все в 1 видео! [M_pclb-58ZY].mp4",
+      "Практика JavaScript с нуля за 2 часа. Сделаем целый сайт! [0ViiJ8qTCFM].mp4",
+      "Создайте Fullstack-приложение за 3 часа с помощью React и NodeJS： MERN [ivDjWYcKDZI].mp4"
+    ],
+    "mysli_i_idei": [
+      "9 важных качеств мышления успешного программиста [eFRrKYm-Vnk].mp4",
+      "Web3, Блокчейн И Смарт Контракты ｜ КАК Работает ДЕЦЕНТРАЛИЗОВАННЫЙ Интернет!？ [Ge-UNWmSyUc].mp4",
+      "Как быстро начать карьеру программиста [lV4Ww8vGU88].mp4",
+      "Как правильно проходить курсы по программированию [b9-oHWOof7k].mp4",
+      "Не смотри обучающие ролики! [Hn4tRC6NSzI].mp4",
+      "ПРОВЕРЬ, СМОЖЕШЬ ЛИ ТЫ СТАТЬ ПРОГРАММИСТОМ？ Потрать 30 минут, сэкономь годы и нервы [QKM8bn7lVLw].mp4",
+      "Ты не станешь программистом и забросишь через месяц. Объясню с позиции 12-летнего опыта [Y5c5wc30soo].mp4",
+      "🎙 Как ПЕРЕСТАТЬ откладывать и НАЧАТЬ действовать [rAT3zYWBmp8].mp4"
+    ],
+    "ne_uroki": [
+      "Зачем я открыл канал？ Видео на 1000 подписчиков. Ветер [d6CeJmV2KQg].mp4"
+    ],
+    "neyroseti_chatgpt_dall_e_3": [
+      "ChatGPT говорит голосом с помощью Google Text 2 Speech API [M7mt7C9mTJk].mp4",
+      "Telegram бот на NodeJS + Notion с нуля. Деплой и обновление на Ubuntu [jXmsjFUY3sE].mp4",
+      "Вышли GPT 4 и Midjourney 5. Стоит ли из-за них переживать？ [OZNrzaz_vQw].mp4",
+      "Как спасти свою карьеру от наступления ИИ в IT сфере？ [seq2e5GzLW8].mp4",
+      "Пишем Telegram бота, который говорит с ChatGPT API [-6ufFPvp6CY].mp4",
+      "Программисты больше не нужны？ ChatGPT. Как ИИ пишет код [ZCXbRq7zArY].mp4"
+    ],
+    "podkasty_otvechayu_na_vashi_voprosy": [
+      "[Подкаст №1] Ответы на Ваши JavaScript и Собеседования Вопросы [ubdxFrnd0h8].mp4",
+      "[Подкаст №2] Новости, контент, работа и JavaScript [Vm8peomsXwo].mp4"
+    ],
+    "prakticheskie_rukovodstva": [
+      "NodeJS, Express, MongoDB - Сайт с нуля [8bE_PBRriyU].mp4",
+      "React Redux + Saga. Практический Курс [G3GGXIhggGs].mp4",
+      "Что такое PWA. Как работают Service Workers [ifroMW_F4Sc].mp4"
+    ],
+    "praktika_javascript": [
+      "Fullstack тапалка с нуля на Vue 3. Практика по Telegram Apps [6H_UBijkwm8].mp4",
+      "Модальное окно JS. Promise, Делегирование событий. Урок 3 [GVGq0iy8GQE].mp4",
+      "Модальное окно JS. События, Прототипы, Замыкания. Урок 2 [BmxD74C3rCs].mp4",
+      "Модальное окно на ЧИСТОМ JS + CSS. Урок 1 [FX2fiUvrYP4].mp4",
+      "Практика JavaScript. Создаем плагин Select с нуля [35va4OY7Y1c].mp4"
+    ],
+    "prostymi_slovami": [
+      "Blockchain простыми словами. Про Bitcoin, Solidity, Binance и гигиену в крипте. Антон Морев [5VVYDzY7LMQ].mp4",
+      "IT профессии под угрозой？ Про нейросети и ИИ. Как ИИ изменил сферу и прошел тест Тьюринга [EDIVa0Gbet4].mp4",
+      "Как быстро вырасти программисту？ Про работу в Apple, накрутку опыта, iOS и GPT-4. Антон Назаров [uC0W1zvPBNs].mp4",
+      "Как построить карьеру в IT. Резюме, собеседования и карьера. Эльвира Зарипова [s_XcVgjGj4E].mp4",
+      "Почему не хватает программистов？ Про IT, образование, CTO и Angular. Глеб Михеев [kQH2Iyv0J5E].mp4",
+      "Рынок IT переполнен и в него поздно идти？ Про Frontend, React и ChatGPT. Зар Захаров [NkMpLeHl9P8].mp4",
+      "🎙 Пути развития программиста. Про девушек, крипту, контент и доверие людей ft. @digital_ninja [rXv6oPKly7Q].mp4"
+    ],
+    "sekrety_programmirovaniya": [
+      "7 причин почему ваш навык ПРОГРАММИРОВАНИЯ не улучшается [717UuD2V5Bs].mp4",
+      "Vibe Coding 101 - Полный курс (От А до Я) [q6w9KiI8URo].mp4",
+      "Как Я Начал получать УДОВОЛЬСТВИЕ ОТ Программирования [r-oB9gXASwU].mp4",
+      "Я Пишу КОД На 30% БЫСТРЕЕ, И вот почему... [RZ9dY5-P8kM].mp4",
+      "Я создал IT Стартап не написав ни строчки кода (Буквально 0...) [E1u4t_oTq-g].mp4"
+    ],
+    "slozhnyy_javascript_prostym_yazykom": [
+      "Урок 1. JavaScript. Что такое prototype. JavaScript Prototype (English Subs) [aQkgUUmUJy4].mp4",
+      "Урок 10. JavaScript. Proxy. Примеры. Часть 2 [mSbyhHfxs04].mp4",
+      "Урок 11. JavaScript. Генераторы. Symbol iterator, for of [7wtbNNiOh30].mp4",
+      "Урок 12. JavaScript. Методы массивов (forEach, map, filter, reduce, find, findIndex). Js Массивы. [nEabP9CYCAQ].mp4",
+      "Урок 13. JavaScript. Все о Map, Set, WeakMap, WeakSet с примерами [mbcP3Oc0PjU].mp4",
+      "Урок 14. JavaScript. Запросы на сервер. Fetch, XMLHttpRequest (XHR), Ajax [eKCD9djJQKc].mp4",
+      "Урок 15. JavaScript. Все о Spread и Rest [SGeQ-U0G7dE].mp4",
+      "Урок 16. JavaScript. Все о Деструктуризации в JS [wWYokY0Pt2M].mp4",
+      "Урок 17. JavaScript. Все о LocalStorage [3-bZ7gLVSzo].mp4",
+      "Урок 2. JavaScript. Что такое контекст this. Как работает call, bind, apply [UGapN-hrekw].mp4",
+      "Урок 4. JavaScript. Асинхронность.Что такое Event Loop. JS SetTimeout 0 [vIZs5tH-HGQ].mp4",
+      "Урок 5. JavaScript. Promise. Что это, как работает (+ пример) [1idOY3C1gYU].mp4",
+      "Урок 6. JavaScript. Объекты с Object.create. Что такое getters, setters [cS6nTVNzOPw].mp4",
+      "Урок 7. JavaScript. Все о ES6 Классах (+ Практическое Применение) [uLY9GXGMXaA].mp4",
+      "Урок 8. JavaScript. Как работает Async, Await. Работа с сервером c fetch [SHiUyM_fFME].mp4",
+      "Урок 9. JavaScript. Proxy. Объекты, функции, классы. Часть 1 [np08WdS9OXg].mp4"
+    ],
+    "start_it_karery_s_nulya_v_2025": [
+      "ГЛАВНАЯ ПРИЧИНА ОТКАЗА НА СОБЕСЕДОВАНИИ. Как устроиться на работу в IT？ [G0WFz0DTwoY].mp4",
+      "КАК ЗАЙТИ В IT в 2025 ГОДУ с нуля？ Я бы начинал именно так [aaGC7_t52KA].mp4"
+    ],
+    "typescript": [
+      "Полная настройка Node.js с TypeScript в 2023 [w2n5HkUNEv4].mp4"
+    ],
+    "misc": [
+      "1 год каналу Владилен Минин [pn_o5vD9Gko].mp4",
+      "2 трюка для успешного попадания в IT [H0FuxfHDFlQ].mp4",
+      "4 совета НЕОБХОДИМЫЕ для программистов [fpOnczmg7Bg].mp4",
+      "5 самых востребованных языков программирования в 2022 году [XJ6B9wRVQlg].mp4",
+      "7 дней программирования за 12 минут [qg-9KxK791s].mp4",
+      "8 редких HTML тегов, которые почти НИКТО не знает! [LcOl02m0sXc].mp4",
+      "AutoResearch — Первый шаг к Самообучающимся Агентам [_lZGVSFDQmM].mp4",
+      "FRONTEND： Мифы и Реалии рынка труда [rKwlKWoMXM4].mp4",
+      "JSON – Полный курс за 90 секунд [-DxcESkvcQo].mp4",
+      "Notion. Полный практический гайд с нуля [JbJducQmxqw].mp4",
+      "OpenClaw： 5 применений, которые сломают тебе мозг [4SDSkhVsVXI].mp4",
+      "React 19： Новые хуки, которые вы ждали [MZ0HG3fOWqE].mp4",
+      "React JS Практика. Пишем сайт с нуля [V1rhxheJg4A].mp4",
+      "React или Vue или Angular. Что Выбрать？ [Nm8GpLCAgwk].mp4",
+      "TypeScript за 2 минуты [b598TqLzBb4].mp4",
+      "VK мертв？ Как заработать 200к, найти любовь и узнать будущее [jjVvxWlKwZc].mp4",
+      "Vue JS с Нуля - Полный курс для начинающих С ПРАКТИКОЙ (2025) [1rRD9uMF92o].mp4",
+      "Webpack за 2 минуты [mtzpmljnrGo].mp4",
+      "YONOTE： трекер жизни и бизнеса. Полный гайд [oLUJKLYIuAI].mp4",
+      "Zustand – Подробный курс от 0 до ПРОФИ ｜ 2025 [xesIS-t-UhA].mp4",
+      "Будущие работы： какие навыки будут востребованы [3N-cOhvR5Ro].mp4",
+      "В IT ПЕРЕИЗБЫТОК денег – выживут ТОЛЬКО инженеры! ft. @S0ERDEVS [e2BUMt-gpnQ].mp4",
+      "Врать в резюме или нет？ Самый бесполезный показатель экспертизы [MSvRyYNr7oE].mp4",
+      "Джуны победили рынок разработки (Вот почему) [NaVHpD42ezA].mp4",
+      "ДИСС НА ОНЛАЙН ШКОЛЫ - OXXXYMIRON ОЙДА (remake) [Ban8XZrXEG4].mp4",
+      "Если бы я начал учить программирование сейчас. Советы спустя 10 лет [iT6P2ajyf2g].mp4",
+      "Иду к воде без воды [4uBr6VhsHFw].mp4",
+      "Как Бы Я Учил Программирование, Если Бы у Меня Было 14 Дней [it_IXFcrGd4].mp4",
+      "Как быть здоровым работая за компьютером. Спорт, питание, практики [uVT13wba1MU].mp4",
+      "Как вернуть контроль над жизнью за 1 ДЕНЬ ｜ Детокс дофамина [_VqaqP9ow0w].mp4",
+      "Как выглядел Frontend в 2015 [KFUmIT3Zh5w].mp4",
+      "Как начать работать с Obsidian ПРАВИЛЬНО (Гайд для новичков) [iZQQvj7yt_o].mp4",
+      "Как попасть в IT БЕСПЛАТНО. Аналитический способ [qta_NojPBWw].mp4",
+      "Как преодолеть зависимость от телефона в 4 раза за 3 минуты [lPDnh_gEC_I].mp4",
+      "Как принимать платежи на сайте？ Полная схема интеграции ｜ Мой опыт [AfypOVaB5r0].mp4",
+      "Как сделать 2025 ЛУЧШИМ годом вашей жизни (пошаговый план) [pkDIxr4hGTo].mp4",
+      "Как создать своего ИИ Агента всего за 1 ЧАС ｜ Подробный гайд (TypeScript) [9oJIU6A5Z70].mp4",
+      "Как стать программистом с нуля. Полный план (2024) [CzGbODODYuY].mp4",
+      "Как устроиться программистом без опыта. 5 способов [a7GrgcucvUI].mp4",
+      "Кризис, новые форматы, поддержка IT [1oNmaa6_yEg].mp4",
+      "Кто такие Middle разработчики. Разница Junior Middle Senior [vmxkgmw9GMI].mp4",
+      "Навигация по каналу (Все видео в нужном порядке!) [bmS4Xz5JGn0].mp4",
+      "Написал приложение на React и Vue! Что такое микрофронтенды [eS9XXlqmhuw].mp4",
+      "Новые фреймворки, нейронки и рынок труда. Что ждать в 2023？ [1w1k81x9Rqc].mp4",
+      "Он вам не АйтиБорода [jr9NGp-LQ1I].mp4",
+      "Пишем аналог Hamster Kombat с нуля на HTML & CSS & JavaScript [vT-XwvcK2NI].mp4",
+      "Почему я остаюсь в России [7ilv9iJmC6M].mp4",
+      "Про мой новый проект и критику [dXpudYamCac].mp4",
+      "ПСИХОЛОГИЯ УБИВАЕТ МОЗГ [28GqIe02it8].mp4",
+      "РАБОТАЙ МЕНЬШЕ： Как достичь цели за 2-4 часа в день [1abj4N5MN1A].mp4",
+      "Решение задач на СОБЕСЕДОВАНИЕ. Практический курс. Junior⧸Middle [x-EZy6gu_38].mp4",
+      "Собеседование на  FRONTEND Разработчика с определением уровня (+ Live coding) [v8b_BrMQXXk].mp4",
+      "Собеседование на FRONTEND Разработчика уровня Senior (Middle +) [TOw2ME7Bvvw].mp4",
+      "Создаем Second Brain в Notion [BpljTtWH4fs].mp4",
+      "Создаем Telegram Mini App на Angular 17. С нуля до продакшн деплоя [hf2FID-mH3s].mp4",
+      "Создаем VK Mini Apps сайт с нуля на React [G0_0u7kXaUE].mp4",
+      "Создай КРУТОЙ проект в портфолио на JavaScript [OaNICHKM5KM].mp4",
+      "СОЗДАНИЕ БОТА： Программирование и Анализ Криптовалюты [i4b04sJC7TE].mp4",
+      "Технический контент - все？ Слово пацана WTF. Angular и много личного [dU6ePqncmEI].mp4",
+      "Топ 10 ИИ каждый программист должен знать [RZIEokQdgsI].mp4",
+      "Трейлер JavaScript Марафона： 5 дней 5 проектов [VbV01DZzS18].mp4",
+      "Ты бросишь IT До трудоустройства (и вот почему..) [ZwIcdlv9Vmo].mp4",
+      "Ты построил карьеру. А что дальше？ [GnMEfcaT84c].mp4",
+      "У этого AI-агента уже 235 000 звёзд на GitHub. Показываю, как запустить за 10 минут [z1DHw3djzY8].mp4",
+      "Улучшите свой день： как повысить энергию и делать больше [1NZXQ2l-1Vw].mp4",
+      "Успехи и неудачи в 2023 [V3DuHJtvkJ4].mp4",
+      "Учись МЕНЬШЕ, а запоминай БОЛЬШЕ с этими техниками! [ITqz2gARbOw].mp4",
+      "Февраль 2020 повторяется. Но сейчас ставки выше [2OaAYDRZjo0].mp4",
+      "Что должен знать КРУТОЙ Junior Frontend разработчик？ [gehFGUGbnRs].mp4",
+      "Что там с JavaScript？ Stateofjs 2023 [Wg1eMhrWDBY].mp4",
+      "Экс-разработчик Яндекса： ＂AI уничтожает мышление. И это только начало＂ [hnrI0yEJBck].mp4",
+      "Этот AI-агент набрал 130 000 звёзд за 10 недель. Поставил Hermes Agent за 10 минут бесплатно [Kiw_HSR3YkQ].mp4",
+      "Я 2 года игнорировал ИИ. Вот чего это мне стоило [CC-VRcGJS5A].mp4",
+      "Я заменил Chrome на AI (результат вас удивит) [88fwdZHw39s].mp4",
+      "Я сделал коррекцию зрения. Как это было [v-Okmw8zyV8].mp4",
+      "Я создал приложение на 10 разных JavaScript фреймворках. Какой лучше？ [2BgZQ1EnZBA].mp4",
+      "🎙 Зачем я вышел из IT и стал блоггером [HZk31lZYmME].mp4",
+      "🎙 УХОЖУ С YOUTUBE？ ОНЛАЙН ШКОЛЫ НЕ РАБОТАЮТ [TWyjWfAVOZo].mp4"
+    ]
+  },
+  "order_renames": {
+    "frontend_roadmap_2025": [
+      {
+        "from": "CSS для Начинающих - Практический Курс [SpCUuyZZTp8].mp4",
+        "to": "04_CSS для Начинающих - Практический Курс [SpCUuyZZTp8].mp4"
+      },
+      {
+        "from": "Docker для Начинающих – Полный Курс [n9uCgUzfeRQ].mp4",
+        "to": "14_Docker для Начинающих – Полный Курс [n9uCgUzfeRQ].mp4"
+      },
+      {
+        "from": "Git и GitHub Курс Для Новичков [zZBiln_2FhM].mp4",
+        "to": "05_Git и GitHub Курс Для Новичков [zZBiln_2FhM].mp4"
+      },
+      {
+        "from": "JavaScript c Нуля - Курс для начинающих С ПРАКТИКОЙ (2025) [fcMcf_4PjfI].mp4",
+        "to": "06_JavaScript c Нуля - Курс для начинающих С ПРАКТИКОЙ (2025) [fcMcf_4PjfI].mp4"
+      },
+      {
+        "from": "Node JS – Быстрый Курс за 1 час [3aGSqasVPsI].mp4",
+        "to": "13_Node JS – Быстрый Курс за 1 час [3aGSqasVPsI].mp4"
+      },
+      {
+        "from": "React JS c Нуля – ПОЛНЫЙ Курс для начинающих (2025) [kz23xxukY5s].mp4",
+        "to": "07_React JS c Нуля – ПОЛНЫЙ Курс для начинающих (2025) [kz23xxukY5s].mp4"
+      },
+      {
+        "from": "React и TypeScript – Быстрый Курс [OJ16BaPC6VI].mp4",
+        "to": "10_React и TypeScript – Быстрый Курс [OJ16BaPC6VI].mp4"
+      },
+      {
+        "from": "React стек 2022. TypeScript, Redux Toolkit, RTKQuery, Tailwind [lkbm-zlcFvs].mp4",
+        "to": "12_React стек 2022. TypeScript, Redux Toolkit, RTKQuery, Tailwind [lkbm-zlcFvs].mp4"
+      },
+      {
+        "from": "Redux Полный Курс [YdYyYMFPa44].mp4",
+        "to": "11_Redux Полный Курс [YdYyYMFPa44].mp4"
+      },
+      {
+        "from": "TypeScript – Быстрый Курс за 70 минут [nyIpDs2DJ_c].mp4",
+        "to": "09_TypeScript – Быстрый Курс за 70 минут [nyIpDs2DJ_c].mp4"
+      },
+      {
+        "from": "Выучи React JS с Этим Одним Проектом! [S4HOy6yTclU].mp4",
+        "to": "08_Выучи React JS с Этим Одним Проектом! [S4HOy6yTclU].mp4"
+      },
+      {
+        "from": "Начни учить HTML с этого курса (Понятно даже чайнику) [DOEtVdkKwcU].mp4",
+        "to": "03_Начни учить HTML с этого курса (Понятно даже чайнику) [DOEtVdkKwcU].mp4"
+      },
+      {
+        "from": "Самый БЫСТРЫЙ путь до работы Frontend. Frontend Roadmap 2025 [DhleEgRmWF8].mp4",
+        "to": "02_Самый БЫСТРЫЙ путь до работы Frontend. Frontend Roadmap 2025 [DhleEgRmWF8].mp4"
+      }
+    ],
+    "start_it_karery_s_nulya_v_2025": [
+      {
+        "from": "ГЛАВНАЯ ПРИЧИНА ОТКАЗА НА СОБЕСЕДОВАНИИ. Как устроиться на работу в IT？ [G0WFz0DTwoY].mp4",
+        "to": "07_ГЛАВНАЯ ПРИЧИНА ОТКАЗА НА СОБЕСЕДОВАНИИ. Как устроиться на работу в IT？ [G0WFz0DTwoY].mp4"
+      },
+      {
+        "from": "КАК ЗАЙТИ В IT в 2025 ГОДУ с нуля？ Я бы начинал именно так [aaGC7_t52KA].mp4",
+        "to": "04_КАК ЗАЙТИ В IT в 2025 ГОДУ с нуля？ Я бы начинал именно так [aaGC7_t52KA].mp4"
+      }
+    ],
+    "praktika_javascript": [
+      {
+        "from": "Fullstack тапалка с нуля на Vue 3. Практика по Telegram Apps [6H_UBijkwm8].mp4",
+        "to": "07_Fullstack тапалка с нуля на Vue 3. Практика по Telegram Apps [6H_UBijkwm8].mp4"
+      },
+      {
+        "from": "Модальное окно JS. Promise, Делегирование событий. Урок 3 [GVGq0iy8GQE].mp4",
+        "to": "03_Модальное окно JS. Promise, Делегирование событий. Урок 3 [GVGq0iy8GQE].mp4"
+      },
+      {
+        "from": "Модальное окно JS. События, Прототипы, Замыкания. Урок 2 [BmxD74C3rCs].mp4",
+        "to": "02_Модальное окно JS. События, Прототипы, Замыкания. Урок 2 [BmxD74C3rCs].mp4"
+      },
+      {
+        "from": "Модальное окно на ЧИСТОМ JS + CSS. Урок 1 [FX2fiUvrYP4].mp4",
+        "to": "01_Модальное окно на ЧИСТОМ JS + CSS. Урок 1 [FX2fiUvrYP4].mp4"
+      },
+      {
+        "from": "Практика JavaScript. Создаем плагин Select с нуля [35va4OY7Y1c].mp4",
+        "to": "05_Практика JavaScript. Создаем плагин Select с нуля [35va4OY7Y1c].mp4"
+      }
+    ],
+    "kursy": [
+      {
+        "from": "Angular Основы. Полный Курс для начинающих [Rf54BH35yrY].mp4",
+        "to": "09_Angular Основы. Полный Курс для начинающих [Rf54BH35yrY].mp4"
+      },
+      {
+        "from": "Github Actions - Введение в CI⧸CD [e0A2hDObLmg].mp4",
+        "to": "16_Github Actions - Введение в CI⧸CD [e0A2hDObLmg].mp4"
+      },
+      {
+        "from": "JavaScript ES6 - Полный курс за 2 часа [Ti2Q4sQkNdU].mp4",
+        "to": "08_JavaScript ES6 - Полный курс за 2 часа [Ti2Q4sQkNdU].mp4"
+      },
+      {
+        "from": "React Hooks - Полный Курс (Про Все Хуки в 1 видео!) [9KJxaFHotqI].mp4",
+        "to": "04_React Hooks - Полный Курс (Про Все Хуки в 1 видео!) [9KJxaFHotqI].mp4"
+      },
+      {
+        "from": "REST API - что это？ Создаем API с нуля на Express [lzQIhjElV_g].mp4",
+        "to": "06_REST API - что это？ Создаем API с нуля на Express [lzQIhjElV_g].mp4"
+      },
+      {
+        "from": "VS Code Полный Курс для JavaScript разработчиков [QeUp3CahkQw].mp4",
+        "to": "13_VS Code Полный Курс для JavaScript разработчиков [QeUp3CahkQw].mp4"
+      },
+      {
+        "from": "Vue 3 Основы для Начинающих - Полный Курс [2021] [p059z-0JTFg].mp4",
+        "to": "14_Vue 3 Основы для Начинающих - Полный Курс [2021] [p059z-0JTFg].mp4"
+      },
+      {
+        "from": "Webpack - Полный курс за 3 часа [eSaF8NXeNsA].mp4",
+        "to": "03_Webpack - Полный курс за 3 часа [eSaF8NXeNsA].mp4"
+      },
+      {
+        "from": "ВТОРОЙ МОЗГ： Obsidian простым языком для НЕ технарей. Как вести заметки и упорядочить жизнь [m2zxCTuRJWE].mp4",
+        "to": "18_ВТОРОЙ МОЗГ： Obsidian простым языком для НЕ технарей. Как вести заметки и упорядочить жизнь [m2zxCTuRJWE].mp4"
+      },
+      {
+        "from": "Курс React Native. Пишем Мобильное Приложение на JavaScript [7KwtXNoYQEY].mp4",
+        "to": "12_Курс React Native. Пишем Мобильное Приложение на JavaScript [7KwtXNoYQEY].mp4"
+      },
+      {
+        "from": "Полный гайд по JavaScript собеседованию. Все в 1 видео! [M_pclb-58ZY].mp4",
+        "to": "05_Полный гайд по JavaScript собеседованию. Все в 1 видео! [M_pclb-58ZY].mp4"
+      },
+      {
+        "from": "Практика JavaScript с нуля за 2 часа. Сделаем целый сайт! [0ViiJ8qTCFM].mp4",
+        "to": "15_Практика JavaScript с нуля за 2 часа. Сделаем целый сайт! [0ViiJ8qTCFM].mp4"
+      },
+      {
+        "from": "Создайте Fullstack-приложение за 3 часа с помощью React и NodeJS： MERN [ivDjWYcKDZI].mp4",
+        "to": "02_Создайте Fullstack-приложение за 3 часа с помощью React и NodeJS： MERN [ivDjWYcKDZI].mp4"
+      }
+    ],
+    "slozhnyy_javascript_prostym_yazykom": [
+      {
+        "from": "Урок 1. JavaScript. Что такое prototype. JavaScript Prototype (English Subs) [aQkgUUmUJy4].mp4",
+        "to": "Урок 01. JavaScript. Что такое prototype. JavaScript Prototype (English Subs) [aQkgUUmUJy4].mp4"
+      },
+      {
+        "from": "Урок 2. JavaScript. Что такое контекст this. Как работает call, bind, apply [UGapN-hrekw].mp4",
+        "to": "Урок 02. JavaScript. Что такое контекст this. Как работает call, bind, apply [UGapN-hrekw].mp4"
+      },
+      {
+        "from": "Урок 4. JavaScript. Асинхронность.Что такое Event Loop. JS SetTimeout 0 [vIZs5tH-HGQ].mp4",
+        "to": "Урок 04. JavaScript. Асинхронность.Что такое Event Loop. JS SetTimeout 0 [vIZs5tH-HGQ].mp4"
+      },
+      {
+        "from": "Урок 5. JavaScript. Promise. Что это, как работает (+ пример) [1idOY3C1gYU].mp4",
+        "to": "Урок 05. JavaScript. Promise. Что это, как работает (+ пример) [1idOY3C1gYU].mp4"
+      },
+      {
+        "from": "Урок 6. JavaScript. Объекты с Object.create. Что такое getters, setters [cS6nTVNzOPw].mp4",
+        "to": "Урок 06. JavaScript. Объекты с Object.create. Что такое getters, setters [cS6nTVNzOPw].mp4"
+      },
+      {
+        "from": "Урок 7. JavaScript. Все о ES6 Классах (+ Практическое Применение) [uLY9GXGMXaA].mp4",
+        "to": "Урок 07. JavaScript. Все о ES6 Классах (+ Практическое Применение) [uLY9GXGMXaA].mp4"
+      },
+      {
+        "from": "Урок 8. JavaScript. Как работает Async, Await. Работа с сервером c fetch [SHiUyM_fFME].mp4",
+        "to": "Урок 08. JavaScript. Как работает Async, Await. Работа с сервером c fetch [SHiUyM_fFME].mp4"
+      },
+      {
+        "from": "Урок 9. JavaScript. Proxy. Объекты, функции, классы. Часть 1 [np08WdS9OXg].mp4",
+        "to": "Урок 09. JavaScript. Proxy. Объекты, функции, классы. Часть 1 [np08WdS9OXg].mp4"
+      }
+    ],
+    "bystrye_kursy": [
+      {
+        "from": "Angular 14 - Быстрый Курс [2022] [yCIti018Srw].mp4",
+        "to": "15_Angular 14 - Быстрый Курс [2022] [yCIti018Srw].mp4"
+      },
+      {
+        "from": "Astro. Теперь сайты моментальные. Быстрый курс [-Jdk0bTh2-I].mp4",
+        "to": "16_Astro. Теперь сайты моментальные. Быстрый курс [-Jdk0bTh2-I].mp4"
+      },
+      {
+        "from": "Deno - Быстрый Курс (Замена NodeJS？) [5tkDUN8xAMw].mp4",
+        "to": "09_Deno - Быстрый Курс (Замена NodeJS？) [5tkDUN8xAMw].mp4"
+      },
+      {
+        "from": "ExpressJS Быстрый Курс [9EtkpCzqZu0].mp4",
+        "to": "07_ExpressJS Быстрый Курс [9EtkpCzqZu0].mp4"
+      },
+      {
+        "from": "JavaScript： Взгляд изнутри за 60 минут [2JSl1e4vBTY].mp4",
+        "to": "18_JavaScript： Взгляд изнутри за 60 минут [2JSl1e4vBTY].mp4"
+      },
+      {
+        "from": "NestJS Быстрый Курс. Express на максималках [abdgy72csaA].mp4",
+        "to": "08_NestJS Быстрый Курс. Express на максималках [abdgy72csaA].mp4"
+      },
+      {
+        "from": "Next.js с Нуля - полный курс для начинающих (2025) [KZb53sf-PEg].mp4",
+        "to": "19_Next.js с Нуля - полный курс для начинающих (2025) [KZb53sf-PEg].mp4"
+      },
+      {
+        "from": "NextJS Быстрый Курс - SSR на React JS [_EOrSmjdOZQ].mp4",
+        "to": "05_NextJS Быстрый Курс - SSR на React JS [_EOrSmjdOZQ].mp4"
+      },
+      {
+        "from": "Nuxt JS - Vue + SSR (быстрый курс за 70 минут) [lm9olMCRCIc].mp4",
+        "to": "13_Nuxt JS - Vue + SSR (быстрый курс за 70 минут) [lm9olMCRCIc].mp4"
+      },
+      {
+        "from": "React JS Быстрый Курс [xJZa2_aldDs].mp4",
+        "to": "01_React JS Быстрый Курс [xJZa2_aldDs].mp4"
+      },
+      {
+        "from": "Vue JS - Быстрый курс за 50 минут [OlnwgS-gk8Y].mp4",
+        "to": "06_Vue JS - Быстрый курс за 50 минут [OlnwgS-gk8Y].mp4"
+      },
+      {
+        "from": "WebStorm – Полный Курс [WlBrhM1_t5k].mp4",
+        "to": "14_WebStorm – Полный Курс [WlBrhM1_t5k].mp4"
+      }
+    ]
+  },
+  "stats": {
+    "local_total": 193,
+    "moved_to_playlists": 115,
+    "moved_to_misc": 78,
+    "renamed": 53
+  }
+}

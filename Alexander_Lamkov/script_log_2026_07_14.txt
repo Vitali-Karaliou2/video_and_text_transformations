@@ -1,0 +1,1258 @@
+Microsoft Windows [Version 10.0.19045.5131]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\Vitali>cd "D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov"
+
+C:\Users\Vitali>d:
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>dir
+ Volume in drive D has no label.
+ Volume Serial Number is 6BBF-E4E0
+
+ Directory of D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov
+
+07/14/2026  12:08 PM    <DIR>          .
+07/14/2026  12:08 PM    <DIR>          ..
+07/14/2026  12:07 PM             7,852 script_2026_07_13.bat
+               1 File(s)          7,852 bytes
+               2 Dir(s)  524,607,422,464 bytes free
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>script_2026_07_13.bat
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=2R0DFFmxT_I
+[youtube] Extracting URL: https://www.youtube.com/watch?v=2R0DFFmxT_I
+[youtube] 2R0DFFmxT_I: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 2R0DFFmxT_I: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 2R0DFFmxT_I: Downloading 1 format(s): 18
+[download] Destination: Как задеплоить React-приложение на GitHub Pages [2R0DFFmxT_I].mp4
+[download] 100% of   24.60MiB in 00:00:17 at 1.42MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=tTvbc1x6Jao
+[youtube] Extracting URL: https://www.youtube.com/watch?v=tTvbc1x6Jao
+[youtube] tTvbc1x6Jao: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] tTvbc1x6Jao: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] tTvbc1x6Jao: Downloading 1 format(s): 18
+[download] Destination: Тестирование и отладка React-компонентов： React DevTools на практике [tTvbc1x6Jao].mp4
+[download] 100% of   32.06MiB in 00:00:25 at 1.27MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=AwMFWuUJXnk
+[youtube] Extracting URL: https://www.youtube.com/watch?v=AwMFWuUJXnk
+[youtube] AwMFWuUJXnk: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] AwMFWuUJXnk: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] AwMFWuUJXnk: Downloading 1 format(s): 18
+[download] Destination: Безопасность в React： защита от XSS и работа с чувствительными данными. Подсветка фрагмента поиска [AwMFWuUJXnk].mp4
+[download] 100% of   18.71MiB in 00:00:11 at 1.64MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=B72gtyI0kPI
+[youtube] Extracting URL: https://www.youtube.com/watch?v=B72gtyI0kPI
+[youtube] B72gtyI0kPI: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] B72gtyI0kPI: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] B72gtyI0kPI: Downloading 1 format(s): 18
+[download] Destination: Менеджмент состояния в React без Redux – когда хватает useReducer, useState и useContext [B72gtyI0kPI].mp4
+[download] 100% of   27.44MiB in 00:00:16 at 1.69MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=KnwduChQuuo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=KnwduChQuuo
+[youtube] KnwduChQuuo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] KnwduChQuuo: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] KnwduChQuuo: Downloading 1 format(s): 18
+[download] Destination: Архитектура React-приложения. Как структурировать проект. Методология Featured-Sliced Design [KnwduChQuuo].mp4
+[download] 100% of   38.78MiB in 00:00:23 at 1.64MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=Xe_Xylz-ojE
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Xe_Xylz-ojE
+[youtube] Xe_Xylz-ojE: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Xe_Xylz-ojE: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] Xe_Xylz-ojE: Downloading 1 format(s): 18
+[download] Destination: Анимации в React без библиотек. Плавные переходы с помощью CSS и состояний [Xe_Xylz-ojE].mp4
+[download]  72.1% of   27.57MiB at    1.90MiB/s ETA 00:04[download] Got error: timed out. Retrying (1/10)...
+[download] 100% of   27.57MiB in 00:01:18 at 360.17KiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=xcWkwjC8Mbw
+[youtube] Extracting URL: https://www.youtube.com/watch?v=xcWkwjC8Mbw
+[youtube] xcWkwjC8Mbw: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] xcWkwjC8Mbw: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] xcWkwjC8Mbw: Downloading 1 format(s): 18
+[download] Destination: Стилизация компонентов в React： CSS, SCSS и CSS-модули. Почему не Tailwind и не CSS-in-JS [xcWkwjC8Mbw].mp4
+[download] 100% of   31.30MiB in 00:00:23 at 1.33MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=VDOdieM9Np0
+[youtube] Extracting URL: https://www.youtube.com/watch?v=VDOdieM9Np0
+[youtube] VDOdieM9Np0: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] VDOdieM9Np0: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] VDOdieM9Np0: Downloading 1 format(s): 18
+[download] Destination: Маршрутизация в React без библиотек. Как реализовать переходы между страницами [VDOdieM9Np0].mp4
+[download] 100% of   29.53MiB in 00:00:19 at 1.49MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=sKb3VoX9vF4
+[youtube] Extracting URL: https://www.youtube.com/watch?v=sKb3VoX9vF4
+[youtube] sKb3VoX9vF4: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] sKb3VoX9vF4: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] sKb3VoX9vF4: Downloading 1 format(s): 18
+[download] Destination: Работа с API в React. Подключение к json-server и fetch-запросы： GET, POST, DELETE, PATCH [sKb3VoX9vF4].mp4
+[download] 100% of   37.51MiB in 00:00:24 at 1.56MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=pofiCNm5-U4
+[youtube] Extracting URL: https://www.youtube.com/watch?v=pofiCNm5-U4
+[youtube] pofiCNm5-U4: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] pofiCNm5-U4: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] pofiCNm5-U4: Downloading 1 format(s): 18
+[download] Destination: Формы в React： управление вводом и простая валидация без сторонних библиотек [pofiCNm5-U4].mp4
+[download] 100% of   25.56MiB in 00:00:20 at 1.26MiB/s
+
+**************************
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=APc_0qugrY8
+[youtube] Extracting URL: https://www.youtube.com/watch?v=APc_0qugrY8
+[youtube] APc_0qugrY8: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] APc_0qugrY8: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] APc_0qugrY8: Downloading 1 format(s): 18
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=dULZOHjEMt0
+[youtube] Extracting URL: https://www.youtube.com/watch?v=dULZOHjEMt0
+[youtube] dULZOHjEMt0: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] dULZOHjEMt0: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] dULZOHjEMt0: Downloading 1 format(s): 18
+[download] Destination: Кастомные хуки в React： как выносить логику в отдельные функции [dULZOHjEMt0].mp4
+[download] 100% of   14.12MiB in 00:00:10 at 1.35MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=ryYneS2SFso
+[youtube] Extracting URL: https://www.youtube.com/watch?v=ryYneS2SFso
+[youtube] ryYneS2SFso: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] ryYneS2SFso: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] ryYneS2SFso: Downloading 1 format(s): 18
+[download] Destination: Контекст в React： хук useContext и избавление от prop drilling [ryYneS2SFso].mp4
+[download] 100% of   31.04MiB in 00:00:26 at 1.17MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=BafPMy2H4mg
+[youtube] Extracting URL: https://www.youtube.com/watch?v=BafPMy2H4mg
+[youtube] BafPMy2H4mg: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] BafPMy2H4mg: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] BafPMy2H4mg: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=heBRA9LVpsA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=heBRA9LVpsA
+[youtube] heBRA9LVpsA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] heBRA9LVpsA: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] heBRA9LVpsA: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=xs3ejvdIkp8
+[youtube] Extracting URL: https://www.youtube.com/watch?v=xs3ejvdIkp8
+[youtube] xs3ejvdIkp8: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] xs3ejvdIkp8: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] xs3ejvdIkp8: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=iHQ7fwXTqik
+[youtube] Extracting URL: https://www.youtube.com/watch?v=iHQ7fwXTqik
+[youtube] iHQ7fwXTqik: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] iHQ7fwXTqik: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] iHQ7fwXTqik: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=SHDsVFMLtAQ
+[youtube] Extracting URL: https://www.youtube.com/watch?v=SHDsVFMLtAQ
+[youtube] SHDsVFMLtAQ: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] SHDsVFMLtAQ: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] SHDsVFMLtAQ: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=jtC_gyCIVdU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=jtC_gyCIVdU
+[youtube] jtC_gyCIVdU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] jtC_gyCIVdU: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] jtC_gyCIVdU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=N9og2m810jE
+[youtube] Extracting URL: https://www.youtube.com/watch?v=N9og2m810jE
+[youtube] N9og2m810jE: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] N9og2m810jE: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] N9og2m810jE: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=8EXUlJ80Vec
+[youtube] Extracting URL: https://www.youtube.com/watch?v=8EXUlJ80Vec
+[youtube] 8EXUlJ80Vec: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 8EXUlJ80Vec: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 8EXUlJ80Vec: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=Rku2F5OGPzU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Rku2F5OGPzU
+[youtube] Rku2F5OGPzU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Rku2F5OGPzU: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] Rku2F5OGPzU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=TmgbYJgcw9c
+[youtube] Extracting URL: https://www.youtube.com/watch?v=TmgbYJgcw9c
+[youtube] TmgbYJgcw9c: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] TmgbYJgcw9c: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] TmgbYJgcw9c: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=NV-QdMZdGc8
+[youtube] Extracting URL: https://www.youtube.com/watch?v=NV-QdMZdGc8
+[youtube] NV-QdMZdGc8: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] NV-QdMZdGc8: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] NV-QdMZdGc8: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=tBl1n9VPdMk
+[youtube] Extracting URL: https://www.youtube.com/watch?v=tBl1n9VPdMk
+[youtube] tBl1n9VPdMk: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] tBl1n9VPdMk: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] tBl1n9VPdMk: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=0nqwWprv5Qs
+[youtube] Extracting URL: https://www.youtube.com/watch?v=0nqwWprv5Qs
+[youtube] 0nqwWprv5Qs: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 0nqwWprv5Qs: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 0nqwWprv5Qs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=jwTwnI3hwig
+[youtube] Extracting URL: https://www.youtube.com/watch?v=jwTwnI3hwig
+[youtube] jwTwnI3hwig: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] jwTwnI3hwig: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] jwTwnI3hwig: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=G5wvcMNdvyY
+[youtube] Extracting URL: https://www.youtube.com/watch?v=G5wvcMNdvyY
+[youtube] G5wvcMNdvyY: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] G5wvcMNdvyY: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] G5wvcMNdvyY: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=WoolADiqRE8
+[youtube] Extracting URL: https://www.youtube.com/watch?v=WoolADiqRE8
+[youtube] WoolADiqRE8: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] WoolADiqRE8: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] WoolADiqRE8: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=Ib7Pj38m0wQ
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Ib7Pj38m0wQ
+[youtube] Ib7Pj38m0wQ: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Ib7Pj38m0wQ: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] Ib7Pj38m0wQ: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=PLU2AuU6wlU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=PLU2AuU6wlU
+[youtube] PLU2AuU6wlU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] PLU2AuU6wlU: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] PLU2AuU6wlU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=eMETcugEX_c
+[youtube] Extracting URL: https://www.youtube.com/watch?v=eMETcugEX_c
+[youtube] eMETcugEX_c: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] eMETcugEX_c: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] eMETcugEX_c: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=bvULuLY1JZI
+[youtube] Extracting URL: https://www.youtube.com/watch?v=bvULuLY1JZI
+[youtube] bvULuLY1JZI: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] bvULuLY1JZI: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] bvULuLY1JZI: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=hkYzqTKnSIg
+[youtube] Extracting URL: https://www.youtube.com/watch?v=hkYzqTKnSIg
+[youtube] hkYzqTKnSIg: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] hkYzqTKnSIg: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] hkYzqTKnSIg: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=6l6IJLlSoLo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=6l6IJLlSoLo
+[youtube] 6l6IJLlSoLo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 6l6IJLlSoLo: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 6l6IJLlSoLo: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=IsRl03T9VMo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=IsRl03T9VMo
+[youtube] IsRl03T9VMo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] IsRl03T9VMo: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] IsRl03T9VMo: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=5ri5EC--az8
+[youtube] Extracting URL: https://www.youtube.com/watch?v=5ri5EC--az8
+[youtube] 5ri5EC--az8: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 5ri5EC--az8: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 5ri5EC--az8: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=2Pl9ZwN76bE
+[youtube] Extracting URL: https://www.youtube.com/watch?v=2Pl9ZwN76bE
+[youtube] 2Pl9ZwN76bE: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 2Pl9ZwN76bE: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 2Pl9ZwN76bE: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=klVGCxWsN2A
+[youtube] Extracting URL: https://www.youtube.com/watch?v=klVGCxWsN2A
+[youtube] klVGCxWsN2A: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] klVGCxWsN2A: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] klVGCxWsN2A: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=4pEfCpJpPTg
+[youtube] Extracting URL: https://www.youtube.com/watch?v=4pEfCpJpPTg
+[youtube] 4pEfCpJpPTg: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 4pEfCpJpPTg: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 4pEfCpJpPTg: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=jcMqPYwVZtc
+[youtube] Extracting URL: https://www.youtube.com/watch?v=jcMqPYwVZtc
+[youtube] jcMqPYwVZtc: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] jcMqPYwVZtc: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] jcMqPYwVZtc: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=797JCY_TzTI
+[youtube] Extracting URL: https://www.youtube.com/watch?v=797JCY_TzTI
+[youtube] 797JCY_TzTI: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 797JCY_TzTI: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 797JCY_TzTI: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=rwVQKaySfuM
+[youtube] Extracting URL: https://www.youtube.com/watch?v=rwVQKaySfuM
+[youtube] rwVQKaySfuM: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] rwVQKaySfuM: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] rwVQKaySfuM: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=9nZtqLPmcKo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=9nZtqLPmcKo
+[youtube] 9nZtqLPmcKo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 9nZtqLPmcKo: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 9nZtqLPmcKo: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=guop-Q-CrAo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=guop-Q-CrAo
+[youtube] guop-Q-CrAo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] guop-Q-CrAo: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] guop-Q-CrAo: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=BY4lw9uykFk
+[youtube] Extracting URL: https://www.youtube.com/watch?v=BY4lw9uykFk
+[youtube] BY4lw9uykFk: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] BY4lw9uykFk: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] BY4lw9uykFk: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=nxwNhad4jtk
+[youtube] Extracting URL: https://www.youtube.com/watch?v=nxwNhad4jtk
+[youtube] nxwNhad4jtk: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] nxwNhad4jtk: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] nxwNhad4jtk: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=N1HIezZEFcE
+[youtube] Extracting URL: https://www.youtube.com/watch?v=N1HIezZEFcE
+[youtube] N1HIezZEFcE: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] N1HIezZEFcE: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] N1HIezZEFcE: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=Q2KXxasvPRA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Q2KXxasvPRA
+[youtube] Q2KXxasvPRA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Q2KXxasvPRA: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] Q2KXxasvPRA: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=dGSp8nc-mO8
+[youtube] Extracting URL: https://www.youtube.com/watch?v=dGSp8nc-mO8
+[youtube] dGSp8nc-mO8: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] dGSp8nc-mO8: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] dGSp8nc-mO8: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=h5GHA1Xb1Aw
+[youtube] Extracting URL: https://www.youtube.com/watch?v=h5GHA1Xb1Aw
+[youtube] h5GHA1Xb1Aw: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] h5GHA1Xb1Aw: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] h5GHA1Xb1Aw: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=7ofRYfOkhbo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=7ofRYfOkhbo
+[youtube] 7ofRYfOkhbo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 7ofRYfOkhbo: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 7ofRYfOkhbo: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=01RGJQn-lAY
+[youtube] Extracting URL: https://www.youtube.com/watch?v=01RGJQn-lAY
+[youtube] 01RGJQn-lAY: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 01RGJQn-lAY: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 01RGJQn-lAY: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=7qMrFsVFgqQ
+[youtube] Extracting URL: https://www.youtube.com/watch?v=7qMrFsVFgqQ
+[youtube] 7qMrFsVFgqQ: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 7qMrFsVFgqQ: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 7qMrFsVFgqQ: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=toXX_yk1s0s
+[youtube] Extracting URL: https://www.youtube.com/watch?v=toXX_yk1s0s
+[youtube] toXX_yk1s0s: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] toXX_yk1s0s: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] toXX_yk1s0s: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=vA5iT8rN5HU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=vA5iT8rN5HU
+[youtube] vA5iT8rN5HU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] vA5iT8rN5HU: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] vA5iT8rN5HU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=C7TgmKZRNF4
+[youtube] Extracting URL: https://www.youtube.com/watch?v=C7TgmKZRNF4
+[youtube] C7TgmKZRNF4: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] C7TgmKZRNF4: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] C7TgmKZRNF4: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=Nnst-gK38ow
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Nnst-gK38ow
+[youtube] Nnst-gK38ow: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Nnst-gK38ow: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] Nnst-gK38ow: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=ubYPpR9acQc
+[youtube] Extracting URL: https://www.youtube.com/watch?v=ubYPpR9acQc
+[youtube] ubYPpR9acQc: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] ubYPpR9acQc: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] ubYPpR9acQc: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=5nAg2zPgmF4
+[youtube] Extracting URL: https://www.youtube.com/watch?v=5nAg2zPgmF4
+[youtube] 5nAg2zPgmF4: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 5nAg2zPgmF4: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 5nAg2zPgmF4: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=6Ccc1BJ8Bjo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=6Ccc1BJ8Bjo
+[youtube] 6Ccc1BJ8Bjo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 6Ccc1BJ8Bjo: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 6Ccc1BJ8Bjo: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=us1GTgdUsJo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=us1GTgdUsJo
+[youtube] us1GTgdUsJo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] us1GTgdUsJo: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] us1GTgdUsJo: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=vm-M4m-OH0U
+[youtube] Extracting URL: https://www.youtube.com/watch?v=vm-M4m-OH0U
+[youtube] vm-M4m-OH0U: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] vm-M4m-OH0U: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] vm-M4m-OH0U: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=Lq73eax010s
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Lq73eax010s
+[youtube] Lq73eax010s: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Lq73eax010s: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] Lq73eax010s: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=syZhAlHgrxs
+[youtube] Extracting URL: https://www.youtube.com/watch?v=syZhAlHgrxs
+[youtube] syZhAlHgrxs: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] syZhAlHgrxs: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] syZhAlHgrxs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=SjTTDZX2hIA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=SjTTDZX2hIA
+[youtube] SjTTDZX2hIA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] SjTTDZX2hIA: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] SjTTDZX2hIA: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=bMYxQao21gw
+[youtube] Extracting URL: https://www.youtube.com/watch?v=bMYxQao21gw
+[youtube] bMYxQao21gw: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] bMYxQao21gw: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] bMYxQao21gw: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=n9K4P420uh0
+[youtube] Extracting URL: https://www.youtube.com/watch?v=n9K4P420uh0
+[youtube] n9K4P420uh0: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] n9K4P420uh0: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] n9K4P420uh0: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=MGrpBVpctNo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=MGrpBVpctNo
+[youtube] MGrpBVpctNo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] MGrpBVpctNo: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] MGrpBVpctNo: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=zjCPKTJa030
+[youtube] Extracting URL: https://www.youtube.com/watch?v=zjCPKTJa030
+[youtube] zjCPKTJa030: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] zjCPKTJa030: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] zjCPKTJa030: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=yIvIAU-7_SY
+[youtube] Extracting URL: https://www.youtube.com/watch?v=yIvIAU-7_SY
+[youtube] yIvIAU-7_SY: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] yIvIAU-7_SY: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] yIvIAU-7_SY: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=cYx5ckAYhK8
+[youtube] Extracting URL: https://www.youtube.com/watch?v=cYx5ckAYhK8
+[youtube] cYx5ckAYhK8: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] cYx5ckAYhK8: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] cYx5ckAYhK8: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=hYiS-T9a0WA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=hYiS-T9a0WA
+[youtube] hYiS-T9a0WA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] hYiS-T9a0WA: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] hYiS-T9a0WA: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=t_B7hl1W65E
+[youtube] Extracting URL: https://www.youtube.com/watch?v=t_B7hl1W65E
+[youtube] t_B7hl1W65E: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] t_B7hl1W65E: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] t_B7hl1W65E: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=kXAM_VuiBMM
+[youtube] Extracting URL: https://www.youtube.com/watch?v=kXAM_VuiBMM
+[youtube] kXAM_VuiBMM: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] kXAM_VuiBMM: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] kXAM_VuiBMM: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=IcgdjdeOziA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=IcgdjdeOziA
+[youtube] IcgdjdeOziA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] IcgdjdeOziA: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] IcgdjdeOziA: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=rJK0eMkI3BE
+[youtube] Extracting URL: https://www.youtube.com/watch?v=rJK0eMkI3BE
+[youtube] rJK0eMkI3BE: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] rJK0eMkI3BE: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] rJK0eMkI3BE: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=_WlC6UxMyNE
+[youtube] Extracting URL: https://www.youtube.com/watch?v=_WlC6UxMyNE
+[youtube] _WlC6UxMyNE: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] _WlC6UxMyNE: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] _WlC6UxMyNE: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=fJgjpWU_f4g
+[youtube] Extracting URL: https://www.youtube.com/watch?v=fJgjpWU_f4g
+[youtube] fJgjpWU_f4g: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] fJgjpWU_f4g: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] fJgjpWU_f4g: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=zpNk1HMCMoQ
+[youtube] Extracting URL: https://www.youtube.com/watch?v=zpNk1HMCMoQ
+[youtube] zpNk1HMCMoQ: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] zpNk1HMCMoQ: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] zpNk1HMCMoQ: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=ugio2BJOO04
+[youtube] Extracting URL: https://www.youtube.com/watch?v=ugio2BJOO04
+[youtube] ugio2BJOO04: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] ugio2BJOO04: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] ugio2BJOO04: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=fayTKZUUm7c
+[youtube] Extracting URL: https://www.youtube.com/watch?v=fayTKZUUm7c
+[youtube] fayTKZUUm7c: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] fayTKZUUm7c: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] fayTKZUUm7c: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=kfcl02Nd2YI
+[youtube] Extracting URL: https://www.youtube.com/watch?v=kfcl02Nd2YI
+[youtube] kfcl02Nd2YI: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] kfcl02Nd2YI: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] kfcl02Nd2YI: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=s6WLpR3RDPY
+[youtube] Extracting URL: https://www.youtube.com/watch?v=s6WLpR3RDPY
+[youtube] s6WLpR3RDPY: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] s6WLpR3RDPY: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] s6WLpR3RDPY: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=ZV8fNtV1mOM
+[youtube] Extracting URL: https://www.youtube.com/watch?v=ZV8fNtV1mOM
+[youtube] ZV8fNtV1mOM: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] ZV8fNtV1mOM: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] ZV8fNtV1mOM: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=nCgFdChjnds
+[youtube] Extracting URL: https://www.youtube.com/watch?v=nCgFdChjnds
+[youtube] nCgFdChjnds: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] nCgFdChjnds: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] nCgFdChjnds: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=ae_ijNJ38zM
+[youtube] Extracting URL: https://www.youtube.com/watch?v=ae_ijNJ38zM
+[youtube] ae_ijNJ38zM: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] ae_ijNJ38zM: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] ae_ijNJ38zM: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=Vom1FEVuDrM
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Vom1FEVuDrM
+[youtube] Vom1FEVuDrM: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Vom1FEVuDrM: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] Vom1FEVuDrM: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=pOfRi5RVnJM
+[youtube] Extracting URL: https://www.youtube.com/watch?v=pOfRi5RVnJM
+[youtube] pOfRi5RVnJM: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] pOfRi5RVnJM: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] pOfRi5RVnJM: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=bbSLzh5sDyk
+[youtube] Extracting URL: https://www.youtube.com/watch?v=bbSLzh5sDyk
+[youtube] bbSLzh5sDyk: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] bbSLzh5sDyk: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] bbSLzh5sDyk: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=mCcg0ExF81M
+[youtube] Extracting URL: https://www.youtube.com/watch?v=mCcg0ExF81M
+[youtube] mCcg0ExF81M: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] mCcg0ExF81M: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] mCcg0ExF81M: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=3wsvVLOrI3g
+[youtube] Extracting URL: https://www.youtube.com/watch?v=3wsvVLOrI3g
+[youtube] 3wsvVLOrI3g: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 3wsvVLOrI3g: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 3wsvVLOrI3g: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=pBSch5AsJWs
+[youtube] Extracting URL: https://www.youtube.com/watch?v=pBSch5AsJWs
+[youtube] pBSch5AsJWs: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] pBSch5AsJWs: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] pBSch5AsJWs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=FH-t1mt-lSs
+[youtube] Extracting URL: https://www.youtube.com/watch?v=FH-t1mt-lSs
+[youtube] FH-t1mt-lSs: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] FH-t1mt-lSs: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] FH-t1mt-lSs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=EVWT4exv4jA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=EVWT4exv4jA
+[youtube] EVWT4exv4jA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] EVWT4exv4jA: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] EVWT4exv4jA: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=1WRJKgwlX9w
+[youtube] Extracting URL: https://www.youtube.com/watch?v=1WRJKgwlX9w
+[youtube] 1WRJKgwlX9w: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 1WRJKgwlX9w: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 1WRJKgwlX9w: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=OFX-5MRlaPI
+[youtube] Extracting URL: https://www.youtube.com/watch?v=OFX-5MRlaPI
+[youtube] OFX-5MRlaPI: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] OFX-5MRlaPI: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] OFX-5MRlaPI: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=7ycmAac24us
+[youtube] Extracting URL: https://www.youtube.com/watch?v=7ycmAac24us
+[youtube] 7ycmAac24us: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 7ycmAac24us: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 7ycmAac24us: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=ZcWWWzfTk3w
+[youtube] Extracting URL: https://www.youtube.com/watch?v=ZcWWWzfTk3w
+[youtube] ZcWWWzfTk3w: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] ZcWWWzfTk3w: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] ZcWWWzfTk3w: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=OPTAlr54EjM
+[youtube] Extracting URL: https://www.youtube.com/watch?v=OPTAlr54EjM
+[youtube] OPTAlr54EjM: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] OPTAlr54EjM: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] OPTAlr54EjM: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=4ShBCc_GX0w
+[youtube] Extracting URL: https://www.youtube.com/watch?v=4ShBCc_GX0w
+[youtube] 4ShBCc_GX0w: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 4ShBCc_GX0w: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 4ShBCc_GX0w: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=AUdW01JQFME
+[youtube] Extracting URL: https://www.youtube.com/watch?v=AUdW01JQFME
+[youtube] AUdW01JQFME: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] AUdW01JQFME: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] AUdW01JQFME: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=wLWO58PJFrE
+[youtube] Extracting URL: https://www.youtube.com/watch?v=wLWO58PJFrE
+[youtube] wLWO58PJFrE: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] wLWO58PJFrE: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] wLWO58PJFrE: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=OgPY8FccBkI
+[youtube] Extracting URL: https://www.youtube.com/watch?v=OgPY8FccBkI
+[youtube] OgPY8FccBkI: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] OgPY8FccBkI: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] OgPY8FccBkI: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=5JrU-SM-200
+[youtube] Extracting URL: https://www.youtube.com/watch?v=5JrU-SM-200
+[youtube] 5JrU-SM-200: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 5JrU-SM-200: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 5JrU-SM-200: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=ahYuxTRjY0g
+[youtube] Extracting URL: https://www.youtube.com/watch?v=ahYuxTRjY0g
+[youtube] ahYuxTRjY0g: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] ahYuxTRjY0g: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] ahYuxTRjY0g: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=3a_iaHqazHo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=3a_iaHqazHo
+[youtube] 3a_iaHqazHo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 3a_iaHqazHo: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 3a_iaHqazHo: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=aCN5h6Hj4uQ
+[youtube] Extracting URL: https://www.youtube.com/watch?v=aCN5h6Hj4uQ
+[youtube] aCN5h6Hj4uQ: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] aCN5h6Hj4uQ: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] aCN5h6Hj4uQ: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=Ad8bfvZ50NY
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Ad8bfvZ50NY
+[youtube] Ad8bfvZ50NY: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Ad8bfvZ50NY: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] Ad8bfvZ50NY: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=p0Hb2RtISOU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=p0Hb2RtISOU
+[youtube] p0Hb2RtISOU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] p0Hb2RtISOU: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] p0Hb2RtISOU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=45z_efsvd3I
+[youtube] Extracting URL: https://www.youtube.com/watch?v=45z_efsvd3I
+[youtube] 45z_efsvd3I: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 45z_efsvd3I: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 45z_efsvd3I: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=JrKOHNRnRMg
+[youtube] Extracting URL: https://www.youtube.com/watch?v=JrKOHNRnRMg
+[youtube] JrKOHNRnRMg: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] JrKOHNRnRMg: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] JrKOHNRnRMg: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=cZa0aWzAj8E
+[youtube] Extracting URL: https://www.youtube.com/watch?v=cZa0aWzAj8E
+[youtube] cZa0aWzAj8E: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] cZa0aWzAj8E: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] cZa0aWzAj8E: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=9FoDgEMkqaI
+[youtube] Extracting URL: https://www.youtube.com/watch?v=9FoDgEMkqaI
+[youtube] 9FoDgEMkqaI: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 9FoDgEMkqaI: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 9FoDgEMkqaI: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=YG8Vhz1pAsU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=YG8Vhz1pAsU
+[youtube] YG8Vhz1pAsU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] YG8Vhz1pAsU: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] YG8Vhz1pAsU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=HcuVlzsW9S8
+[youtube] Extracting URL: https://www.youtube.com/watch?v=HcuVlzsW9S8
+[youtube] HcuVlzsW9S8: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] HcuVlzsW9S8: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] HcuVlzsW9S8: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=jQCzxM2dPWU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=jQCzxM2dPWU
+[youtube] jQCzxM2dPWU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] jQCzxM2dPWU: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] jQCzxM2dPWU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=Q2tVYJfW-aU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Q2tVYJfW-aU
+[youtube] Q2tVYJfW-aU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Q2tVYJfW-aU: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] Q2tVYJfW-aU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=bWoqW6PjqBE
+[youtube] Extracting URL: https://www.youtube.com/watch?v=bWoqW6PjqBE
+[youtube] bWoqW6PjqBE: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] bWoqW6PjqBE: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] bWoqW6PjqBE: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=TJQi4H4ix0s
+[youtube] Extracting URL: https://www.youtube.com/watch?v=TJQi4H4ix0s
+[youtube] TJQi4H4ix0s: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] TJQi4H4ix0s: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] TJQi4H4ix0s: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=L0eAz_5IRKE
+[youtube] Extracting URL: https://www.youtube.com/watch?v=L0eAz_5IRKE
+[youtube] L0eAz_5IRKE: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] L0eAz_5IRKE: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] L0eAz_5IRKE: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=qxJEcHjk8Xs
+[youtube] Extracting URL: https://www.youtube.com/watch?v=qxJEcHjk8Xs
+[youtube] qxJEcHjk8Xs: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] qxJEcHjk8Xs: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] qxJEcHjk8Xs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=A4Y5VwXGG9g
+[youtube] Extracting URL: https://www.youtube.com/watch?v=A4Y5VwXGG9g
+[youtube] A4Y5VwXGG9g: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] A4Y5VwXGG9g: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] A4Y5VwXGG9g: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=G-U-XU2KjD8
+[youtube] Extracting URL: https://www.youtube.com/watch?v=G-U-XU2KjD8
+[youtube] G-U-XU2KjD8: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] G-U-XU2KjD8: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] G-U-XU2KjD8: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=oQDNPNZ72Ig
+[youtube] Extracting URL: https://www.youtube.com/watch?v=oQDNPNZ72Ig
+[youtube] oQDNPNZ72Ig: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] oQDNPNZ72Ig: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] oQDNPNZ72Ig: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=ZyOWTXtwJD8
+[youtube] Extracting URL: https://www.youtube.com/watch?v=ZyOWTXtwJD8
+[youtube] ZyOWTXtwJD8: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] ZyOWTXtwJD8: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] ZyOWTXtwJD8: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=GctszxSvbeQ
+[youtube] Extracting URL: https://www.youtube.com/watch?v=GctszxSvbeQ
+[youtube] GctszxSvbeQ: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] GctszxSvbeQ: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] GctszxSvbeQ: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=PEQ3i9q3ez8
+[youtube] Extracting URL: https://www.youtube.com/watch?v=PEQ3i9q3ez8
+[youtube] PEQ3i9q3ez8: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] PEQ3i9q3ez8: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] PEQ3i9q3ez8: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=WdubKeJ881I
+[youtube] Extracting URL: https://www.youtube.com/watch?v=WdubKeJ881I
+[youtube] WdubKeJ881I: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] WdubKeJ881I: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] WdubKeJ881I: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=Br-v6hVuQxU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Br-v6hVuQxU
+[youtube] Br-v6hVuQxU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Br-v6hVuQxU: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] Br-v6hVuQxU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=7OGYuM3xrAg
+[youtube] Extracting URL: https://www.youtube.com/watch?v=7OGYuM3xrAg
+[youtube] 7OGYuM3xrAg: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 7OGYuM3xrAg: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 7OGYuM3xrAg: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=XTqd_x_rdjk
+[youtube] Extracting URL: https://www.youtube.com/watch?v=XTqd_x_rdjk
+[youtube] XTqd_x_rdjk: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] XTqd_x_rdjk: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] XTqd_x_rdjk: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=7ZZK9Iprw5c
+[youtube] Extracting URL: https://www.youtube.com/watch?v=7ZZK9Iprw5c
+[youtube] 7ZZK9Iprw5c: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 7ZZK9Iprw5c: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 7ZZK9Iprw5c: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=Mt0st24hTpI
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Mt0st24hTpI
+[youtube] Mt0st24hTpI: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Mt0st24hTpI: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] Mt0st24hTpI: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=Lq4tky_6fN0
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Lq4tky_6fN0
+[youtube] Lq4tky_6fN0: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Lq4tky_6fN0: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] Lq4tky_6fN0: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=FMjuLXNTPfU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=FMjuLXNTPfU
+[youtube] FMjuLXNTPfU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] FMjuLXNTPfU: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] FMjuLXNTPfU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=ScPhhvz1z5Q
+[youtube] Extracting URL: https://www.youtube.com/watch?v=ScPhhvz1z5Q
+[youtube] ScPhhvz1z5Q: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] ScPhhvz1z5Q: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] ScPhhvz1z5Q: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=aNGyq7j0yYA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=aNGyq7j0yYA
+[youtube] aNGyq7j0yYA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] aNGyq7j0yYA: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] aNGyq7j0yYA: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=_in4LAdxAUA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=_in4LAdxAUA
+[youtube] _in4LAdxAUA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] _in4LAdxAUA: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] _in4LAdxAUA: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=jWXGLAD2BUU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=jWXGLAD2BUU
+[youtube] jWXGLAD2BUU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] jWXGLAD2BUU: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] jWXGLAD2BUU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=6PL2TqBdz0I
+[youtube] Extracting URL: https://www.youtube.com/watch?v=6PL2TqBdz0I
+[youtube] 6PL2TqBdz0I: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 6PL2TqBdz0I: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 6PL2TqBdz0I: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=5roKGSdGMF4
+[youtube] Extracting URL: https://www.youtube.com/watch?v=5roKGSdGMF4
+[youtube] 5roKGSdGMF4: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 5roKGSdGMF4: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 5roKGSdGMF4: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=nw4ILgX_mLo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=nw4ILgX_mLo
+[youtube] nw4ILgX_mLo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] nw4ILgX_mLo: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] nw4ILgX_mLo: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=uCXwmupsoMY
+[youtube] Extracting URL: https://www.youtube.com/watch?v=uCXwmupsoMY
+[youtube] uCXwmupsoMY: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] uCXwmupsoMY: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] uCXwmupsoMY: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=scB2C0uNV1s
+[youtube] Extracting URL: https://www.youtube.com/watch?v=scB2C0uNV1s
+[youtube] scB2C0uNV1s: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] scB2C0uNV1s: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] scB2C0uNV1s: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=I3e5TaoV1TI
+[youtube] Extracting URL: https://www.youtube.com/watch?v=I3e5TaoV1TI
+[youtube] I3e5TaoV1TI: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] I3e5TaoV1TI: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] I3e5TaoV1TI: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=ny-ouhU-cCc
+[youtube] Extracting URL: https://www.youtube.com/watch?v=ny-ouhU-cCc
+[youtube] ny-ouhU-cCc: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] ny-ouhU-cCc: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] ny-ouhU-cCc: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=aDGJ3St-jqU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=aDGJ3St-jqU
+[youtube] aDGJ3St-jqU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] aDGJ3St-jqU: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] aDGJ3St-jqU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=-MY61d175_o
+[youtube] Extracting URL: https://www.youtube.com/watch?v=-MY61d175_o
+[youtube] -MY61d175_o: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] -MY61d175_o: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] -MY61d175_o: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=yE4Rlp0OeVc
+[youtube] Extracting URL: https://www.youtube.com/watch?v=yE4Rlp0OeVc
+[youtube] yE4Rlp0OeVc: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] yE4Rlp0OeVc: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] yE4Rlp0OeVc: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>yt-dlp https://www.youtube.com/watch?v=DcOsjxV9IT4
+[youtube] Extracting URL: https://www.youtube.com/watch?v=DcOsjxV9IT4
+[youtube] DcOsjxV9IT4: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] DcOsjxV9IT4: Downloading android vr player API JSON
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] DcOsjxV9IT4: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Alexander_Lamkov>

@@ -1,0 +1,273 @@
+{
+  "playlists": {
+    "foodieland_jsx_minista_vite": {
+      "title": "Foodieland (JSX + Minista + Vite)",
+      "folder": "foodieland_jsx_minista_vite",
+      "video_count_in_playlist": 5,
+      "local_moved": 0
+    },
+    "kod_revyu": {
+      "title": "Код-ревью",
+      "folder": "kod_revyu",
+      "video_count_in_playlist": 10,
+      "local_moved": 0
+    },
+    "react_kurs_2025": {
+      "title": "React курс 2025",
+      "folder": "react_kurs_2025",
+      "video_count_in_playlist": 22,
+      "local_moved": 22
+    },
+    "vyorstka_s_nulya_html_scss_js": {
+      "title": "Вёрстка сайта с нуля • HTML, SCSS, JS практика • Подробное объяснение по шагам • Проект в портфолио",
+      "folder": "vyorstka_s_nulya_html_scss_js",
+      "video_count_in_playlist": 1,
+      "local_moved": 0
+    },
+    "html": {
+      "title": "HTML",
+      "folder": "html",
+      "video_count_in_playlist": 21,
+      "local_moved": 3
+    },
+    "css": {
+      "title": "CSS",
+      "folder": "css",
+      "video_count_in_playlist": 27,
+      "local_moved": 3
+    },
+    "razgovornye": {
+      "title": "Разговорные",
+      "folder": "razgovornye",
+      "video_count_in_playlist": 11,
+      "local_moved": 10
+    },
+    "javascript_kurs_2025": {
+      "title": "JavaScript курс 2025",
+      "folder": "javascript_kurs_2025",
+      "video_count_in_playlist": 42,
+      "local_moved": 41
+    },
+    "accessibility_kurs_2025": {
+      "title": "Accessibility курс 2025",
+      "folder": "accessibility_kurs_2025",
+      "video_count_in_playlist": 4,
+      "local_moved": 0
+    },
+    "vyorstka_sayta_s_0_do_rezultata_html_bem_scss_figma_praktika": {
+      "title": "Вёрстка сайта с 0 до результата | HTML, БЭМ, SCSS, Figma практика | Пошаговое подробное объяснение | Разработка сайта с 0 до результата",
+      "folder": "vyorstka_sayta_s_0_do_rezultata_html_bem_scss_figma_praktika",
+      "video_count_in_playlist": 2,
+      "local_moved": 0
+    },
+    "verstka_saytov_master_klassy": {
+      "title": "Верстка сайтов (мастер-классы)",
+      "folder": "verstka_saytov_master_klassy",
+      "video_count_in_playlist": 14,
+      "local_moved": 3
+    },
+    "adaptivnaya_verstka_html_css_figma": {
+      "title": "Адаптивная верстка сайта с нуля для начинающих | HTML, CSS, Figma практика | Пошаговое подробное объяснение | Разработка сайта с 0 до результата",
+      "folder": "adaptivnaya_verstka_html_css_figma",
+      "video_count_in_playlist": 6,
+      "local_moved": 6
+    },
+    "frontend_tricks_tips": {
+      "title": "Frontend Tricks & Tips",
+      "folder": "frontend_tricks_tips",
+      "video_count_in_playlist": 88,
+      "local_moved": 0
+    },
+    "css_kurs_2025": {
+      "title": "CSS курс 2025",
+      "folder": "css_kurs_2025",
+      "video_count_in_playlist": 23,
+      "local_moved": 23
+    },
+    "devtools": {
+      "title": "DevTools",
+      "folder": "devtools",
+      "video_count_in_playlist": 4,
+      "local_moved": 4
+    },
+    "html_kurs_2025": {
+      "title": "HTML курс 2025",
+      "folder": "html_kurs_2025",
+      "video_count_in_playlist": 18,
+      "local_moved": 18
+    }
+  },
+  "moved": {
+    "adaptivnaya_verstka_html_css_figma": [
+      "#1 Адаптивная верстка сайта с нуля для начинающих ｜ HTML, CSS, Figma практика ｜ Анализ макета [AUdW01JQFME].mp4",
+      "#2 Адаптивная верстка сайта с нуля для начинающих ｜ HTML, CSS, Figma ｜ Секция banner [4ShBCc_GX0w].mp4",
+      "#3 Адаптивная верстка сайта с нуля для начинающих ｜ HTML, CSS, Figma ｜ Секция motivation [OPTAlr54EjM].mp4",
+      "#4 Адаптивная верстка сайта с нуля для начинающих ｜ HTML, CSS, Figma ｜ Секция training-types и др. [ZcWWWzfTk3w].mp4",
+      "#5 Адаптивная верстка сайта с нуля для начинающих ｜ HTML, CSS, Figma ｜ Секции location и family [7ycmAac24us].mp4",
+      "#6 Адаптивная верстка сайта с нуля для начинающих ｜ HTML, CSS, Figma ｜ ФИНАЛ [OFX-5MRlaPI].mp4"
+    ],
+    "css": [
+      "CSS： svh, lvh, dvh — новые единицы измерения [aNGyq7j0yYA].mp4",
+      "Будущее CSS-анимаций — scroll-timeline, animation-timeline и animation-range, JS больше не нужен! [zpNk1HMCMoQ].mp4",
+      "Пиксели в CSS не нужны — используй Rem! Адаптивный размер шрифта, Sass-миксин и функция Px to Rem [6l6IJLlSoLo].mp4"
+    ],
+    "css_kurs_2025": [
+      "1. CSS для начинающих. Введение. Подключение, базовые концепции： каскад, специфичность, наследование [PEQ3i9q3ez8].mp4",
+      "10. CSS позиционирование — свойства position, top, right, bottom, left, z-index. Контекст наложения [jQCzxM2dPWU].mp4",
+      "11. Единицы измерения в CSS — px, %, em, rem, vw, vh. Относительные и абсолютные величины [HcuVlzsW9S8].mp4",
+      "12. CSS Flexbox Layout. Флексы в CSS. Гайд по флексбокс [YG8Vhz1pAsU].mp4",
+      "13. CSS псевдоэлементы — before, after, placeholder, selection, marker, file-selector-button и др. [9FoDgEMkqaI].mp4",
+      "14. CSS псевдоклассы — child, not. Состояния hover, focus и focus-visible, active, disabled, checked [cZa0aWzAj8E].mp4",
+      "15. CSS Grid Layout. Грид-сетка. Гайд по гридам в CSS [JrKOHNRnRMg].mp4",
+      "16. CSS переполнение overflow, видимость opacity и visibility, обрезка clip-path [p0Hb2RtISOU].mp4",
+      "17. CSS свойства взаимодействия — cursor, user-select, pointer-events, scroll-behavior и resize [Ad8bfvZ50NY].mp4",
+      "18. CSS переходы состояний transition, трансформации transform. Свойства translate, scale и rotate [aCN5h6Hj4uQ].mp4",
+      "19. Анимации в CSS. Правило @keyframes. Свойство animation. Настройка анимаций [3a_iaHqazHo].mp4",
+      "2. Гайд по CSS-селекторам, расчёт специфичности в CSS. Приоритет и вес стилей [GctszxSvbeQ].mp4",
+      "20. Адаптивная верстка в CSS. Desktop и mobile first. Медиазапросы @media. Свойства min-max размеров [ahYuxTRjY0g].mp4",
+      "21. CSS свойства — устаревшие и новые. Вендорные префиксы. Директива @supports. Сервис caniuse [5JrU-SM-200].mp4",
+      "3. Блочная модель в CSS — свойства display, width, height, padding, margin, border и box-sizing [oQDNPNZ72Ig].mp4",
+      "4. CSS внутренние и внешние отступы — свойства padding и margin. Схлопывание отступов [G-U-XU2KjD8].mp4",
+      "5. Обнуляющие стили в CSS. Сброс стилей, нормализация, reset, normalize. Стили браузера по умолчанию [A4Y5VwXGG9g].mp4",
+      "6. CSS шрифты — способы подключения, правило font-face, свойство font и другие параметры [qxJEcHjk8Xs].mp4",
+      "7. Цвета в CSS. Форматы RGB, HEX, HSL. Свойство color, ключевые слова transparent, currentColor [TJQi4H4ix0s].mp4",
+      "8. CSS фоновый цвет, изображение, градиент — свойство background, функция linear-gradient [bWoqW6PjqBE].mp4",
+      "9. CSS рамка border, обводка outline, тени box-shadow, фильтры filter [Q2tVYJfW-aU].mp4",
+      "CSS Переменные ｜ CSS Variables ｜ функция var() [OgPY8FccBkI].mp4",
+      "CSS Функции calc(), min(), max(), clamp() [wLWO58PJFrE].mp4"
+    ],
+    "devtools": [
+      "Chrome DevTools — Coverage, Paint Flashing, Console Levels [ZyOWTXtwJD8].mp4",
+      "DevTools — Design Mode, Media Queries, эмуляция геолокации Sensors, Vision Deficiencies Mode [L0eAz_5IRKE].mp4",
+      "Фишки Chrome DevTools, о которых ты не знал — CSS Overview, Accessibility tree, DOM Breakpoints [7OGYuM3xrAg].mp4",
+      "Фишки DevTools — Dual Screen Mode, Element Properties, Font Editor, Conditional Breakpoints [45z_efsvd3I].mp4"
+    ],
+    "html": [
+      "HTML Продвинутая работа с изображениями • srcset, picture, WebP и AVIF, preload, figure и figcaption [Nnst-gK38ow].mp4",
+      "БЭМ методология за 10 минут ｜ Основы для начинающих [FH-t1mt-lSs].mp4",
+      "Имена классов в верстке ｜ Как лучше называть элементы в разметке [EVWT4exv4jA].mp4"
+    ],
+    "html_kurs_2025": [
+      "1. HTML для начинающих. Введение — тег, анатомия тега, поток документа, вложенность, атрибуты [yE4Rlp0OeVc].mp4",
+      "10. HTML таблицы — теги table, tr, td и th. Структурные табличные теги thead, tbody, tfoot и caption [jWXGLAD2BUU].mp4",
+      "11. HTML формы. Теги form, fieldset, legend, label и поле ввода input [_in4LAdxAUA].mp4",
+      "12. HTML тег input и его вариации. Атрибут type, значения tel, email, password, url, search и другие [ScPhhvz1z5Q].mp4",
+      "13. Формы в HTML. Теги textarea, select, option, optgroup [FMjuLXNTPfU].mp4",
+      "14. Формы в HTML. Атрибуты required, disabled, readonly, placeholder, inputmode, type и autocomplete [Lq4tky_6fN0].mp4",
+      "15. Семантические теги HTML： header, main, footer, section, aside, nav и остальные. Семантика HTML5 [7ZZK9Iprw5c].mp4",
+      "16. HTML векторная графика, тег svg. Как выгрузить SVG изображение из Figma [XTqd_x_rdjk].mp4",
+      "17. Глобальные атрибуты HTML — class, id, title, hidden, tabindex, lang и др. Комментарии в разметке [Br-v6hVuQxU].mp4",
+      "18. Актуальность HTML-тегов и атрибутов. Сервисы caniuse и caninclude. Валидатор разметки от W3C [WdubKeJ881I].mp4",
+      "2. HTML — первые шаги в среде разработки (IDE), Hello World. Как открыть HTML в браузере [-MY61d175_o].mp4",
+      "3. Блочные и строчные теги в HTML. Теги div, span [aDGJ3St-jqU].mp4",
+      "4. HTML заголовки, параграфы и списки — теги h1-h6, p, ol, ul и li [ny-ouhU-cCc].mp4",
+      "5. Форматирование текста в HTML — теги b, strong, i и em, s, u, sub и sup, small, mark, br, hr, code [I3e5TaoV1TI].mp4",
+      "6. HTML ссылки и кнопки — теги a, button. Якорная ссылка, ссылка mailto и tel. Атрибут target _blank [scB2C0uNV1s].mp4",
+      "7. HTML изображения — тег img. Относительные и абсолютные пути [uCXwmupsoMY].mp4",
+      "8. Цитаты в HTML — теги blockquote, cite. Атрибут cite. Источник цитаты в HTML [nw4ILgX_mLo].mp4",
+      "9. Медиаконтент в HTML — видео, аудио, фреймы. Теги video, audio, iframe. Тег source [6PL2TqBdz0I].mp4"
+    ],
+    "javascript_kurs_2025": [
+      "DOM JavaScript： стили и CSS-классы. Свойства style и classList. Управление CSS-переменными в JS. [h5GHA1Xb1Aw].mp4",
+      "DOM в JavaScript — Навигация по элементам дерева, атрибуты async и defer [7qMrFsVFgqQ].mp4",
+      "JS Браузерные события： всплытие и погружение, способы обработки событий, отмена всплытия [nxwNhad4jtk].mp4",
+      "JS в браузере： размеры окна и страницы, скролл scrollIntoView, scrollTo, scroll, scrollBy [Q2KXxasvPRA].mp4",
+      "JavaScript DOM манипуляции： создание элементов, вставка, перемещение, удаление и клонирование [N1HIezZEFcE].mp4",
+      "JavaScript DOM-элементы： свойства и атрибуты, поведение value, data-＊ атрибуты [7ofRYfOkhbo].mp4",
+      "JavaScript Отложенное и регулярное выполнение кода — setTimeout и setInterval, clearTimeout и др. [5nAg2zPgmF4].mp4",
+      "JavaScript в браузере — DOM (Document Object Model) и BOM (Browser Object Model) [toXX_yk1s0s].mp4",
+      "JavaScript в браузере： Location и History API, URL страницы и история браузера [5ri5EC--az8].mp4",
+      "JavaScript валидация форм — validity свойство у полей формы. Классовый компонент валидации форм [4pEfCpJpPTg].mp4",
+      "JavaScript для начинающих. Введение — подключение к странице, вывод в консоль, комментарии в коде. [nCgFdChjnds].mp4",
+      "JavaScript запросы fetch — клиент-серверное взаимодействие на практике [klVGCxWsN2A].mp4",
+      "JavaScript и JSON формат — парсинг и преобразование данных [syZhAlHgrxs].mp4",
+      "JavaScript массивы — основы. Приведение к строке. Копирование, объединение и сравнение массивов. [n9K4P420uh0].mp4",
+      "JavaScript методы примитивов. Числа. Объект Math. Округление чисел. Парсинг чисел из строк. [yIvIAU-7_SY].mp4",
+      "JavaScript объекты — сравнение, копирование, объединение, деструктуризация, остаточные параметры. [t_B7hl1W65E].mp4",
+      "JavaScript событийный цикл Event Loop, асинхронный код, промисы (Promise), async ⧸ await [C7TgmKZRNF4].mp4",
+      "JavaScript события клавиатуры： keydown и keyup. События ввода： input, change, cut, copy, paste [9nZtqLPmcKo].mp4",
+      "JavaScript события мыши и указателя, Drag and Drop компонент [guop-Q-CrAo].mp4",
+      "JavaScript события фокуса： focus и blur, focusin и focusout ｜ Методы focus и blur ｜ activeElement [rwVQKaySfuM].mp4",
+      "JavaScript условия if else. Тернарный оператор. Логические операторы. Оператор нулевого слияния. [ugio2BJOO04].mp4",
+      "JavaScript формы — FormData, класс для сбора данных со всех полей формы [jcMqPYwVZtc].mp4",
+      "JavaScript функции alert, prompt и confirm для взаимодействия с пользователем. Условия switch case. [fJgjpWU_f4g].mp4",
+      "Браузерные хранилища данных： localStorage, sessionStorage, cookie, IndexedDB. Смена темы на сайте [2Pl9ZwN76bE].mp4",
+      "Браузерный JavaScript： размеры и координаты DOM-элементов [dGSp8nc-mO8].mp4",
+      "Виды функций в JavaScript. Стрелочные функции. Как правильно называть функции？ Назначение функций. [IcgdjdeOziA].mp4",
+      "Классы в JavaScript — объявление, конструктор, наследование, экземпляр, геттеры и сеттеры [us1GTgdUsJo].mp4",
+      "Ключевое слово this в JavaScript для начинающих • this в объектах и функциях [cYx5ckAYhK8].mp4",
+      "Математика в JavaScript. Арифметические операторы, операторы сравнения. Декремент и инкремент. [fayTKZUUm7c].mp4",
+      "Методы массивов JavaScript — forEach, map, filter, reduce, some, every, sort, includes, indexOf [SjTTDZX2hIA].mp4",
+      "Модули в JavaScript, import и export, декомпозиция кода [vA5iT8rN5HU].mp4",
+      "Обработка ошибок в JavaScript — try catch finally, throw, класс Error [ubYPpR9acQc].mp4",
+      "Объекты в JavaScript. Свойства объекта — чтение, добавление, удаление, проверка наличия и перебор. [kXAM_VuiBMM].mp4",
+      "Перебор объекта в JavaScript. Коллекции Map и Set [vm-M4m-OH0U].mp4",
+      "Переменные в JavaScript (var, let, const), строгий режим (use strict). Как называть переменные？ [ZV8fNtV1mOM].mp4",
+      "События JavaScript： делегирование, поведение браузера по умолчанию, генерация собственных событий [BY4lw9uykFk].mp4",
+      "Строки в JavaScript. Методы at, replace, slice, includes, repeat, trim, split. Длина строки length. [MGrpBVpctNo].mp4",
+      "Типы данных в JavaScript. Проверка типов (typeof), преобразование типов. Интерполяция строк. [kfcl02Nd2YI].mp4",
+      "Формы в JS — доступ к элементам форм, чтение и изменение значений полей ввода, атрибут form [797JCY_TzTI].mp4",
+      "Функции в JavaScript. Область видимости. Параметры и аргументы. Значения по умолчанию. Return. [rJK0eMkI3BE].mp4",
+      "Циклы в JavaScript — while, do while и for. Прерывание цикла break. Продолжение цикла continue. [_WlC6UxMyNE].mp4"
+    ],
+    "razgovornye": [
+      "React — что нужно знать до изучения фронтенд-разработчику？ Пример практики [bvULuLY1JZI].mp4",
+      "Большой разбор ваших вопросов： обучение, работа, мотивация [APc_0qugrY8].mp4",
+      "Зачем разработчику ютуб-канал？ Год на ютубе — итоги и планы. [Lq73eax010s].mp4",
+      "Как бы я изучал программирование сейчас ｜ Эффективное обучение в IT ｜ Топ ошибок при обучении [s6WLpR3RDPY].mp4",
+      "Как долго учить фронтенд？ Сколько учиться на фронтенд-разработчика？ [zjCPKTJa030].mp4",
+      "Как найти первую работу？ Накрутка опыта. Актуален ли фронтенд？ Обучение и мотивация. Карьерный путь [hYiS-T9a0WA].mp4",
+      "Нейросети убили вёрстку？ Спокойно, давай по пунктам [G5wvcMNdvyY].mp4",
+      "Ошибки начинающих при изучении фронтенд-разработки [5roKGSdGMF4].mp4",
+      "Страхи джуна. Чего я боялся в начале изучение фронтенда？ [6Ccc1BJ8Bjo].mp4",
+      "Что такое фронтенд？ ｜ Как стать фронтенд-разработчиком？ ｜ С чего начать изучение фронтенда？ [DcOsjxV9IT4].mp4"
+    ],
+    "react_kurs_2025": [
+      "JSX в React： особенности синтаксиса, подводные камни, условный рендеринг и списки [8EXUlJ80Vec].mp4",
+      "Props в React. Что такое пропсы, как передавать данные и зачем нужен children [jtC_gyCIVdU].mp4",
+      "React JS с 0 для начинающих. Введение. Что такое React？ Преимущества React. Зачем React нужен？ [TmgbYJgcw9c].mp4",
+      "Анимации в React без библиотек. Плавные переходы с помощью CSS и состояний [Xe_Xylz-ojE].mp4",
+      "Архитектура React-приложения. Как структурировать проект. Методология Featured-Sliced Design [KnwduChQuuo].mp4",
+      "Безопасность в React： защита от XSS и работа с чувствительными данными. Подсветка фрагмента поиска [AwMFWuUJXnk].mp4",
+      "Как задеплоить React-приложение на GitHub Pages [2R0DFFmxT_I].mp4",
+      "Как создать проект на React через Vite. Установка, настройка и структура проекта [Rku2F5OGPzU].mp4",
+      "Кастомные хуки в React： как выносить логику в отдельные функции [dULZOHjEMt0].mp4",
+      "Контекст в React： хук useContext и избавление от prop drilling [ryYneS2SFso].mp4",
+      "Маршрутизация в React без библиотек. Как реализовать переходы между страницами [VDOdieM9Np0].mp4",
+      "Менеджмент состояния в React без Redux – когда хватает useReducer, useState и useContext [B72gtyI0kPI].mp4",
+      "Оптимизация в React： как и когда использовать memo, useCallback и useMemo [BafPMy2H4mg].mp4",
+      "Работа с API в React. Подключение к json-server и fetch-запросы： GET, POST, DELETE, PATCH [sKb3VoX9vF4].mp4",
+      "События в React： клики, ввод текста и отправка форм. Обработка onClick и onChange [SHDsVFMLtAQ].mp4",
+      "Состояние компонента в React. useState на практике： добавляем и обновляем данные [iHQ7fwXTqik].mp4",
+      "Стилизация компонентов в React： CSS, SCSS и CSS-модули. Почему не Tailwind и не CSS-in-JS [xcWkwjC8Mbw].mp4",
+      "Тестирование и отладка React-компонентов： React DevTools на практике [tTvbc1x6Jao].mp4",
+      "Управляемые и неуправляемые компоненты в React. Хук useRef и работа с DOM [heBRA9LVpsA].mp4",
+      "Формы в React： управление вводом и простая валидация без сторонних библиотек [pofiCNm5-U4].mp4",
+      "Функциональные компоненты в React. Как разбить интерфейс на переиспользуемые части [N9og2m810jE].mp4",
+      "Хук useEffect и жизненный цикл компонента. Сохраняем состояние в localStorage. Фильтрация задач [xs3ejvdIkp8].mp4"
+    ],
+    "verstka_saytov_master_klassy": [
+      "Вёрстка сайта с 0 до результата ｜ HTML, SCSS, БЭМ — Подробное ПОШАГОВОЕ объяснение ｜ Часть 1 [Vom1FEVuDrM].mp4",
+      "Вёрстка сайта с 0 до результата ｜ HTML, SCSS, БЭМ — Подробное ПОШАГОВОЕ объяснение ｜ Часть 2 [ae_ijNJ38zM].mp4",
+      "Вёрстка сайта с нуля • HTML, SCSS, JS практика • Подробное объяснение по шагам • Проект в портфолио [hkYzqTKnSIg].mp4"
+    ],
+    "misc": [
+      "CSS Layers ｜ Слои — киллер-фича будущего [Mt0st24hTpI].mp4",
+      "NPM для начинающих. Полный гайд： установка, команды, флаги, разбор package.json, версионирование [IsRl03T9VMo].mp4",
+      "To Do List на чистом JavaScript — без фреймворков и библиотек [tBl1n9VPdMk].mp4",
+      "Vite — лучший сборщик для фронтенда в 2025： почему его выбирают все [Ib7Pj38m0wQ].mp4",
+      "WebStorm настройки для быстрой и удобной работы • Плагины • Git GUI • Шаблоны и сниппеты • Обзор IDE [PLU2AuU6wlU].mp4",
+      "Как писать сайты на JSX (без React) и собирать их через Vite： Minista в деле [WoolADiqRE8].mp4",
+      "Линтеры и форматтеры в фронтенде： ESLint, Stylelint и Prettier без боли [jwTwnI3hwig].mp4",
+      "Мой стартовый шаблон для вёрстки： Minista + JSX + Vite — без Gulp и Webpack [0nqwWprv5Qs].mp4",
+      "Основы Git и GitHub. Курс для начинающих. Установка, настройка, основные команды. Git в WebStorm [eMETcugEX_c].mp4",
+      "Фронтенд и моё первое тестовое задание — прожарка, анализ ошибок. [bMYxQao21gw].mp4",
+      "Я сделал полный курс по React (22 урока, 7+ часов практики) [NV-QdMZdGc8].mp4"
+    ]
+  },
+  "stats": {
+    "local_total": 144,
+    "moved_to_playlists": 133,
+    "moved_to_misc": 11
+  }
+}

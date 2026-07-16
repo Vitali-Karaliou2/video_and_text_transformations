@@ -1,0 +1,34 @@
+# Downloaded media
+*.mp4
+*.mkv
+*.webm
+*.m4a
+*.mp3
+*.wav
+*.avi
+*.mov
+*.part
+*.ytdl
+
+# Python / PyInstaller
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+*.spec
+
+# OS / editor
+Thumbs.db
+Desktop.ini
+.DS_Store
+.idea/
+.vscode/
+.cursor/
+
+# Local data dumps / workbooks
+*.xlsx
+*.xls
+*.csv

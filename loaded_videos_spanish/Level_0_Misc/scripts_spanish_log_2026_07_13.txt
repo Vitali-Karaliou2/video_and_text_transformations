@@ -1,0 +1,839 @@
+ Directory of D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol
+
+07/14/2026  10:07 AM    <DIR>          .
+07/14/2026  10:07 AM    <DIR>          ..
+07/14/2026  10:06 AM             4,316 scripts_spanish_2026_07_13.bat
+07/14/2026  10:07 AM    <DIR>          Temp
+               1 File(s)          4,316 bytes
+               3 Dir(s)  530,010,300,416 bytes free
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>scripts_spanish_2026_07_13.bat
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=t0hhwBHjuTM
+[youtube] Extracting URL: https://www.youtube.com/watch?v=t0hhwBHjuTM
+[youtube] t0hhwBHjuTM: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] t0hhwBHjuTM: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] t0hhwBHjuTM: Downloading 1 format(s): 18
+[download] Destination: THE SECRET I KEEP  ｜  Learn SPANISH with this SIMPLE STORY  ⭐   Level 3 [t0hhwBHjuTM].mp4
+[download] 100% of   15.11MiB in 00:00:09 at 1.55MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=_QjVY3e7VYA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=_QjVY3e7VYA
+[youtube] _QjVY3e7VYA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] _QjVY3e7VYA: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] _QjVY3e7VYA: Downloading 1 format(s): 18
+[download] Destination: THE GIRL BEHIND THE MASK  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [_QjVY3e7VYA].mp4
+[download] 100% of   17.01MiB in 00:00:15 at 1.13MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=YRYwKe4sWTA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=YRYwKe4sWTA
+[youtube] YRYwKe4sWTA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] YRYwKe4sWTA: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] YRYwKe4sWTA: Downloading 1 format(s): 18
+[download] Destination: A SPANISH STORY ｜ Spanish Story for beginners ｜  Level 2⭐ [YRYwKe4sWTA].mp4
+[download] 100% of   14.08MiB in 00:00:12 at 1.14MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=0FmRiNeO0FA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=0FmRiNeO0FA
+[youtube] 0FmRiNeO0FA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 0FmRiNeO0FA: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 0FmRiNeO0FA: Downloading 1 format(s): 18
+[download] Destination: LIVING MY DREAM LIFE  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [0FmRiNeO0FA].mp4
+[download] 100% of   15.92MiB in 00:00:09 at 1.73MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=6sXCKwMV7fU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=6sXCKwMV7fU
+[youtube] 6sXCKwMV7fU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 6sXCKwMV7fU: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 6sXCKwMV7fU: Downloading 1 format(s): 18
+[download] Destination: I DON'T LIKE HIM  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [6sXCKwMV7fU].mp4
+[download] 100% of   10.87MiB in 00:00:08 at 1.34MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=p8PS5VV-Bo0
+[youtube] Extracting URL: https://www.youtube.com/watch?v=p8PS5VV-Bo0
+[youtube] p8PS5VV-Bo0: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] p8PS5VV-Bo0: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] p8PS5VV-Bo0: Downloading 1 format(s): 18
+[download] Destination: FROM CLEANER TO WIFE  ｜ Spanish Story for beginners ｜  Level 4 ⭐ [p8PS5VV-Bo0].mp4
+[download] 100% of   20.72MiB in 00:00:14 at 1.41MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=f7uIVpsGAVA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=f7uIVpsGAVA
+[youtube] f7uIVpsGAVA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] f7uIVpsGAVA: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] f7uIVpsGAVA: Downloading 1 format(s): 18
+[download] Destination: HOW TO LEARN SPANISH IN SEVEN DAYS  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [f7uIVpsGAVA].mp4
+[download] 100% of   14.04MiB in 00:00:11 at 1.20MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=WRr4mXwFnP0
+[youtube] Extracting URL: https://www.youtube.com/watch?v=WRr4mXwFnP0
+[youtube] WRr4mXwFnP0: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] WRr4mXwFnP0: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] WRr4mXwFnP0: Downloading 1 format(s): 18
+[download] Destination: FROM SILENT TO FLUENT  ｜ Spanish Story for beginners ｜  Level 4 ⭐ [WRr4mXwFnP0].mp4
+[download] 100% of   25.80MiB in 00:00:17 at 1.51MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=DPvahJ-TkZA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=DPvahJ-TkZA
+[youtube] DPvahJ-TkZA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] DPvahJ-TkZA: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] DPvahJ-TkZA: Downloading 1 format(s): 18
+[download] Destination: AT THE CAFE  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [DPvahJ-TkZA].mp4
+[download] 100% of   13.24MiB in 00:00:09 at 1.43MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=d3SOuLtSvyw
+[youtube] Extracting URL: https://www.youtube.com/watch?v=d3SOuLtSvyw
+[youtube] d3SOuLtSvyw: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] d3SOuLtSvyw: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] d3SOuLtSvyw: Downloading 1 format(s): 18
+[download] Destination: I WENT TO THE JUNGLE  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [d3SOuLtSvyw].mp4
+[download] 100% of   11.82MiB in 00:00:08 at 1.37MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=kN0qsUwpb5E
+[youtube] Extracting URL: https://www.youtube.com/watch?v=kN0qsUwpb5E
+[youtube] kN0qsUwpb5E: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] kN0qsUwpb5E: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] kN0qsUwpb5E: Downloading 1 format(s): 18
+[download] Destination: HABITS THAT MAKE YOU SUCCESSFUL  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [kN0qsUwpb5E].mp4
+[download] 100% of   15.81MiB in 00:00:11 at 1.42MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=TqvO_Y6U0SM
+[youtube] Extracting URL: https://www.youtube.com/watch?v=TqvO_Y6U0SM
+[youtube] TqvO_Y6U0SM: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] TqvO_Y6U0SM: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] TqvO_Y6U0SM: Downloading 1 format(s): 18
+[download] Destination: THE MAN WITH TWO FACES  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [TqvO_Y6U0SM].mp4
+[download] 100% of   27.90MiB in 00:00:18 at 1.53MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=2YW1VnObvi4
+[youtube] Extracting URL: https://www.youtube.com/watch?v=2YW1VnObvi4
+[youtube] 2YW1VnObvi4: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 2YW1VnObvi4: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 2YW1VnObvi4: Downloading 1 format(s): 18
+[download] Destination: MY BEST FRIEND LOVES ME  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [2YW1VnObvi4].mp4
+[download] 100% of   20.05MiB in 00:00:12 at 1.58MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=A5v15THZpYA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=A5v15THZpYA
+[youtube] A5v15THZpYA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] A5v15THZpYA: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] A5v15THZpYA: Downloading 1 format(s): 18
+[download] Destination: I MARRIED A YOUNG MAN  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [A5v15THZpYA].mp4
+[download] 100% of   47.10MiB in 00:00:25 at 1.86MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=HX4X_yMOHcU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=HX4X_yMOHcU
+[youtube] HX4X_yMOHcU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] HX4X_yMOHcU: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] HX4X_yMOHcU: Downloading 1 format(s): 18
+[download] Destination: I MET HIM IN THE RAIN  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [HX4X_yMOHcU].mp4
+[download] 100% of   14.27MiB in 00:00:12 at 1.16MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=5agmxh-ICjs
+[youtube] Extracting URL: https://www.youtube.com/watch?v=5agmxh-ICjs
+[youtube] 5agmxh-ICjs: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 5agmxh-ICjs: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 5agmxh-ICjs: Downloading 1 format(s): 18
+[download] Destination: I AM A CLEANER  ｜ Spanish Story for beginners ｜  Level 4 ⭐ [5agmxh-ICjs].mp4
+[download] 100% of    8.77MiB in 00:00:05 at 1.56MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=gRyTxQU7Hsg
+[youtube] Extracting URL: https://www.youtube.com/watch?v=gRyTxQU7Hsg
+[youtube] gRyTxQU7Hsg: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] gRyTxQU7Hsg: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] gRyTxQU7Hsg: Downloading 1 format(s): 18
+[download] Destination: THE NEW LIFE  ｜ Spanish Story for beginners ｜  Level 4 ⭐ [gRyTxQU7Hsg].mp4
+[download] 100% of   30.44MiB in 00:00:18 at 1.65MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=LV8XhLcGZ60
+[youtube] Extracting URL: https://www.youtube.com/watch?v=LV8XhLcGZ60
+[youtube] LV8XhLcGZ60: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] LV8XhLcGZ60: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] LV8XhLcGZ60: Downloading 1 format(s): 18
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=DyWGk5WMt2g
+[youtube] Extracting URL: https://www.youtube.com/watch?v=DyWGk5WMt2g
+[youtube] DyWGk5WMt2g: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] DyWGk5WMt2g: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] DyWGk5WMt2g: Downloading 1 format(s): 18
+[download] Destination: LEARN TO LIVE  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [DyWGk5WMt2g].mp4
+[download] 100% of   34.21MiB in 00:00:22 at 1.51MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=0Zxs1q8rtw8
+[youtube] Extracting URL: https://www.youtube.com/watch?v=0Zxs1q8rtw8
+[youtube] 0Zxs1q8rtw8: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 0Zxs1q8rtw8: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 0Zxs1q8rtw8: Downloading 1 format(s): 18
+[download] Destination: THE CRAZY FAMILY  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [0Zxs1q8rtw8].mp4
+[download] 100% of   30.93MiB in 00:00:34 at 918.80KiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=qkgx5ArvRIY
+[youtube] Extracting URL: https://www.youtube.com/watch?v=qkgx5ArvRIY
+[youtube] qkgx5ArvRIY: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] qkgx5ArvRIY: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] qkgx5ArvRIY: Downloading 1 format(s): 18
+[download] Destination: I FELL IN LOVE WITH MY PROFESSOR  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [qkgx5ArvRIY].mp4
+[download] 100% of   27.89MiB in 00:00:16 at 1.71MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=rQ32Asfhv98
+[youtube] Extracting URL: https://www.youtube.com/watch?v=rQ32Asfhv98
+[youtube] rQ32Asfhv98: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] rQ32Asfhv98: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] rQ32Asfhv98: Downloading 1 format(s): 18
+[download] Destination: WHY READING IS IMPORTANT  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [rQ32Asfhv98].mp4
+[download] 100% of   33.41MiB in 00:00:25 at 1.32MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=9Sd_iXvbpxo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=9Sd_iXvbpxo
+[youtube] 9Sd_iXvbpxo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 9Sd_iXvbpxo: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 9Sd_iXvbpxo: Downloading 1 format(s): 18
+[download] Destination: The Apple Tree ｜ Learn Spanish Through Stories [9Sd_iXvbpxo].mp4
+[download] 100% of   23.33MiB in 00:00:15 at 1.48MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=GMybIb4py8Y
+[youtube] Extracting URL: https://www.youtube.com/watch?v=GMybIb4py8Y
+[youtube] GMybIb4py8Y: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] GMybIb4py8Y: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] GMybIb4py8Y: Downloading 1 format(s): 18
+[download] Destination: THE NIGHT WALK  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [GMybIb4py8Y].mp4
+[download] 100% of   31.24MiB in 00:00:20 at 1.51MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=t_rhwGrCPMI
+[youtube] Extracting URL: https://www.youtube.com/watch?v=t_rhwGrCPMI
+[youtube] t_rhwGrCPMI: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] t_rhwGrCPMI: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] t_rhwGrCPMI: Downloading 1 format(s): 18
+[download] Destination: THE LOVE OF A MOTHER  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [t_rhwGrCPMI].mp4
+[download] 100% of   25.12MiB in 00:00:19 at 1.32MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=uQCjhVaTgP4
+[youtube] Extracting URL: https://www.youtube.com/watch?v=uQCjhVaTgP4
+[youtube] uQCjhVaTgP4: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] uQCjhVaTgP4: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] uQCjhVaTgP4: Downloading 1 format(s): 18
+[download] Destination: ＂The Miracle＂ A BEAUTIFUL STORY  ｜ Learn SPANISH with this SIMPLE STORY  ｜  Level 3 ⭐ [uQCjhVaTgP4].mp4
+[download] 100% of   52.56MiB in 00:00:34 at 1.52MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=F2Ve10ZP2Sk
+[youtube] Extracting URL: https://www.youtube.com/watch?v=F2Ve10ZP2Sk
+[youtube] F2Ve10ZP2Sk: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] F2Ve10ZP2Sk: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] F2Ve10ZP2Sk: Downloading 1 format(s): 18
+[download] Destination: THE INTERVIEW  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [F2Ve10ZP2Sk].mp4
+[download] 100% of   29.91MiB in 00:00:23 at 1.26MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=XCXw4WimPtw
+[youtube] Extracting URL: https://www.youtube.com/watch?v=XCXw4WimPtw
+[youtube] XCXw4WimPtw: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] XCXw4WimPtw: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] XCXw4WimPtw: Downloading 1 format(s): 18
+[download] Destination: THE LAST TRAIN  ｜ Learn SPANISH with this SIMPLE STORY  ｜  Level 3 ⭐ [XCXw4WimPtw].mp4
+[download] 100% of   37.63MiB in 00:00:23 at 1.61MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=6rUDrtL7t9w
+[youtube] Extracting URL: https://www.youtube.com/watch?v=6rUDrtL7t9w
+[youtube] 6rUDrtL7t9w: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 6rUDrtL7t9w: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 6rUDrtL7t9w: Downloading 1 format(s): 18
+[download] Destination: I MARRIED A MAN I NEVER MET  ｜ Spanish Story for beginners ｜  Level 3 ⭐ [6rUDrtL7t9w].mp4
+[download] 100% of   39.75MiB in 00:00:25 at 1.56MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=s7fyT4sR6bg
+[youtube] Extracting URL: https://www.youtube.com/watch?v=s7fyT4sR6bg
+[youtube] s7fyT4sR6bg: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] s7fyT4sR6bg: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] s7fyT4sR6bg: Downloading 1 format(s): 18
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=LM8AwL3T_xU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=LM8AwL3T_xU
+[youtube] LM8AwL3T_xU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] LM8AwL3T_xU: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] LM8AwL3T_xU: Downloading 1 format(s): 18
+[download] Destination: CHANGE YOUR LIFE  ｜ Learn SPANISH with this SIMPLE STORY  ｜  Level 3 ⭐ [LM8AwL3T_xU].mp4
+[download] 100% of   43.87MiB in 00:00:40 at 1.08MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=7m8KAgowgRQ
+[youtube] Extracting URL: https://www.youtube.com/watch?v=7m8KAgowgRQ
+[youtube] 7m8KAgowgRQ: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 7m8KAgowgRQ: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 7m8KAgowgRQ: Downloading 1 format(s): 18
+[download] Destination: HE USED ME  ｜  Master Spanish with This One Simple Story  ⭐  Level 3 [7m8KAgowgRQ].mp4
+[download] 100% of   20.73MiB in 00:00:25 at 821.50KiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=PwLtYHRQL5Y
+[youtube] Extracting URL: https://www.youtube.com/watch?v=PwLtYHRQL5Y
+[youtube] PwLtYHRQL5Y: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] PwLtYHRQL5Y: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] PwLtYHRQL5Y: Downloading 1 format(s): 18
+[download] Destination: THE UNEXPECTED CALL  ｜ Learn SPANISH with this SIMPLE STORY  ｜  Level 3 ⭐ [PwLtYHRQL5Y].mp4
+[download] 100% of   20.54MiB in 00:00:15 at 1.34MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=x4tyNJjgm4M
+[youtube] Extracting URL: https://www.youtube.com/watch?v=x4tyNJjgm4M
+[youtube] x4tyNJjgm4M: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] x4tyNJjgm4M: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] x4tyNJjgm4M: Downloading 1 format(s): 18
+[download] Destination: The Rich Man  ｜  Learn SPANISH with this SIMPLE STORY  ｜  Learn Spanish the Easy Way  ｜  Level 3 [x4tyNJjgm4M].mp4
+[download] 100% of   37.39MiB in 00:00:22 at 1.63MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=7RhR0nDAqlY
+[youtube] Extracting URL: https://www.youtube.com/watch?v=7RhR0nDAqlY
+[youtube] 7RhR0nDAqlY: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 7RhR0nDAqlY: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 7RhR0nDAqlY: Downloading 1 format(s): 18
+[download] Destination: THE SLAVE  ｜  Learn Spanish Easily Using This Simple Story  ｜  Level 4 [7RhR0nDAqlY].mp4
+[download] 100% of   56.45MiB in 00:00:36 at 1.53MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=1tmkvhmHpYc
+[youtube] Extracting URL: https://www.youtube.com/watch?v=1tmkvhmHpYc
+[youtube] 1tmkvhmHpYc: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 1tmkvhmHpYc: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 1tmkvhmHpYc: Downloading 1 format(s): 18
+[download] Destination: HOW TO LEARN SPANISH PROPERLY  ｜  This Simple Story Will Teach You Spanish  ⭐  Level 2 [1tmkvhmHpYc].mp4
+[download] 100% of   64.02MiB in 00:00:45 at 1.40MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=kSIyK2_mM48
+[youtube] Extracting URL: https://www.youtube.com/watch?v=kSIyK2_mM48
+[youtube] kSIyK2_mM48: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] kSIyK2_mM48: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] kSIyK2_mM48: Downloading 1 format(s): 18
+[download] Destination: THE SICK DAUGHTER  ｜  Learn Spanish Easily Using This Simple Story  ⭐  Level 3 [kSIyK2_mM48].mp4
+[download] 100% of   48.10MiB in 00:00:34 at 1.40MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=rYK3UrsmE2Q
+[youtube] Extracting URL: https://www.youtube.com/watch?v=rYK3UrsmE2Q
+[youtube] rYK3UrsmE2Q: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] rYK3UrsmE2Q: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] rYK3UrsmE2Q: Downloading 1 format(s): 18
+[download] Destination: I GO TO DUBAI  ｜  Learn Spanish Through a Simple Story  ⭐  Level 3 [rYK3UrsmE2Q].mp4
+[download] 100% of   38.26MiB in 00:00:25 at 1.53MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=choqC6JAOPs
+[youtube] Extracting URL: https://www.youtube.com/watch?v=choqC6JAOPs
+[youtube] choqC6JAOPs: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] choqC6JAOPs: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] choqC6JAOPs: Downloading 1 format(s): 18
+[download] Destination: THE BEAUTIFUL GIRL  ｜  Learn Spanish for Beginners with a Simple Story  ⭐  Level 3 [choqC6JAOPs].mp4
+[download] 100% of   22.18MiB in 00:00:15 at 1.44MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=KMYOjmKGr_s
+[youtube] Extracting URL: https://www.youtube.com/watch?v=KMYOjmKGr_s
+[youtube] KMYOjmKGr_s: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] KMYOjmKGr_s: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] KMYOjmKGr_s: Downloading 1 format(s): 18
+[download] Destination: IS HE LYING？  ｜  This Simple Story Will Teach You Spanish  ⭐  Level 3 [KMYOjmKGr_s].mp4
+[download] 100% of   26.41MiB in 00:00:17 at 1.50MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=9134THtWqkg
+[youtube] Extracting URL: https://www.youtube.com/watch?v=9134THtWqkg
+[youtube] 9134THtWqkg: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 9134THtWqkg: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 9134THtWqkg: Downloading 1 format(s): 18
+[download] Got error: HTTP Error 500: Internal Server Error. Retrying (1/10)...
+[download] Destination: THE STUPID WIFE  ｜  Learn Spanish the Easy Way  ⭐  Level 4 [9134THtWqkg].mp4
+[download] 100% of   23.80MiB in 00:00:38 at 635.61KiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=aAr8ULEghyA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=aAr8ULEghyA
+[youtube] aAr8ULEghyA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] aAr8ULEghyA: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] aAr8ULEghyA: Downloading 1 format(s): 18
+[download] Destination: I GO TO LONDON  ｜  Simple Story to Learn Spanish Fast  ｜  Level 3 [aAr8ULEghyA].mp4
+[download] 100% of   29.99MiB in 00:00:22 at 1.34MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=cMVYM998y9w
+[youtube] Extracting URL: https://www.youtube.com/watch?v=cMVYM998y9w
+[youtube] cMVYM998y9w: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] cMVYM998y9w: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] cMVYM998y9w: Downloading 1 format(s): 18
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=bS6jLuZybYI
+[youtube] Extracting URL: https://www.youtube.com/watch?v=bS6jLuZybYI
+[youtube] bS6jLuZybYI: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] bS6jLuZybYI: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] bS6jLuZybYI: Downloading 1 format(s): 18
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=gs1w0oQETqk
+[youtube] Extracting URL: https://www.youtube.com/watch?v=gs1w0oQETqk
+[youtube] gs1w0oQETqk: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] gs1w0oQETqk: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] gs1w0oQETqk: Downloading 1 format(s): 18
+[download] Destination: NOTHING IS FREE  ｜  Learn Spanish Through a Simple Story  ⭐  Level 3 [gs1w0oQETqk].mp4
+[download] 100% of   27.97MiB in 00:00:14 at 1.88MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=5sbnnh0Yqv0
+[youtube] Extracting URL: https://www.youtube.com/watch?v=5sbnnh0Yqv0
+[youtube] 5sbnnh0Yqv0: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 5sbnnh0Yqv0: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 5sbnnh0Yqv0: Downloading 1 format(s): 18
+[download] Destination: THE WAITRESS  ｜  Learn SPANISH with this SIMPLE STORY  ⭐  Level 3 [5sbnnh0Yqv0].mp4
+[download] 100% of   47.67MiB in 00:00:29 at 1.63MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=3sSElU3mAVI
+[youtube] Extracting URL: https://www.youtube.com/watch?v=3sSElU3mAVI
+[youtube] 3sSElU3mAVI: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 3sSElU3mAVI: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 3sSElU3mAVI: Downloading 1 format(s): 18
+[download] Destination: I GO TO CARLIFORNIA  ｜  Learn Spanish Fast  ⭐  Level 3 [3sSElU3mAVI].mp4
+[download] 100% of   26.41MiB in 00:00:20 at 1.26MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=OFlk7axBGDA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=OFlk7axBGDA
+[youtube] OFlk7axBGDA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] OFlk7axBGDA: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] OFlk7axBGDA: Downloading 1 format(s): 18
+[download] Destination: THE HOUSEKEEPER  ｜  Learn SPANISH with this SIMPLE STORY  ⭐  Level 3 [OFlk7axBGDA].mp4
+[download] 100% of   39.92MiB in 00:00:33 at 1.20MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=LYhogMsD6tA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=LYhogMsD6tA
+[youtube] LYhogMsD6tA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] LYhogMsD6tA: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] LYhogMsD6tA: Downloading 1 format(s): 18
+[download] Destination: Learn Spanish Easily with This Simple Story  ｜  Spanish Comprehension Practice  ｜  Level 3 ⭐ [LYhogMsD6tA].mp4
+[download] 100% of   30.20MiB in 00:00:17 at 1.71MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=W9Ekkcbvx3s
+[youtube] Extracting URL: https://www.youtube.com/watch?v=W9Ekkcbvx3s
+[youtube] W9Ekkcbvx3s: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] W9Ekkcbvx3s: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] W9Ekkcbvx3s: Downloading 1 format(s): 18
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=a6AYpJOclRQ
+[youtube] Extracting URL: https://www.youtube.com/watch?v=a6AYpJOclRQ
+[youtube] a6AYpJOclRQ: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] a6AYpJOclRQ: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] a6AYpJOclRQ: Downloading 1 format(s): 18
+[download] Destination: HE HIT ME  ｜  Learn Basic Spanish Through Storytelling  ⭐  Level 3 [a6AYpJOclRQ].mp4
+[download] 100% of   31.95MiB in 00:00:19 at 1.63MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=zULES1K7LDs
+[youtube] Extracting URL: https://www.youtube.com/watch?v=zULES1K7LDs
+[youtube] zULES1K7LDs: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] zULES1K7LDs: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] zULES1K7LDs: Downloading 1 format(s): 18
+[download] Destination: MASTER SPANISH AT HOME  ｜   Learn SPANISH with this SIMPLE STORIES  ⭐  Level 3 [zULES1K7LDs].mp4
+[download] 100% of   33.61MiB in 00:00:17 at 1.87MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=G5IuKFZeIzc
+[youtube] Extracting URL: https://www.youtube.com/watch?v=G5IuKFZeIzc
+[youtube] G5IuKFZeIzc: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] G5IuKFZeIzc: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] G5IuKFZeIzc: Downloading 1 format(s): 18
+[download] Destination: SPANISH STORIES COMPILATION 2  ｜  Spanish Listening Practice   ｜  All levels ⭐ [G5IuKFZeIzc].mp4
+[download] 100% of  203.63MiB in 00:01:54 at 1.78MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=k_9L9O0d4xU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=k_9L9O0d4xU
+[youtube] k_9L9O0d4xU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] k_9L9O0d4xU: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] k_9L9O0d4xU: Downloading 1 format(s): 18
+[download] Destination: THE BLACK CAT  ｜  Learn SPANISH through STORIES  ⭐  Level 3 [k_9L9O0d4xU].mp4
+[download] 100% of   29.52MiB in 00:00:19 at 1.51MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=JqfyK-yni4U
+[youtube] Extracting URL: https://www.youtube.com/watch?v=JqfyK-yni4U
+[youtube] JqfyK-yni4U: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] JqfyK-yni4U: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] JqfyK-yni4U: Downloading 1 format(s): 18
+[download] Destination: SPANISH STORIES COMPILATION  ｜  Spanish Listening Practice  ⭐  All levels [JqfyK-yni4U].mp4
+[download] 100% of  119.48MiB in 00:01:06 at 1.79MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=Q6EFLoAXkpQ
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Q6EFLoAXkpQ
+[youtube] Q6EFLoAXkpQ: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Q6EFLoAXkpQ: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] Q6EFLoAXkpQ: Downloading 1 format(s): 18
+[download] Destination: THE TEACHER  ｜   Learn SPANISH with this SIMPLE STORY  ｜  Level 3 ⭐ [Q6EFLoAXkpQ].mp4
+[download] 100% of   37.95MiB in 00:00:20 at 1.84MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=xaCM4gRln34
+[youtube] Extracting URL: https://www.youtube.com/watch?v=xaCM4gRln34
+[youtube] xaCM4gRln34: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] xaCM4gRln34: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] xaCM4gRln34: Downloading 1 format(s): 18
+[download] Destination: MY FIRST FLIGHT ｜  Learn SPANISH with this INTERESTING STORY  ｜  Level 2 ⭐ [xaCM4gRln34].mp4
+[download] 100% of   55.06MiB in 00:00:42 at 1.29MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=-cBzyPejKQI
+[youtube] Extracting URL: https://www.youtube.com/watch?v=-cBzyPejKQI
+[youtube] -cBzyPejKQI: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] -cBzyPejKQI: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] -cBzyPejKQI: Downloading 1 format(s): 18
+[download] Destination: Learn SPANISH with this SIMPLE STORY  ｜  Level 2 ⭐ [-cBzyPejKQI].mp4
+[download] 100% of   23.67MiB in 00:00:18 at 1.26MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=QgJeKOLgEPw
+[youtube] Extracting URL: https://www.youtube.com/watch?v=QgJeKOLgEPw
+[youtube] QgJeKOLgEPw: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] QgJeKOLgEPw: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] QgJeKOLgEPw: Downloading 1 format(s): 18
+[download] Destination: THE STORY OF NIKOLA TESLA ｜  Learn Spanish Through Stories  ｜  Level 3 ⭐ [QgJeKOLgEPw].mp4
+[download] 100% of   49.48MiB in 00:00:29 at 1.69MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=7gPgkHd8xeo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=7gPgkHd8xeo
+[youtube] 7gPgkHd8xeo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 7gPgkHd8xeo: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 7gPgkHd8xeo: Downloading 1 format(s): 18
+[download] Destination: THE NURSE  ｜  Learn SPANISH with this SIMPLE STORY  ｜  Level 3 ⭐ [7gPgkHd8xeo].mp4
+[download] 100% of   45.05MiB in 00:00:28 at 1.59MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=0Dep_jFtgxg
+[youtube] Extracting URL: https://www.youtube.com/watch?v=0Dep_jFtgxg
+[youtube] 0Dep_jFtgxg: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 0Dep_jFtgxg: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 0Dep_jFtgxg: Downloading 1 format(s): 18
+[download] Destination: FLIGHT 324  ｜  Learn Spanish FAST with This Simple Story  ｜  Level 2 ⭐ [0Dep_jFtgxg].mp4
+[download] 100% of   40.09MiB in 00:00:26 at 1.54MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=y_yVTAj4ILk
+[youtube] Extracting URL: https://www.youtube.com/watch?v=y_yVTAj4ILk
+[youtube] y_yVTAj4ILk: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] y_yVTAj4ILk: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] y_yVTAj4ILk: Downloading 1 format(s): 18
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=5YYXEjSiFfQ
+[youtube] Extracting URL: https://www.youtube.com/watch?v=5YYXEjSiFfQ
+[youtube] 5YYXEjSiFfQ: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 5YYXEjSiFfQ: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 5YYXEjSiFfQ: Downloading 1 format(s): 18
+[download] Destination: I GO TO NEW YORK  ｜  Learn Spanish Through a Simple Story  ｜  Level 2 ⭐ [5YYXEjSiFfQ].mp4
+[download] 100% of   45.96MiB in 00:00:29 at 1.55MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=SLQMuOi9E8I
+[youtube] Extracting URL: https://www.youtube.com/watch?v=SLQMuOi9E8I
+[youtube] SLQMuOi9E8I: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] SLQMuOi9E8I: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] SLQMuOi9E8I: Downloading 1 format(s): 18
+[download] Destination: THE TAXI DRIVER  ｜  Learn Spanish Through a Simple Story  ｜  Level 2 ⭐ [SLQMuOi9E8I].mp4
+[download] 100% of   30.88MiB in 00:00:21 at 1.45MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=fjk5M6WQgKo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=fjk5M6WQgKo
+[youtube] fjk5M6WQgKo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] fjk5M6WQgKo: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] fjk5M6WQgKo: Downloading 1 format(s): 18
+[download] Destination: THE RIGHT WAY TO LEARN SPANISH [fjk5M6WQgKo].mp4
+[download] 100% of   44.47MiB in 00:00:30 at 1.47MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=Lcwt_dRd3gc
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Lcwt_dRd3gc
+[youtube] Lcwt_dRd3gc: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Lcwt_dRd3gc: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] Lcwt_dRd3gc: Downloading 1 format(s): 18
+[download] Destination: MY FAMILY  ｜  Learn SPANISH with this SIMPLE STORY  ｜  Level 1 [Lcwt_dRd3gc].mp4
+[download] 100% of   24.64MiB in 00:00:16 at 1.46MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=8hAf1GQN5CA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=8hAf1GQN5CA
+[youtube] 8hAf1GQN5CA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 8hAf1GQN5CA: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 8hAf1GQN5CA: Downloading 1 format(s): 18
+[download] Got error: HTTP Error 500: Internal Server Error. Retrying (1/10)...
+[download] Destination: THE HISTORY OF AMERICA  ｜  Learn Spanish Through Stories  ｜  Level 3 ⭐ [8hAf1GQN5CA].mp4
+[download] 100% of   73.69MiB in 00:00:57 at 1.28MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=Ec_x-E6fumM
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Ec_x-E6fumM
+[youtube] Ec_x-E6fumM: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Ec_x-E6fumM: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] Ec_x-E6fumM: Downloading 1 format(s): 18
+[download] Destination: I GO TO LONDON  ｜  Master Spanish with This One Simple Story  ｜  Level 1 [Ec_x-E6fumM].mp4
+[download] 100% of   37.01MiB in 00:00:21 at 1.70MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=XQa4cG1ieM8
+[youtube] Extracting URL: https://www.youtube.com/watch?v=XQa4cG1ieM8
+[youtube] XQa4cG1ieM8: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] XQa4cG1ieM8: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] XQa4cG1ieM8: Downloading 1 format(s): 18
+[download] Destination: THE SHOESHINE BOY  ｜  Learn Spanish Easily Using This Simple Story  ｜  Level 0 ⭐ [XQa4cG1ieM8].mp4
+[download] 100% of   11.31MiB in 00:00:08 at 1.38MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=uC8XH3xXwZk
+[youtube] Extracting URL: https://www.youtube.com/watch?v=uC8XH3xXwZk
+[youtube] uC8XH3xXwZk: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] uC8XH3xXwZk: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] uC8XH3xXwZk: Downloading 1 format(s): 18
+[download] Destination: DONALD TRUMP'S LIFE  ｜  Learn Spanish Through Stories  ｜  Level 2 ⭐ [uC8XH3xXwZk].mp4
+[download] 100% of   36.51MiB in 00:00:19 at 1.90MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=461m0uBAnSs
+[youtube] Extracting URL: https://www.youtube.com/watch?v=461m0uBAnSs
+[youtube] 461m0uBAnSs: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 461m0uBAnSs: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 461m0uBAnSs: Downloading 1 format(s): 18
+[download] Destination: 100 SPANISH CONVERSATIONS FOR BEGINNERS  ｜ Level 1 [461m0uBAnSs].mp4
+[download] 100% of   25.90MiB in 00:00:15 at 1.70MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=scGOUkdxQtQ
+[youtube] Extracting URL: https://www.youtube.com/watch?v=scGOUkdxQtQ
+[youtube] scGOUkdxQtQ: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] scGOUkdxQtQ: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] scGOUkdxQtQ: Downloading 1 format(s): 18
+[download] Destination: SHERLOCK HOLMES  ｜  Learn SPANISH with this SIMPLE STORY  ⭐  Level 3 [scGOUkdxQtQ].mp4
+[download] 100% of   42.74MiB in 00:00:34 at 1.24MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=Q8ljzJhu47k
+[youtube] Extracting URL: https://www.youtube.com/watch?v=Q8ljzJhu47k
+[youtube] Q8ljzJhu47k: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] Q8ljzJhu47k: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] Q8ljzJhu47k: Downloading 1 format(s): 18
+[download] Destination: THE PRICE OF LOVE  ｜  Learn Spanish Easily Using This Simple Story  ｜  Level 1 ⭐ [Q8ljzJhu47k].mp4
+[download] 100% of   17.85MiB in 00:00:11 at 1.61MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=8vSQ60xOxMg
+[youtube] Extracting URL: https://www.youtube.com/watch?v=8vSQ60xOxMg
+[youtube] 8vSQ60xOxMg: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 8vSQ60xOxMg: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 8vSQ60xOxMg: Downloading 1 format(s): 18
+[download] Destination: HOW TO PRACTICE SPANISH AT HOME [8vSQ60xOxMg].mp4
+[download] 100% of   54.69MiB in 00:00:32 at 1.70MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=p3l17isFQU0
+[youtube] Extracting URL: https://www.youtube.com/watch?v=p3l17isFQU0
+[youtube] p3l17isFQU0: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] p3l17isFQU0: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] p3l17isFQU0: Downloading 1 format(s): 18
+[download] Destination: THE YOUNG PEOPLE  ｜  Learn Spanish the Easy Way  ｜  Level 1 ⭐ [p3l17isFQU0].mp4
+[download] 100% of   16.52MiB in 00:00:10 at 1.56MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=BaIZr-tAr1k
+[youtube] Extracting URL: https://www.youtube.com/watch?v=BaIZr-tAr1k
+[youtube] BaIZr-tAr1k: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] BaIZr-tAr1k: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] BaIZr-tAr1k: Downloading 1 format(s): 18
+[download] Destination: Master Spanish with This One Simple Story  ｜  Learn Spanish the Easy Way   ｜  Level 2 ⭐ [BaIZr-tAr1k].mp4
+[download] 100% of   52.55MiB in 00:00:33 at 1.57MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=8LCafMxatgU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=8LCafMxatgU
+[youtube] 8LCafMxatgU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] 8LCafMxatgU: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] 8LCafMxatgU: Downloading 1 format(s): 18
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=r8MLPnD_j0o
+[youtube] Extracting URL: https://www.youtube.com/watch?v=r8MLPnD_j0o
+[youtube] r8MLPnD_j0o: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] r8MLPnD_j0o: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] r8MLPnD_j0o: Downloading 1 format(s): 18
+[download] Destination: THE HAUNTED HOUSE  ｜  Master Spanish with This One Simple Story  ｜  Level 4 ⭐ [r8MLPnD_j0o].mp4
+[download] 100% of   43.94MiB in 00:00:30 at 1.44MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=zm4924ckp7E
+[youtube] Extracting URL: https://www.youtube.com/watch?v=zm4924ckp7E
+[youtube] zm4924ckp7E: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] zm4924ckp7E: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] zm4924ckp7E: Downloading 1 format(s): 18
+[download] Destination: WHY YOU MUST LISTEN IN SPANISH [zm4924ckp7E].mp4
+[download] 100% of   24.47MiB in 00:00:16 at 1.47MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=oTAhy8WPlNA
+[youtube] Extracting URL: https://www.youtube.com/watch?v=oTAhy8WPlNA
+[youtube] oTAhy8WPlNA: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] oTAhy8WPlNA: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] oTAhy8WPlNA: Downloading 1 format(s): 18
+[download] Destination: THE TRAIN TO MYRTLE COTTAGE  ｜  Easy Spanish Story  ｜  Level 3 ⭐ [oTAhy8WPlNA].mp4
+[download] 100% of   38.09MiB in 00:00:24 at 1.59MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=q_g9lp-gyuU
+[youtube] Extracting URL: https://www.youtube.com/watch?v=q_g9lp-gyuU
+[youtube] q_g9lp-gyuU: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] q_g9lp-gyuU: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] q_g9lp-gyuU: Downloading 1 format(s): 18
+[download] Destination: Learn Spanish Fast with this Story  ｜  Spanish Story For Beginners  ⭐  Level 2 [q_g9lp-gyuU].mp4
+[download] 100% of   33.17MiB in 00:00:21 at 1.53MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=B-Z5o2cFigo
+[youtube] Extracting URL: https://www.youtube.com/watch?v=B-Z5o2cFigo
+[youtube] B-Z5o2cFigo: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] B-Z5o2cFigo: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] B-Z5o2cFigo: Downloading 1 format(s): 18
+[download] Destination: WHO AM I？  ｜   Easy Spanish Learning with a Simple Story  ⭐  Level 2 [B-Z5o2cFigo].mp4
+[download] 100% of   23.40MiB in 00:00:21 at 1.11MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>yt-dlp https://www.youtube.com/watch?v=DEzosW9oDGE
+[youtube] Extracting URL: https://www.youtube.com/watch?v=DEzosW9oDGE
+[youtube] DEzosW9oDGE: Downloading webpage
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[youtube] DEzosW9oDGE: Downloading android vr player API JSON
+WARNING: ffmpeg not found. The downloaded format may not be the best available. Installing ffmpeg is strongly recommended: https://github.com/yt-dlp/yt-dlp#dependencies
+[info] DEzosW9oDGE: Downloading 1 format(s): 18
+[download] Destination: Learn SPANISH with this SIMPLE STORY  ⭐  Level 1 [DEzosW9oDGE].mp4
+[download] 100% of   38.70MiB in 00:00:23 at 1.62MiB/s
+
+D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol>D:\Vitali\Streams_from_Youtube_Channels\yt-dlp\Lyke.Espanol
+
+83 videos loaded in 30 minutes
