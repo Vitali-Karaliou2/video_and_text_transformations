@@ -43,6 +43,7 @@ DEFAULT_TO = 10000
 CHANNEL_ID_RE = re.compile(r"^UC[\w-]{22}$")
 INVALID_PATH_CHARS = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
 CACHE_HEAD_CHECK = 3
+PAGE_SIZE = 30  # для оценки номера страницы по индексу видео (--to); API может вернуть 28–30
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -451,16 +452,29 @@ def write_cache(
     channel_name: str,
     channel_handle: str | None,
     videos: list[dict],
+    continuation_token: str | None = None,
+    pages_fetched: int | None = None,
+    playlist_map: dict[str, str] | None = None,
+    keep_playlist_map: bool = False,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    existing = read_cache(path) if keep_playlist_map else None
     payload = {
         "channel_id": channel_id,
         "channel_name": channel_name,
         "channel_handle": channel_handle,
         "count": len(videos),
         "last_fetched_at": datetime.now().isoformat(timespec="seconds"),
+        "continuation_token": continuation_token,
+        "pages_fetched": pages_fetched,
         "videos": videos,
     }
+    if playlist_map is not None:
+        payload["playlist_map"] = playlist_map
+        payload["playlist_map_at"] = datetime.now().isoformat(timespec="seconds")
+    elif existing and existing.get("playlist_map"):
+        payload["playlist_map"] = existing["playlist_map"]
+        payload["playlist_map_at"] = existing.get("playlist_map_at")
     path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -489,92 +503,218 @@ def fetch_browse_page(channel_id: str, continuation: str | None = None) -> dict:
     return post_innertube("browse", payload)
 
 
-def ingest_response(response: dict, videos: dict[str, dict]) -> int:
-    added = 0
-    for lockup in extract_lockups(response):
-        parsed = parse_lockup(lockup)
-        if parsed and parsed["id"] not in videos:
-            videos[parsed["id"]] = parsed
-            added += 1
-    return added
-
-
-def fetch_all_browse_videos(channel_id: str) -> tuple[list[dict], str]:
-    print("Fetching channel videos via YouTube browse API...", flush=True)
-    body = fetch_browse_page(channel_id)
-    channel_name = extract_channel_name(body)
-    videos: dict[str, dict] = {}
-    ingest_response(body, videos)
-
+def first_continuation(body: dict) -> str | None:
     tokens: list[str] = []
     find_continuations(body, tokens)
-    token = tokens[0] if tokens else None
-    page = 1
-
-    while token:
-        page += 1
-        response = fetch_browse_page(channel_id, token)
-        added = ingest_response(response, videos)
-        print(f"Page {page}: total {len(videos)} (+{added})", flush=True)
-        tokens = []
-        find_continuations(response, tokens)
-        token = tokens[0] if tokens else None
-        time.sleep(0.4)
-
-    return list(videos.values()), channel_name
+    return tokens[0] if tokens else None
 
 
-def fetch_first_page_videos(channel_id: str) -> tuple[list[dict], str]:
+def ingest_lockups_from_response(
+    response: dict,
+    videos: list[dict],
+    seen_ids: set[str],
+) -> tuple[int, int]:
+    lockups = extract_lockups(response)
+    added = 0
+    for lockup in lockups:
+        parsed = parse_lockup(lockup)
+        if parsed and parsed["id"] not in seen_ids:
+            seen_ids.add(parsed["id"])
+            videos.append(parsed)
+            added += 1
+    return added, len(lockups)
+
+
+def log_page_ingest(
+    page: int,
+    total: int,
+    added: int,
+    items: int,
+    *,
+    is_last: bool = False,
+) -> None:
+    """Log one browse page. `added` = new videos on this page; no padding to PAGE_SIZE."""
+    if is_last:
+        suffix = ", last page"
+    elif items and added == 0 and total == 0:
+        suffix = f", 0 parsed from {items} lockups"
+    elif added == 0:
+        suffix = ", all already in cache"
+    elif added < items:
+        suffix = f", {items - added} skipped"
+    else:
+        suffix = ""
+    print(f"Page {page}: total {total} (+{added}{suffix})", flush=True)
+
+
+def browse_api_header() -> None:
+    print("Fetching channel videos via YouTube browse API...", flush=True)
+
+
+def fetch_all_browse_videos(channel_id: str) -> tuple[list[dict], str, str | None, int]:
+    browse_api_header()
     body = fetch_browse_page(channel_id)
     channel_name = extract_channel_name(body)
     videos: list[dict] = []
-    for lockup in extract_lockups(body):
-        parsed = parse_lockup(lockup)
-        if parsed:
-            videos.append(parsed)
-    return videos, channel_name
+    seen_ids: set[str] = set()
+    added, items = ingest_lockups_from_response(body, videos, seen_ids)
+    log_page_ingest(1, len(videos), added, items)
 
-
-def fetch_until_known(channel_id: str, known_ids: set[str]) -> tuple[list[dict], str]:
-    """Fetch pages until the first previously cached video appears."""
-    print("Fetching recent channel videos...", flush=True)
-    body = fetch_browse_page(channel_id)
-    channel_name = extract_channel_name(body)
-    collected: list[dict] = []
-    seen: set[str] = set()
-
-    def add_from_response(response: dict) -> bool:
-        hit_known = False
-        for lockup in extract_lockups(response):
-            parsed = parse_lockup(lockup)
-            if not parsed:
-                continue
-            if parsed["id"] in known_ids:
-                hit_known = True
-                break
-            if parsed["id"] not in seen:
-                seen.add(parsed["id"])
-                collected.append(parsed)
-        return hit_known
-
-    if add_from_response(body):
-        return collected, channel_name
-
-    tokens: list[str] = []
-    find_continuations(body, tokens)
-    token = tokens[0] if tokens else None
+    token = first_continuation(body)
     page = 1
+
     while token:
         page += 1
         response = fetch_browse_page(channel_id, token)
-        if add_from_response(response):
+        added, items = ingest_lockups_from_response(response, videos, seen_ids)
+        token = first_continuation(response)
+        if items == 0:
+            log_page_ingest(page, len(videos), added, items, is_last=True)
             break
-        tokens = []
-        find_continuations(response, tokens)
-        token = tokens[0] if tokens else None
+        log_page_ingest(page, len(videos), added, items, is_last=not token)
         time.sleep(0.4)
 
-    return collected, channel_name
+    print(
+        f"Channel browse complete: {len(videos)} videos in {page} page(s).",
+        flush=True,
+    )
+    return videos, channel_name, None, page
+
+
+def pages_for_index(index: int) -> int:
+    return max(1, (index - 1) // PAGE_SIZE + 1)
+
+
+def fetch_first_browse_page(
+    channel_id: str,
+    *,
+    known_ids: set[str] | None = None,
+    announce: bool = True,
+) -> tuple[list[dict], str, dict]:
+    if announce:
+        browse_api_header()
+    body = fetch_browse_page(channel_id)
+    channel_name = extract_channel_name(body)
+    lockups = extract_lockups(body)
+    videos: list[dict] = []
+    added = 0
+    for lockup in lockups:
+        parsed = parse_lockup(lockup)
+        if not parsed:
+            continue
+        videos.append(parsed)
+        if known_ids is None or parsed["id"] not in known_ids:
+            added += 1
+    log_page_ingest(1, len(videos), added, len(lockups))
+    return videos, channel_name, body
+
+
+def fetch_first_page_videos(channel_id: str) -> tuple[list[dict], str]:
+    videos, channel_name, _ = fetch_first_browse_page(channel_id)
+    return videos, channel_name
+
+
+def fetch_browse_up_to_count(
+    channel_id: str,
+    min_count: int | None,
+    existing: list[dict],
+    first_body: dict | None = None,
+    *,
+    resume_token: str | None = None,
+    resume_after_page: int = 0,
+) -> tuple[list[dict], str, str | None, int]:
+    """Fetch browse pages until min_count videos are cached, or all pages if min_count is None.
+
+    Returns (videos, channel_name, continuation_token_for_next_page, pages_fetched).
+    When resume_token is set, skips network requests for pages already in cache.
+    """
+    videos = list(existing)
+    seen_ids = {v["id"] for v in videos}
+
+    if min_count is not None and len(videos) >= min_count:
+        if first_body is not None and resume_after_page == 0 and resume_token is None:
+            return (
+                videos,
+                extract_channel_name(first_body),
+                first_continuation(first_body) if len(videos) >= PAGE_SIZE else None,
+                max(1, pages_fetched or 1),
+            )
+        channel_name = (
+            extract_channel_name(first_body) if first_body else fetch_channel_name(channel_id)
+        )
+        return videos, channel_name, resume_token, resume_after_page
+
+    page = resume_after_page
+    pages_fetched = resume_after_page
+    token: str | None = None
+    channel_name = ""
+
+    if resume_token:
+        channel_name = (
+            extract_channel_name(first_body) if first_body else fetch_channel_name(channel_id)
+        )
+        print(
+            f"Resuming from page {page + 1} ({len(videos)} videos already in cache, "
+            f"no re-fetch of page{'s' if page > 1 else ''} "
+            f"{'1-' + str(page) if page > 1 else '1'})...",
+            flush=True,
+        )
+        token = resume_token
+    else:
+        if first_body is not None:
+            body = first_body
+        else:
+            browse_api_header()
+            body = fetch_browse_page(channel_id)
+        channel_name = extract_channel_name(body)
+        page = 1
+        pages_fetched = 1
+
+        if len(videos) < PAGE_SIZE:
+            added, items = ingest_lockups_from_response(body, videos, seen_ids)
+            if page == 1 and not resume_token:
+                log_page_ingest(1, len(videos), added, items)
+            if added == 0 and items > 0 and len(videos) == 0:
+                raise SystemExit(
+                    f"Could not parse any videos from page 1 ({items} lockups on page)."
+                )
+
+        if min_count is not None and len(videos) >= min_count:
+            return videos, channel_name, first_continuation(body), pages_fetched
+
+        token = first_continuation(body)
+        if token and len(videos) >= PAGE_SIZE and min_count is not None:
+            print(
+                f"Walking from page 2 ({len(videos)} videos in cache, "
+                f"no saved continuation token)...",
+                flush=True,
+            )
+
+    while token and (min_count is None or len(videos) < min_count):
+        page += 1
+        response = fetch_browse_page(channel_id, token)
+        added, items = ingest_lockups_from_response(response, videos, seen_ids)
+        pages_fetched = page
+        token = first_continuation(response)
+        if items == 0:
+            log_page_ingest(page, len(videos), added, items, is_last=True)
+            print("Empty browse page; channel list complete.", flush=True)
+            token = None
+            break
+        log_page_ingest(page, len(videos), added, items, is_last=not token)
+        if min_count is not None and len(videos) >= min_count:
+            break
+        if token:
+            time.sleep(0.4)
+
+    if min_count is None and pages_fetched:
+        print(
+            f"Channel browse complete: {len(videos)} videos in {pages_fetched} page(s).",
+            flush=True,
+        )
+
+    next_token = token if token else None
+    return videos, channel_name, next_token, pages_fetched
 
 
 def new_videos_at_head(fresh: list[dict], cached: list[dict]) -> list[dict]:
@@ -617,6 +757,215 @@ def merge_new_with_cache(new_videos: list[dict], cached_videos: list[dict]) -> l
     return ordered
 
 
+def needs_head_check(
+    args: argparse.Namespace,
+    cached_len: int,
+    required: int | None,
+    cached_total: int,
+    continuation_token: str | None,
+) -> bool:
+    """Whether page 1 must be fetched from YouTube before using/extending cache."""
+    if args.new:
+        return True
+    if required is not None and cached_len >= required:
+        return False
+    if required is None:
+        if continuation_token is None and cached_total > 0 and cached_len >= cached_total:
+            return False
+        return True
+    if range_explicit(args) and args.from_index > CACHE_HEAD_CHECK:
+        return False
+    return True
+
+
+def cache_status_line(cached_len: int, cache: dict, required: int | None) -> str:
+    pages = int(cache.get("pages_fetched") or 0)
+    pages_part = f", pages 1-{pages} in cache" if pages else ""
+    need_part = f", need {required}" if required is not None else ", need full list"
+    return f"{cached_len} videos{pages_part}{need_part}"
+
+
+def incremental_smart_load(
+    channel_id: str,
+    args: argparse.Namespace,
+    cache: dict,
+    handle: str | None,
+    cache_path: Path,
+) -> FetchResult:
+    """Page-aware smart refresh (default mode and --new with optional range)."""
+    cached_videos: list[dict] = list(cache["videos"])
+    channel_name = cache.get("channel_name") or ""
+    cached_total = cache.get("count", len(cached_videos))
+
+    if args.new and not range_explicit(args):
+        # --new without range always checks channel head
+        print("Smart refresh: checking channel head (page 1)...", flush=True)
+        browse_api_header()
+        cached_ids = {v["id"] for v in cached_videos}
+        first_page, channel_name, first_body = fetch_first_browse_page(
+            channel_id, known_ids=cached_ids, announce=False
+        )
+        if cached_videos and not cache_head_matches(first_page, cached_videos):
+            print("Cache head mismatch; performing full refresh.", flush=True)
+            videos, channel_name, _, pages_fetched = fetch_all_browse_videos(channel_id)
+            write_cache(
+                cache_path,
+                channel_id=channel_id,
+                channel_name=channel_name,
+                channel_handle=handle or cache.get("channel_handle"),
+                videos=videos,
+                continuation_token=None,
+                pages_fetched=pages_fetched,
+            )
+            return FetchResult(videos, channel_name, set(), False)
+        new_head = new_videos_at_head(first_page, cached_videos) if cached_videos else []
+        new_ids = {v["id"] for v in new_head}
+        if new_head:
+            cached_videos = merge_new_with_cache(new_head, cached_videos)
+            write_cache(
+                cache_path,
+                channel_id=channel_id,
+                channel_name=channel_name,
+                channel_handle=handle or cache.get("channel_handle"),
+                videos=cached_videos,
+                continuation_token=None,
+                pages_fetched=1,
+                keep_playlist_map=True,
+            )
+        else:
+            print("No new videos found.", flush=True)
+        return FetchResult(cached_videos, channel_name, new_ids, True)
+
+    if range_explicit(args):
+        required = args.to_index
+    elif cache.get("continuation_token") is None and cached_total > 0 and len(cached_videos) >= cached_total:
+        required = cached_total
+    else:
+        required = None
+
+    head_check = needs_head_check(
+        args,
+        len(cached_videos),
+        required,
+        cached_total,
+        cache.get("continuation_token"),
+    )
+
+    if required is not None and len(cached_videos) >= required and not head_check:
+        print(
+            f"Using cached browse data ({cache_status_line(len(cached_videos), cache, required)}). "
+            f"No API pages fetched.",
+            flush=True,
+        )
+        return FetchResult(cached_videos, channel_name, set(), True)
+
+    first_page: list[dict] = []
+    first_body: dict | None = None
+    new_ids: set[str] = set()
+    resume_token: str | None = cache.get("continuation_token")
+    resume_page = int(cache.get("pages_fetched") or 0)
+
+    if head_check:
+        print("Smart refresh: checking channel head (page 1)...", flush=True)
+        browse_api_header()
+        cached_ids = {v["id"] for v in cached_videos}
+        first_page, channel_name, first_body = fetch_first_browse_page(
+            channel_id, known_ids=cached_ids, announce=False
+        )
+        if cached_videos and not cache_head_matches(first_page, cached_videos):
+            print("Cache head mismatch; performing full refresh.", flush=True)
+            videos, channel_name, _, pages_fetched = fetch_all_browse_videos(channel_id)
+            write_cache(
+                cache_path,
+                channel_id=channel_id,
+                channel_name=channel_name,
+                channel_handle=handle or cache.get("channel_handle"),
+                videos=videos,
+                continuation_token=None,
+                pages_fetched=pages_fetched,
+            )
+            return FetchResult(videos, channel_name, set(), False)
+        new_head = new_videos_at_head(first_page, cached_videos) if cached_videos else []
+        new_ids = {v["id"] for v in new_head}
+        if new_head:
+            cached_videos = merge_new_with_cache(new_head, cached_videos)
+            print(f"Cache head OK; {len(new_head)} new video(s) at channel head.", flush=True)
+            resume_token = None
+            resume_page = 0
+        elif required is not None and len(cached_videos) >= required:
+            print(
+                f"Using cached browse data ({cache_status_line(len(cached_videos), cache, required)}).",
+                flush=True,
+            )
+            return FetchResult(cached_videos, channel_name, new_ids, True)
+
+    if required is not None and len(cached_videos) >= required:
+        if new_ids:
+            write_cache(
+                cache_path,
+                channel_id=channel_id,
+                channel_name=channel_name,
+                channel_handle=handle or cache.get("channel_handle"),
+                videos=cached_videos,
+                continuation_token=resume_token,
+                pages_fetched=resume_page or 1,
+                keep_playlist_map=True,
+            )
+        print(
+            f"Using cached browse data ({cache_status_line(len(cached_videos), cache, required)}).",
+            flush=True,
+        )
+        return FetchResult(cached_videos, channel_name, new_ids, True)
+
+    if required is not None:
+        target_pages = pages_for_index(required)
+        cached_pages = int(cache.get("pages_fetched") or 0)
+        print(
+            f"Smart refresh: {cache_status_line(len(cached_videos), cache, required)}, "
+            f"target pages 1-{target_pages}...",
+            flush=True,
+        )
+        if not head_check:
+            browse_api_header()
+        videos, channel_name, next_token, pages_fetched = fetch_browse_up_to_count(
+            channel_id,
+            required,
+            cached_videos,
+            first_body if head_check else None,
+            resume_token=resume_token if not new_ids else None,
+            resume_after_page=0 if new_ids else resume_page,
+        )
+    else:
+        cached_pages = int(cache.get("pages_fetched") or 0)
+        print(
+            f"Smart refresh: loading full channel list "
+            f"({len(cached_videos)} in cache, pages 1-{cached_pages or '?'})...",
+            flush=True,
+        )
+        if not head_check:
+            browse_api_header()
+        videos, channel_name, next_token, pages_fetched = fetch_browse_up_to_count(
+            channel_id,
+            None,
+            cached_videos,
+            first_body if head_check else None,
+            resume_token=resume_token if not new_ids else None,
+            resume_after_page=0 if new_ids else resume_page,
+        )
+
+    write_cache(
+        cache_path,
+        channel_id=channel_id,
+        channel_name=channel_name,
+        channel_handle=handle or cache.get("channel_handle"),
+        videos=videos,
+        continuation_token=next_token,
+        pages_fetched=pages_fetched,
+        keep_playlist_map=True,
+    )
+    return FetchResult(videos, channel_name, new_ids, True)
+
+
 def load_browse_videos(
     channel_id: str,
     args: argparse.Namespace,
@@ -629,13 +978,31 @@ def load_browse_videos(
     if not has_cache:
         if args.refresh or args.new:
             print("No cache yet; --refresh/--new ignored.", flush=True)
-        videos, channel_name = fetch_all_browse_videos(channel_id)
+        if range_explicit(args) and not args.refresh:
+            required = args.to_index
+            pages = pages_for_index(required)
+            print(
+                f"No cache yet; loading pages 1-{pages} ({required} videos needed)...",
+                flush=True,
+            )
+            browse_api_header()
+            body = fetch_browse_page(channel_id)
+            channel_name = extract_channel_name(body)
+            videos, channel_name, next_token, pages_fetched = fetch_browse_up_to_count(
+                channel_id, required, [], body
+            )
+        else:
+            videos, channel_name, next_token, pages_fetched = fetch_all_browse_videos(
+                channel_id
+            )
         write_cache(
             cache_path,
             channel_id=channel_id,
             channel_name=channel_name,
             channel_handle=handle or (cache.get("channel_handle") if cache else None),
             videos=videos,
+            continuation_token=next_token,
+            pages_fetched=pages_fetched,
         )
         return FetchResult(videos, channel_name, set(), False)
 
@@ -643,68 +1010,19 @@ def load_browse_videos(
     channel_name = cache.get("channel_name") or fetch_channel_name(channel_id)
 
     if args.refresh:
-        videos, channel_name = fetch_all_browse_videos(channel_id)
+        videos, channel_name, _, pages_fetched = fetch_all_browse_videos(channel_id)
         write_cache(
             cache_path,
             channel_id=channel_id,
             channel_name=channel_name,
             channel_handle=handle or cache.get("channel_handle"),
             videos=videos,
+            continuation_token=None,
+            pages_fetched=pages_fetched,
         )
         return FetchResult(videos, channel_name, set(), False)
 
-    known_ids = {v["id"] for v in cached_videos}
-
-    if args.new:
-        fresh_new, channel_name = fetch_until_known(channel_id, known_ids)
-        new_ids = {v["id"] for v in fresh_new}
-        if fresh_new:
-            merged = merge_new_with_cache(fresh_new, cached_videos)
-            write_cache(
-                cache_path,
-                channel_id=channel_id,
-                channel_name=channel_name,
-                channel_handle=handle or cache.get("channel_handle"),
-                videos=merged,
-            )
-            return FetchResult(merged, channel_name, new_ids, True)
-        print("No new videos found.", flush=True)
-        return FetchResult(cached_videos, channel_name, set(), True)
-
-    # Smart refresh: verify cached head against live first page, then reuse cache
-    first_page, channel_name = fetch_first_page_videos(channel_id)
-    if cache_head_matches(first_page, cached_videos):
-        fresh_new, _ = fetch_until_known(channel_id, known_ids)
-        new_list = fresh_new
-        new_ids = {v["id"] for v in new_list}
-        if new_list:
-            merged = merge_new_with_cache(new_list, cached_videos)
-            write_cache(
-                cache_path,
-                channel_id=channel_id,
-                channel_name=channel_name,
-                channel_handle=handle or cache.get("channel_handle"),
-                videos=merged,
-            )
-            print(
-                f"Cache head OK; appended {len(fresh_new)} new video(s), "
-                f"reused {len(cached_videos)} cached entries.",
-                flush=True,
-            )
-            return FetchResult(merged, channel_name, new_ids, True)
-        print(f"Using cached browse data ({len(cached_videos)} videos)", flush=True)
-        return FetchResult(cached_videos, channel_name, set(), True)
-
-    print("Cache head mismatch; performing full refresh.", flush=True)
-    videos, channel_name = fetch_all_browse_videos(channel_id)
-    write_cache(
-        cache_path,
-        channel_id=channel_id,
-        channel_name=channel_name,
-        channel_handle=handle or cache.get("channel_handle"),
-        videos=videos,
-    )
-    return FetchResult(videos, channel_name, set(), False)
+    return incremental_smart_load(channel_id, args, cache, handle, cache_path)
 
 
 def range_explicit(args: argparse.Namespace) -> bool:
@@ -764,9 +1082,10 @@ def build_records(
     selected_indices: list[int],
     playlist_map: dict[str, str],
     today: date,
-) -> tuple[list[VideoRecord], int]:
+) -> tuple[list[VideoRecord], int, int]:
     total_channel = len(browse_videos)
     records: list[VideoRecord] = []
+    excluded = 0
 
     for index in selected_indices:
         if index < 1 or index > total_channel:
@@ -775,6 +1094,7 @@ def build_records(
         duration_seconds = duration_text_to_seconds(entry.get("duration_text"))
         date_text = resolve_date(entry["title"], entry.get("relative_published"), today)
         if not should_include(entry["title"], date_text, duration_seconds):
+            excluded += 1
             continue
         records.append(
             VideoRecord(
@@ -790,7 +1110,7 @@ def build_records(
             )
         )
 
-    return records, total_channel
+    return records, total_channel, excluded
 
 
 def summary_line(indices: list[int], total_channel: int) -> str:
@@ -804,14 +1124,51 @@ def summary_line(indices: list[int], total_channel: int) -> str:
     )
 
 
-def output_stem(base_path: Path, indices: list[int], total_channel: int) -> Path:
+NO_NEW_VIDEOS_LINE = "No new videos since the previous export."
+
+
+def mode_suffix(args: argparse.Namespace) -> str:
+    if args.refresh:
+        return "_r"
+    if args.new:
+        return "_n"
+    return ""
+
+
+def apply_mode_suffix(stem: Path, args: argparse.Namespace) -> Path:
+    suffix = mode_suffix(args)
+    if suffix:
+        return stem.parent / f"{stem.name}{suffix}"
+    return stem
+
+
+def output_stem(
+    base_path: Path,
+    indices: list[int],
+    total_channel: int,
+    args: argparse.Namespace,
+) -> Path:
     if len(indices) == 1:
-        return base_path.parent / f"{base_path.name}_{indices[0]}"
-    if len(indices) >= 2 and not (
+        stem = base_path.parent / f"{base_path.name}_{indices[0]}"
+    elif len(indices) >= 2 and not (
         indices[0] == 1 and indices[-1] >= total_channel and len(indices) == total_channel
     ):
-        return base_path.parent / f"{base_path.name}_{indices[0]}_{indices[-1]}"
-    return base_path
+        stem = base_path.parent / f"{base_path.name}_{indices[0]}_{indices[-1]}"
+    else:
+        stem = base_path
+    return apply_mode_suffix(stem, args)
+
+
+def write_special_export(stem: Path, line: str) -> tuple[Path, Path]:
+    txt_path = stem.with_suffix(".txt")
+    xlsx_path = stem.with_suffix(".xlsx")
+    txt_path.write_text(line + "\n", encoding="utf-8")
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Videos"
+    ws.cell(row=1, column=1, value=line)
+    wb.save(xlsx_path)
+    return txt_path, xlsx_path
 
 
 def parse_excel_date(value: str) -> date | None:
@@ -857,6 +1214,39 @@ def write_xlsx(path: Path, summary: str, records: list[VideoRecord]) -> None:
         row += 1
 
     wb.save(path)
+
+
+def resolve_playlist_map(
+    channel_id: str,
+    args: argparse.Namespace,
+    cache: dict | None,
+    force_refresh: bool,
+) -> dict[str, str]:
+    if not force_refresh and cache and cache.get("playlist_map"):
+        pmap = cache["playlist_map"]
+        print(f"Using cached playlist map ({len(pmap)} entries).", flush=True)
+        return pmap
+    print("Fetching playlists via yt-dlp...", flush=True)
+    try:
+        return build_video_playlist_map(
+            channel_id, lambda *a, **k: yt_dlp_run(args, *a, **k)
+        )
+    except RuntimeError as exc:
+        raise SystemExit(
+            f"Playlist lookup failed (playlist column is required):\n{exc}"
+        ) from exc
+
+
+def patch_cache_playlist_map(path: Path, playlist_map: dict[str, str]) -> None:
+    cache = read_cache(path)
+    if not cache:
+        return
+    cache["playlist_map"] = playlist_map
+    cache["playlist_map_at"] = datetime.now().isoformat(timespec="seconds")
+    path.write_text(
+        json.dumps(cache, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -920,11 +1310,6 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="yt-dlp",
         help="yt-dlp executable (default: yt-dlp)",
     )
-    parser.add_argument(
-        "--skip-playlists",
-        action="store_true",
-        help="Do not fetch playlist mapping (playlist column will be empty)",
-    )
     return parser.parse_args(argv)
 
 
@@ -933,11 +1318,16 @@ def main(argv: list[str] | None = None) -> int:
     today = date.today()
 
     channel_id, handle = resolve_channel_id(args.channel, args)
-    cache = read_cache(cache_file_path(channel_id, args.workspace))
+    cache_path = cache_file_path(channel_id, args.workspace)
+    cache = read_cache(cache_path)
 
     fetch = load_browse_videos(channel_id, args, cache, handle)
     browse_videos = fetch.videos
     channel_name = fetch.channel_name
+    cache = read_cache(cache_path)
+
+    force_playlists = args.refresh or not (cache and cache.get("playlist_map"))
+    playlist_map = resolve_playlist_map(channel_id, args, cache, force_playlists)
 
     folder_name = resolve_output_folder(
         channel_id, handle, args.output, channel_name, args
@@ -949,29 +1339,31 @@ def main(argv: list[str] | None = None) -> int:
         len(browse_videos), args, fetch.new_video_ids, browse_videos
     )
     if not selected:
+        if args.new and not range_explicit(args):
+            stem = apply_mode_suffix(out_base / folder_name, args)
+            txt_path, xlsx_path = write_special_export(stem, NO_NEW_VIDEOS_LINE)
+            print(f"Channel: {channel_name} ({channel_id})", flush=True)
+            if handle:
+                print(f"Handle: {handle}", flush=True)
+            print(f"Output folder: {out_base}", flush=True)
+            print(f"TXT:   {txt_path}", flush=True)
+            print(f"XLSX:  {xlsx_path}", flush=True)
+            return 0
         print("No videos selected for export.", flush=True)
         return 0
 
-    playlist_map: dict[str, str] = {}
-    if not args.skip_playlists:
-        print("Fetching playlists for playlist column...", flush=True)
-        try:
-            playlist_map = build_video_playlist_map(
-                channel_id, lambda *a, **k: yt_dlp_run(args, *a, **k)
-            )
-        except RuntimeError as exc:
-            print(f"WARN: playlist lookup failed: {exc}", flush=True)
-
-    records, total_channel = build_records(
+    records, total_channel, excluded = build_records(
         browse_videos, channel_name, selected, playlist_map, today
     )
     summary = summary_line(selected, total_channel)
-    stem = output_stem(out_base / folder_name, selected, total_channel)
+    stem = output_stem(out_base / folder_name, selected, total_channel, args)
     txt_path = stem.with_suffix(".txt")
     xlsx_path = stem.with_suffix(".xlsx")
 
     write_txt(txt_path, summary, records)
     write_xlsx(xlsx_path, summary, records)
+    if force_playlists:
+        patch_cache_playlist_map(cache_path, playlist_map)
 
     print(f"Channel: {channel_name} ({channel_id})", flush=True)
     if handle:
@@ -979,6 +1371,12 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Output folder: {out_base}", flush=True)
     print(f"Selected indices: {len(selected)}", flush=True)
     print(f"Exported videos: {len(records)}", flush=True)
+    if excluded:
+        print(
+            f"Excluded from export: {excluded} "
+            f"(pre-2020 streams filtered; {total_channel} in browse cache).",
+            flush=True,
+        )
     print(f"TXT:   {txt_path}", flush=True)
     print(f"XLSX:  {xlsx_path}", flush=True)
     return 0
