@@ -1,6 +1,9 @@
 # Downloaded videos and per-channel collections (see readme.md)
 output/
 
+# Channel browse cache (export_channel.py)
+cache/
+
 # Python / PyInstaller
 __pycache__/
 *.py[cod]

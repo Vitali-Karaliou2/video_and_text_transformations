@@ -7,10 +7,10 @@
 
 ```
 yt-dlp/
+  cache/               ← JSON-кэш списков видео каналов (не в git)
   output/              ← все скачанные коллекции (не в git)
     Vladilen_Minin/
-    Alexander_Lamkov/
-    loaded_videos_spanish/
+    Ekaterina_Schulmann/
     ...
   src/                 ← исходники Python
   scripts/             ← готовые exe для запуска
@@ -18,19 +18,103 @@ yt-dlp/
   readme.md
 ```
 
-Каждая подпапка в `output/` — одна коллекция: канал или тематическая выборка.
-Скачивайте видео туда, затем запускайте организацию по плейлистам.
+## Пайплайн
+
+1. **`export_channel`** — аннотации канала в `.txt` / `.xlsx` (+ столбец плейлиста)
+2. *(скачивание видео — следующий шаг пайплайна)*
+3. **`organize_by_playlists`** — раскладка скачанных файлов по плейлистам
+
+Каждая подпапка в `output/` — одна коллекция канала или тематическая выборка.
 
 ## Скрипты в `scripts/`
 
 | Файл | Назначение |
 |------|------------|
+| `export_channel.exe` | Шаг 1: экспорт списка видео канала в TXT/XLSX с кэшем и столбцом плейлиста |
 | `organize_by_playlists.exe` | Раскладывает видео из указанной папки по вложенным папкам плейлистов канала и (по желанию) нумерует файлы так, чтобы сортировка по имени совпадала с порядком на YouTube |
 
-Исходники: `src/organize_by_playlists.py`.  
-Сборка exe: `python src/build_exe.py` (нужны Python и пакет `pyinstaller`).
+Исходники: `src/export_channel.py`, `src/organize_by_playlists.py`.  
+Зависимости Python: `pip install -r src/requirements.txt`  
+Сборка exe: `python src/build_exe.py` (нужен `pyinstaller`).
 
-Требование: в `PATH` должен быть доступен `yt-dlp`.
+Требование: в `PATH` должен быть доступен `yt-dlp` (для столбца плейлиста).  
+Разрешение `@handle` → `UC…` выполняется через страницу канала (без yt-dlp).
+
+---
+
+## `export_channel.exe`
+
+### Минимальный запуск
+
+```bat
+scripts\export_channel.exe @Ekaterina_Schulmann
+```
+
+или:
+
+```bat
+python src\export_channel.py @Ekaterina_Schulmann
+```
+
+**Первый параметр (обязательный):** `UC…`, `@handle` или URL канала.  
+**Второй параметр (необязательный):** имя подпапки в `output/`.  
+Если не указан — формируется из `@handle` (`@Ekaterina_Schulmann` → `Ekaterina_Schulmann`).
+
+Выходные файлы: `output/<folder>/<folder>.txt` и `.xlsx`  
+(для частичного диапазона — суффикс `_FROM_TO`).
+
+### Столбцы XLSX
+
+| Col | Поле |
+|-----|------|
+| 1 | № на канале (1 = новейшее) |
+| 2 | Имя канала |
+| 3 | **Плейлист** (один лучший; та же логика приоритета, что у `organize_by_playlists`) |
+| 4 | URL |
+| 5 | Дата |
+| 6 | Длительность |
+| 7 | Заголовок |
+
+### Кэш
+
+Файл `cache/<channel_id>.json` — полный список видео канала (pretty-printed JSON).  
+При повторных запусках по умолчанию используется **умное обновление**: проверяются первые 3 записи кэша; если совпадают с YouTube — остальной кэш считается актуальным.
+
+| Режим | Поведение |
+|-------|-----------|
+| *(по умолчанию)* | Умное обновление + `--from` / `--to` |
+| `--new` | Только новые видео с прошлого экспорта; с `--from`/`--to` — объединение с диапазоном |
+| `--refresh` | Полная перезагрузка списка с YouTube, затем `--from` / `--to` |
+| нет кэша | `--new` / `--refresh` игнорируются |
+
+### Параметры
+
+| Параметр | Описание |
+|----------|----------|
+| `channel` | **Обязательный.** `UC…`, `@handle` или URL |
+| `output` | Имя подпапки в `output/` (обычно не нужно) |
+| `--from N` | Первый номер на канале (default: 1) |
+| `--to N` | Последний номер включительно (default: 10000) |
+| `--new` | Только новые видео с прошлого раза |
+| `--refresh` | Игнорировать кэш, загрузить всё заново |
+| `--skip-playlists` | Не запрашивать плейлисты (столбец пустой) |
+| `--output-dir`, `--workspace`, `--cookies-from-browser`, `--yt-dlp` | Как у `organize_by_playlists` |
+
+### Примеры
+
+```bat
+:: Новый канал по @handle, папка output/Ekaterina_Schulmann/
+scripts\export_channel.exe @Ekaterina_Schulmann
+
+:: Только новые видео с прошлого экспорта
+scripts\export_channel.exe @Ekaterina_Schulmann --new
+
+:: Новые + видео 10–20 из кэша
+scripts\export_channel.exe @Ekaterina_Schulmann --new --from 10 --to 20
+
+:: Полное обновление и экспорт первых 50
+scripts\export_channel.exe UCL1rJ0ROIw9V1qFeIN0ZTZQ --refresh --to 50
+```
 
 ---
 
