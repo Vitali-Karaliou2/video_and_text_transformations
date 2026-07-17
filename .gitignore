@@ -1,22 +1,5 @@
-# Downloaded media
-*.mp4
-*.mkv
-*.webm
-*.m4a
-*.mp3
-*.wav
-*.avi
-*.mov
-*.part
-*.ytdl
-
-# Channel / collection folders (videos + local scripts/logs inside them)
-Alexander_Lamkov/
-Vladilen_Minin/
-loaded_videos_ai/
-loaded_videos_politics/
-loaded_videos_spanish/
-OCR_Tesseract/
+# Downloaded videos and per-channel collections (see readme.md)
+output/
 
 # Python / PyInstaller
 __pycache__/

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Organize downloaded YouTube videos into playlist folders.
 
-Takes a channel collection folder name (under the workspace root) and:
+Takes a channel collection folder name (under workspace/output/) and:
 1. Detects the YouTube channel (from local video IDs via yt-dlp, or --channel)
 2. Fetches channel playlists and maps local *.mp4 files by [video_id] in the name
 3. Moves files into nested playlist folders (unmatched -> misc/)
@@ -45,6 +45,16 @@ COURSE_HINTS = re.compile(
 )
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_OUTPUT_DIRNAME = "output"
+
+
+def collection_root(args: argparse.Namespace) -> Path:
+    output_base = (
+        args.output_dir
+        if args.output_dir is not None
+        else args.workspace / DEFAULT_OUTPUT_DIRNAME
+    )
+    return (output_base / args.folder).resolve()
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -53,8 +63,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     p.add_argument(
         "folder",
-        help="Name of the nested folder under the workspace root "
+        help="Name of the collection subfolder under output/ "
         "(e.g. Vladilen_Minin)",
+    )
+    p.add_argument(
+        "--output-dir",
+        type=Path,
+        default=None,
+        help=f"Parent directory for collections "
+        f"(default: <workspace>/{DEFAULT_OUTPUT_DIRNAME})",
     )
     p.add_argument(
         "--channel",
@@ -363,9 +380,17 @@ def apply_renames(plans: list[tuple[Path, Path]], dry_run: bool) -> None:
 
 
 def organize(args: argparse.Namespace) -> int:
-    root = (args.workspace / args.folder).resolve()
+    root = collection_root(args)
     if not root.is_dir():
-        raise SystemExit(f"Folder not found: {root}")
+        output_base = (
+            args.output_dir
+            if args.output_dir is not None
+            else args.workspace / DEFAULT_OUTPUT_DIRNAME
+        )
+        raise SystemExit(
+            f"Folder not found: {root}\n"
+            f"Expected a collection directory under {output_base.resolve()}/"
+        )
 
     local_files = list_local_videos(root)
     print(f"Target: {root}")
