@@ -1,6 +1,7 @@
 # Downloaded videos and per-channel collections (see readme.md)
 _channels/
 misc/
+Prompts/
 
 # Channel browse cache (export_channel.py)
 cache/
