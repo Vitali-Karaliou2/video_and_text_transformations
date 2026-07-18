@@ -7,7 +7,7 @@ from pathlib import Path
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CHANNELS_DIRNAME = "_channels"
-DEFAULT_CACHE_DIRNAME = "cache"
+LEGACY_CACHE_DIRNAME = "cache"
 INVALID_PATH_CHARS = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
 
 
@@ -15,8 +15,32 @@ def channels_dir(workspace: Path | None = None) -> Path:
     return (workspace or WORKSPACE_ROOT) / DEFAULT_CHANNELS_DIRNAME
 
 
-def cache_dir(workspace: Path | None = None) -> Path:
-    return (workspace or WORKSPACE_ROOT) / DEFAULT_CACHE_DIRNAME
+def legacy_cache_dir(workspace: Path | None = None) -> Path:
+    return (workspace or WORKSPACE_ROOT) / LEGACY_CACHE_DIRNAME
+
+
+def legacy_cache_path(channel_id: str, workspace: Path | None = None) -> Path:
+    return legacy_cache_dir(workspace) / f"{channel_id}.json"
+
+
+def channel_cache_dir(channel_root: Path) -> Path:
+    return channel_root / "_cache"
+
+
+def channel_playlists_dir(channel_root: Path) -> Path:
+    return channel_root / "_playlists"
+
+
+def browse_cache_path(channel_root: Path) -> Path:
+    return channel_cache_dir(channel_root) / "browse.json"
+
+
+def playlists_cache_path(channel_root: Path) -> Path:
+    return channel_cache_dir(channel_root) / "playlists.json"
+
+
+def video_playlists_cache_path(channel_root: Path) -> Path:
+    return channel_cache_dir(channel_root) / "video_playlists.json"
 
 
 def sanitize_handle_for_path(handle: str) -> str:

@@ -48,8 +48,19 @@ COURSE_HINTS = re.compile(
     re.I,
 )
 
+from channel_playlists import (
+    known_playlist_folders,
+    resolve_misc_folder_name,
+    sync_channel_playlists,
+)
+from playlist_mapping import (
+    playlist_priority,
+    slugify_playlist_name,
+    unique_folder_name,
+)
 from project_paths import (
     WORKSPACE_ROOT,
+    channel_playlists_dir,
     channels_dir,
     normalize_channel_folder_arg,
 )
@@ -168,40 +179,6 @@ def yt_dlp_video_meta(args: argparse.Namespace, video_id: str) -> dict:
     return json.loads(line)
 
 
-def slugify_playlist_name(title: str, max_len: int = 60) -> str:
-    cyr_to_lat = {
-        "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "yo",
-        "ж": "zh", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m",
-        "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u",
-        "ф": "f", "х": "kh", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "shch",
-        "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu", "я": "ya",
-    }
-    title = title.lower()
-    result: list[str] = []
-    for ch in title:
-        if ch in cyr_to_lat:
-            result.append(cyr_to_lat[ch])
-        elif ch.isalnum():
-            result.append(ch)
-        else:
-            result.append("_")
-    slug = re.sub(r"_+", "_", "".join(result)).strip("_")
-    if len(slug) > max_len:
-        slug = slug[:max_len].rstrip("_")
-    return slug or "unnamed_playlist"
-
-
-def unique_folder_name(base: str, used: set[str]) -> str:
-    name = base
-    n = 2
-    while name in used:
-        suffix = f"_{n}"
-        name = (base[: 60 - len(suffix)] + suffix) if len(base) + len(suffix) > 60 else base + suffix
-        n += 1
-    used.add(name)
-    return name
-
-
 def extract_video_id(filename: str) -> str | None:
     m = VIDEO_ID_RE.search(filename)
     return m.group(1) if m else None
@@ -299,26 +276,9 @@ def normalize_channel_playlists_url(channel: str) -> str:
     return c + "/playlists"
 
 
-def playlist_priority(
-    item: tuple[str, str, int],
-    playlist_sizes: dict[str, int],
-    numbered_ratio: dict[str, float],
-) -> tuple:
-    """Prefer specific course playlists when a video appears in several."""
-    folder, title, _ = item
-    title_l = (title or "").strip().lower()
-    is_course = bool(COURSE_HINTS.search(folder) or COURSE_HINTS.search(title or ""))
-    umbrella = title_l in {"курсы", "courses", "не уроки", "гайды", "guides"}
-    size = playlist_sizes.get(folder, 10**9)
-    ratio = numbered_ratio.get(folder, 0.0)
-    # Lower tuple = higher priority
-    return (
-        0 if is_course and not umbrella else 1 if is_course else 2,
-        0 if ratio >= 0.5 else 1,
-        0 if not umbrella else 1,
-        size,  # smaller / more specific playlists first
-        folder,
-    )
+def channel_id_from_playlists_url(url: str) -> str | None:
+    match = re.search(r"/channel/(UC[\w-]{22})", url)
+    return match.group(1) if match else None
 
 
 def is_course_playlist(folder: str, title: str, video_names: list[str]) -> bool:
@@ -412,6 +372,24 @@ def organize(args: argparse.Namespace) -> int:
     playlists_url = detect_channel(args, local_files)
     print(f"Channel playlists URL: {playlists_url}")
 
+    channel_id = channel_id_from_playlists_url(playlists_url)
+    playlists_cache = None
+    if channel_id:
+        playlists_cache = sync_channel_playlists(
+            root,
+            channel_id=channel_id,
+            channel_handle=None,
+            channel_name=None,
+            run_yt_dlp=lambda *a, **k: subprocess.run(
+                yt_dlp_cmd(args, *a, **k),
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+            ),
+            create_folders=True,
+        )
+
     print("Fetching channel playlists...")
     playlists_meta = yt_dlp_flat_json(args, playlists_url)
     if not playlists_meta:
@@ -476,6 +454,15 @@ def organize(args: argparse.Namespace) -> int:
         )
         numbered_ratio[folder] = n / len(titles)
 
+    playlists_root = channel_playlists_dir(root)
+    playlists_root.mkdir(parents=True, exist_ok=True)
+    playlist_folder_names = (
+        known_playlist_folders(playlists_cache)
+        if playlists_cache
+        else {folder for folder in playlist_info}
+    )
+    misc_folder = resolve_misc_folder_name(playlist_folder_names)
+
     moves: dict[Path, str] = {}
     misc: list[Path] = []
     for vid, filepath in local_files.items():
@@ -492,21 +479,21 @@ def organize(args: argparse.Namespace) -> int:
 
     report_moved: dict[str, list[str]] = {}
     for filepath, folder in sorted(moves.items(), key=lambda x: (x[1], x[0].name)):
-        dest = root / folder / filepath.name
+        dest = playlists_root / folder / filepath.name
         safe_move(filepath, dest, args.dry_run)
         report_moved.setdefault(folder, []).append(filepath.name)
 
     for filepath in misc:
-        dest = root / "misc" / filepath.name
+        dest = playlists_root / misc_folder / filepath.name
         safe_move(filepath, dest, args.dry_run)
-        report_moved.setdefault("misc", []).append(filepath.name)
+        report_moved.setdefault(misc_folder, []).append(filepath.name)
 
     # Build order map folder -> {video_id: index} from playlist_info
     order_log: dict[str, list[dict]] = {}
     if args.order_mode != "none":
         print("\nApplying playlist order renames...")
         for folder, info in playlist_info.items():
-            folder_path = root / folder
+            folder_path = playlists_root / folder
             if not folder_path.is_dir() and not args.dry_run:
                 continue
 
@@ -575,9 +562,9 @@ def organize(args: argparse.Namespace) -> int:
         "stats": {
             "local_total": len(local_files),
             "moved_to_playlists": sum(
-                len(v) for k, v in report_moved.items() if k != "misc"
+                len(v) for k, v in report_moved.items() if k != misc_folder
             ),
-            "moved_to_misc": len(report_moved.get("misc", [])),
+            "moved_to_misc": len(report_moved.get(misc_folder, [])),
             "renamed": sum(len(v) for v in order_log.values()),
         },
     }

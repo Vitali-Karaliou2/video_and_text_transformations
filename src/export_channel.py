@@ -28,11 +28,17 @@ if str(_SRC_DIR) not in sys.path:
 from openpyxl import Workbook
 
 from playlist_mapping import build_video_playlist_map
+from channel_playlists import (
+    load_video_playlist_map,
+    migrate_legacy_browse_cache,
+    save_video_playlist_map,
+    sync_channel_playlists,
+)
 from project_paths import (
     WORKSPACE_ROOT,
-    cache_dir,
-    channel_folder_name,
+    browse_cache_path,
     channels_dir,
+    channel_folder_name,
     export_file_basename,
     find_channel_folder,
     normalize_channel_folder_arg,
@@ -439,10 +445,6 @@ def parse_lockup(lockup: dict) -> dict | None:
     }
 
 
-def cache_file_path(channel_id: str, workspace: Path) -> Path:
-    return cache_dir(workspace) / f"{channel_id}.json"
-
-
 def read_cache(path: Path) -> dict | None:
     if not path.exists():
         return None
@@ -461,11 +463,8 @@ def write_cache(
     videos: list[dict],
     continuation_token: str | None = None,
     pages_fetched: int | None = None,
-    playlist_map: dict[str, str] | None = None,
-    keep_playlist_map: bool = False,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    existing = read_cache(path) if keep_playlist_map else None
     payload = {
         "channel_id": channel_id,
         "channel_name": channel_name,
@@ -476,12 +475,6 @@ def write_cache(
         "pages_fetched": pages_fetched,
         "videos": videos,
     }
-    if playlist_map is not None:
-        payload["playlist_map"] = playlist_map
-        payload["playlist_map_at"] = datetime.now().isoformat(timespec="seconds")
-    elif existing and existing.get("playlist_map"):
-        payload["playlist_map"] = existing["playlist_map"]
-        payload["playlist_map_at"] = existing.get("playlist_map_at")
     path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -837,7 +830,6 @@ def incremental_smart_load(
                 videos=cached_videos,
                 continuation_token=None,
                 pages_fetched=1,
-                keep_playlist_map=True,
             )
         else:
             print("No new videos found.", flush=True)
@@ -916,7 +908,6 @@ def incremental_smart_load(
                 videos=cached_videos,
                 continuation_token=resume_token,
                 pages_fetched=resume_page or 1,
-                keep_playlist_map=True,
             )
         print(
             f"Using cached browse data ({cache_status_line(len(cached_videos), cache, required)}).",
@@ -967,9 +958,8 @@ def incremental_smart_load(
         channel_handle=handle or cache.get("channel_handle"),
         videos=videos,
         continuation_token=next_token,
-        pages_fetched=pages_fetched,
-        keep_playlist_map=True,
-    )
+                pages_fetched=pages_fetched,
+            )
     return FetchResult(videos, channel_name, new_ids, True)
 
 
@@ -978,8 +968,8 @@ def load_browse_videos(
     args: argparse.Namespace,
     cache: dict | None,
     handle: str | None,
+    cache_path: Path,
 ) -> FetchResult:
-    cache_path = cache_file_path(channel_id, args.workspace)
     has_cache = bool(cache and cache.get("videos"))
 
     if not has_cache:
@@ -1224,36 +1214,30 @@ def write_xlsx(path: Path, summary: str, records: list[VideoRecord]) -> None:
 
 
 def resolve_playlist_map(
+    channel_root: Path,
     channel_id: str,
     args: argparse.Namespace,
-    cache: dict | None,
     force_refresh: bool,
 ) -> dict[str, str]:
-    if not force_refresh and cache and cache.get("playlist_map"):
-        pmap = cache["playlist_map"]
-        print(f"Using cached playlist map ({len(pmap)} entries).", flush=True)
-        return pmap
+    if not force_refresh:
+        cached_map = load_video_playlist_map(channel_root)
+        if cached_map:
+            print(
+                f"Using cached video playlist map ({len(cached_map)} entries).",
+                flush=True,
+            )
+            return cached_map
     print("Fetching playlists via yt-dlp...", flush=True)
     try:
-        return build_video_playlist_map(
+        mapping = build_video_playlist_map(
             channel_id, lambda *a, **k: yt_dlp_run(args, *a, **k)
         )
     except RuntimeError as exc:
         raise SystemExit(
             f"Playlist lookup failed (playlist column is required):\n{exc}"
         ) from exc
-
-
-def patch_cache_playlist_map(path: Path, playlist_map: dict[str, str]) -> None:
-    cache = read_cache(path)
-    if not cache:
-        return
-    cache["playlist_map"] = playlist_map
-    cache["playlist_map_at"] = datetime.now().isoformat(timespec="seconds")
-    path.write_text(
-        json.dumps(cache, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    save_video_playlist_map(channel_root, mapping)
+    return mapping
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -1325,27 +1309,45 @@ def main(argv: list[str] | None = None) -> int:
     today = date.today()
 
     channel_id, handle = resolve_channel_id(args.channel, args)
-    cache_path = cache_file_path(channel_id, args.workspace)
-    cache = read_cache(cache_path)
-
-    fetch = load_browse_videos(channel_id, args, cache, handle)
-    browse_videos = fetch.videos
-    channel_name = fetch.channel_name
-    cache = read_cache(cache_path)
-
-    force_playlists = args.refresh or not (cache and cache.get("playlist_map"))
-    playlist_map = resolve_playlist_map(channel_id, args, cache, force_playlists)
-
     if not handle:
         handle = resolve_channel_handle(channel_id, args)
-    if not handle and cache and cache.get("channel_handle"):
-        handle = normalize_handle(cache["channel_handle"])
 
+    legacy_name = fetch_channel_name(channel_id)
     folder_name = resolve_output_folder(
-        channel_id, handle, args.output, channel_name, args
+        channel_id, handle, args.output, legacy_name, args
     )
     channel_root = (args.output_dir or channels_dir(args.workspace)) / folder_name
     channel_root.mkdir(parents=True, exist_ok=True)
+    migrate_legacy_browse_cache(channel_id, channel_root, args.workspace)
+
+    browse_path = browse_cache_path(channel_root)
+    cache = read_cache(browse_path)
+    if not handle and cache and cache.get("channel_handle"):
+        handle = normalize_handle(cache["channel_handle"])
+
+    channel_name = (
+        cache.get("channel_name") if cache and cache.get("channel_name") else legacy_name
+    )
+
+    sync_channel_playlists(
+        channel_root,
+        channel_id=channel_id,
+        channel_handle=handle,
+        channel_name=channel_name,
+        run_yt_dlp=lambda *a, **k: yt_dlp_run(args, *a, **k),
+        force_fetch=args.refresh,
+        create_folders=True,
+    )
+
+    fetch = load_browse_videos(channel_id, args, cache, handle, browse_path)
+    browse_videos = fetch.videos
+    channel_name = fetch.channel_name or channel_name
+
+    force_playlists = args.refresh or load_video_playlist_map(channel_root) is None
+    playlist_map = resolve_playlist_map(
+        channel_root, channel_id, args, force_playlists
+    )
+
     export_name = export_file_basename(handle) if handle else folder_name.lstrip("_")
     export_base = channel_root / export_name
 
@@ -1376,8 +1378,6 @@ def main(argv: list[str] | None = None) -> int:
 
     write_txt(txt_path, summary, records)
     write_xlsx(xlsx_path, summary, records)
-    if force_playlists:
-        patch_cache_playlist_map(cache_path, playlist_map)
 
     print(f"Channel: {channel_name} ({channel_id})", flush=True)
     if handle:

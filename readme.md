@@ -7,12 +7,11 @@
 
 ```
 yt-dlp/
-  cache/               ← JSON-кэш списков видео каналов (не в git)
   _channels/           ← папки отдельных YouTube-каналов (не в git)
-    _VladilenMinin/
-    _Ekaterina_Schulmann/
-    _AleksanderLamkov/
-    ...
+    _Handle/
+      _cache/          ← кэш канала: browse.json, playlists.json, video_playlists.json
+      _playlists/      ← папки плейлистов (имена без ведущего _)
+      ...
   misc/                ← прочие коллекции, не привязанные к каналу (не в git)
   src/                 ← исходники Python
   scripts/             ← готовые exe для запуска
@@ -77,7 +76,7 @@ python src\export_channel.py @Ekaterina_Schulmann
 |-----|------|
 | 1 | № на канале (1 = новейшее) |
 | 2 | Имя канала |
-| 3 | **Плейлист** (обязательный столбец; кэшируется в `cache/*.json`) |
+| 3 | **Плейлист** (обязательный столбец; кэшируется в `_channels/_Handle/_cache/`) |
 | 4 | URL |
 | 5 | Дата |
 | 6 | Длительность |
@@ -85,7 +84,26 @@ python src\export_channel.py @Ekaterina_Schulmann
 
 ### Кэш
 
-Файл `cache/<channel_id>.json` — список видео канала (pretty-printed JSON).  
+Каждый канал хранит кэш в `_channels/_Handle/_cache/`:
+
+| Файл | Содержимое |
+|------|------------|
+| `browse.json` | Список видео канала (pretty-printed JSON) |
+| `playlists.json` | `@handle`, `channel_id`, список плейлистов канала |
+| `video_playlists.json` | Сопоставление `video_id → playlist title` для экспорта |
+
+`playlists.json` создаётся при первом обращении к каналу. При первом обращении
+**за календарные сутки** (локальное время) список плейлистов сверяется с YouTube;
+изменения выводятся в консоль (новые / удалённые плейлисты).
+
+Проверка согласованности `_playlists/` с `playlists.json`:
+
+```bat
+tests\check_playlists.bat
+tests\update_playlists.bat
+```
+
+Файл `browse.json` — список видео канала (pretty-printed JSON).  
 При повторных запусках по умолчанию используется **умное постраничное обновление**:
 проверяется только первая страница (~30 видео); дальнейшие страницы подгружаются ровно
 до `--to`. В кэше сохраняются `count`, `pages_fetched` и `continuation_token`, чтобы при

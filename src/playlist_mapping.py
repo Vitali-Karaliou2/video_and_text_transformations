@@ -46,6 +46,18 @@ def slugify_playlist_name(title: str, max_len: int = 60) -> str:
     return slug or "unnamed_playlist"
 
 
+def unique_folder_name(base: str, used: set[str]) -> str:
+    name = base
+    n = 2
+    while name in used:
+        suffix = f"_{n}"
+        max_base = 60 - len(suffix)
+        name = (base[:max_base] + suffix) if len(base) + len(suffix) > 60 else base + suffix
+        n += 1
+    used.add(name)
+    return name
+
+
 def playlist_priority(
     item: tuple[str, str, int],
     playlist_sizes: dict[str, int],
