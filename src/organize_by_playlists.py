@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Organize downloaded YouTube videos into playlist folders.
 
-Takes a channel collection folder name (under workspace/output/) and:
+Takes a channel collection folder name (under workspace/_channels/) and:
 1. Detects the YouTube channel (from local video IDs via yt-dlp, or --channel)
 2. Fetches channel playlists and maps local *.mp4 files by [video_id] in the name
 3. Moves files into nested playlist folders (unmatched -> misc/)
@@ -20,6 +20,10 @@ import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
+
+_SRC_DIR = Path(__file__).resolve().parent
+if str(_SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(_SRC_DIR))
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -44,17 +48,21 @@ COURSE_HINTS = re.compile(
     re.I,
 )
 
-WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_OUTPUT_DIRNAME = "output"
+from project_paths import (
+    WORKSPACE_ROOT,
+    channels_dir,
+    normalize_channel_folder_arg,
+)
 
 
 def collection_root(args: argparse.Namespace) -> Path:
-    output_base = (
+    channels_base = (
         args.output_dir
         if args.output_dir is not None
-        else args.workspace / DEFAULT_OUTPUT_DIRNAME
+        else channels_dir(args.workspace)
     )
-    return (output_base / args.folder).resolve()
+    folder = normalize_channel_folder_arg(args.folder)
+    return (channels_base / folder).resolve()
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -63,15 +71,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     p.add_argument(
         "folder",
-        help="Name of the collection subfolder under output/ "
-        "(e.g. Vladilen_Minin)",
+        help="Name of the channel subfolder under _channels/ "
+        "(e.g. _VladilenMinin or VladilenMinin)",
     )
     p.add_argument(
         "--output-dir",
         type=Path,
         default=None,
-        help=f"Parent directory for collections "
-        f"(default: <workspace>/{DEFAULT_OUTPUT_DIRNAME})",
+        help=f"Parent directory for channel folders "
+        f"(default: <workspace>/{channels_dir().name})",
     )
     p.add_argument(
         "--channel",
@@ -382,14 +390,14 @@ def apply_renames(plans: list[tuple[Path, Path]], dry_run: bool) -> None:
 def organize(args: argparse.Namespace) -> int:
     root = collection_root(args)
     if not root.is_dir():
-        output_base = (
+        channels_base = (
             args.output_dir
             if args.output_dir is not None
-            else args.workspace / DEFAULT_OUTPUT_DIRNAME
+            else channels_dir(args.workspace)
         )
         raise SystemExit(
             f"Folder not found: {root}\n"
-            f"Expected a collection directory under {output_base.resolve()}/"
+            f"Expected a channel directory under {channels_base.resolve()}/"
         )
 
     local_files = list_local_videos(root)

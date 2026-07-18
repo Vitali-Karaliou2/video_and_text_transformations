@@ -4,7 +4,7 @@
 Examples:
   python src/export_channel.py @Ekaterina_Schulmann
   python src/export_channel.py UCL1rJ0ROIw9V1qFeIN0ZTZQ --new
-  python src/export_channel.py @VladilenMinin Vladilen_Minin --from 1 --to 50
+  python src/export_channel.py @VladilenMinin --from 1 --to 50
 """
 
 from __future__ import annotations
@@ -28,7 +28,15 @@ if str(_SRC_DIR) not in sys.path:
 from openpyxl import Workbook
 
 from playlist_mapping import build_video_playlist_map
-from project_paths import WORKSPACE_ROOT, cache_dir, output_dir
+from project_paths import (
+    WORKSPACE_ROOT,
+    cache_dir,
+    channel_folder_name,
+    channels_dir,
+    export_file_basename,
+    find_channel_folder,
+    normalize_channel_folder_arg,
+)
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -41,7 +49,6 @@ STREAM_CUTOFF = date(2020, 1, 1)
 DEFAULT_FROM = 1
 DEFAULT_TO = 10000
 CHANNEL_ID_RE = re.compile(r"^UC[\w-]{22}$")
-INVALID_PATH_CHARS = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
 CACHE_HEAD_CHECK = 3
 PAGE_SIZE = 30  # для оценки номера страницы по индексу видео (--to); API может вернуть 28–30
 USER_AGENT = (
@@ -98,16 +105,6 @@ def yt_dlp_run(args: argparse.Namespace, *extra: str) -> subprocess.CompletedPro
         encoding="utf-8",
         errors="replace",
     )
-
-
-def folder_name_from_handle(handle: str) -> str:
-    name = handle.strip()
-    if name.startswith("@"):
-        name = name[1:]
-    name = name.replace(" ", "_")
-    name = INVALID_PATH_CHARS.sub("", name)
-    name = name.strip(" .")
-    return name or "unnamed_channel"
 
 
 def normalize_handle(value: str) -> str:
@@ -187,15 +184,25 @@ def resolve_output_folder(
     channel_name: str,
     args: argparse.Namespace,
 ) -> str:
+    channels_root = args.output_dir or channels_dir(args.workspace)
+    resolved_handle = handle
+    if not resolved_handle and not explicit:
+        resolved_handle = resolve_channel_handle(channel_id, args)
+
+    existing = find_channel_folder(
+        channels_root,
+        resolved_handle,
+        explicit=explicit,
+    )
+    if existing:
+        return existing.name
+
     if explicit:
-        return explicit
-    if handle:
-        return folder_name_from_handle(handle)
-    resolved = resolve_channel_handle(channel_id, args)
-    if resolved:
-        return folder_name_from_handle(resolved)
+        return normalize_channel_folder_arg(explicit)
+    if resolved_handle:
+        return channel_folder_name(resolved_handle)
     slug = re.sub(r"\W+", "_", channel_name.strip().lower()).strip("_")
-    return slug[:60] or channel_id
+    return f"_{slug[:60]}" if slug else f"_{channel_id}"
 
 
 def post_innertube(endpoint: str, payload: dict, retries: int = 5) -> dict:
@@ -1261,7 +1268,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "output",
         nargs="?",
         default=None,
-        help="Optional output folder name under output/ (default: derived from @handle)",
+        help="Optional channel folder name under _channels/ (default: _Handle from @handle)",
     )
     parser.add_argument(
         "--from",
@@ -1298,7 +1305,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--output-dir",
         type=Path,
         default=None,
-        help="Parent directory for channel folders (default: <workspace>/output)",
+        help="Parent directory for channel folders (default: <workspace>/_channels)",
     )
     parser.add_argument(
         "--cookies-from-browser",
@@ -1329,23 +1336,30 @@ def main(argv: list[str] | None = None) -> int:
     force_playlists = args.refresh or not (cache and cache.get("playlist_map"))
     playlist_map = resolve_playlist_map(channel_id, args, cache, force_playlists)
 
+    if not handle:
+        handle = resolve_channel_handle(channel_id, args)
+    if not handle and cache and cache.get("channel_handle"):
+        handle = normalize_handle(cache["channel_handle"])
+
     folder_name = resolve_output_folder(
         channel_id, handle, args.output, channel_name, args
     )
-    out_base = (args.output_dir or output_dir(args.workspace)) / folder_name
-    out_base.mkdir(parents=True, exist_ok=True)
+    channel_root = (args.output_dir or channels_dir(args.workspace)) / folder_name
+    channel_root.mkdir(parents=True, exist_ok=True)
+    export_name = export_file_basename(handle) if handle else folder_name.lstrip("_")
+    export_base = channel_root / export_name
 
     selected = selected_channel_indices(
         len(browse_videos), args, fetch.new_video_ids, browse_videos
     )
     if not selected:
         if args.new and not range_explicit(args):
-            stem = apply_mode_suffix(out_base / folder_name, args)
+            stem = apply_mode_suffix(export_base, args)
             txt_path, xlsx_path = write_special_export(stem, NO_NEW_VIDEOS_LINE)
             print(f"Channel: {channel_name} ({channel_id})", flush=True)
             if handle:
                 print(f"Handle: {handle}", flush=True)
-            print(f"Output folder: {out_base}", flush=True)
+            print(f"Channel folder: {channel_root}", flush=True)
             print(f"TXT:   {txt_path}", flush=True)
             print(f"XLSX:  {xlsx_path}", flush=True)
             return 0
@@ -1356,7 +1370,7 @@ def main(argv: list[str] | None = None) -> int:
         browse_videos, channel_name, selected, playlist_map, today
     )
     summary = summary_line(selected, total_channel)
-    stem = output_stem(out_base / folder_name, selected, total_channel, args)
+    stem = output_stem(export_base, selected, total_channel, args)
     txt_path = stem.with_suffix(".txt")
     xlsx_path = stem.with_suffix(".xlsx")
 
@@ -1368,7 +1382,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Channel: {channel_name} ({channel_id})", flush=True)
     if handle:
         print(f"Handle: {handle}", flush=True)
-    print(f"Output folder: {out_base}", flush=True)
+    print(f"Channel folder: {channel_root}", flush=True)
     print(f"Selected indices: {len(selected)}", flush=True)
     print(f"Exported videos: {len(records)}", flush=True)
     if excluded:
