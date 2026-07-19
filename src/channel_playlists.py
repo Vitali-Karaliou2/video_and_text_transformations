@@ -67,6 +67,62 @@ def fetch_channel_playlist_entries(
     return entries
 
 
+def ensure_playlist_aliases(cached: dict) -> bool:
+    playlists = cached.get("playlists", [])
+    if not playlists:
+        return False
+    if all(pl.get("alias") for pl in playlists):
+        return False
+    assign_playlist_aliases(playlists)
+    cached["playlists"] = playlists
+    return True
+
+
+def resolve_playlist_selection(scope: str, cached: dict) -> dict:
+    playlists = cached.get("playlists", [])
+    token = scope.strip()
+    if token.startswith("#"):
+        for playlist in playlists:
+            if playlist.get("alias", "").lower() == token.lower():
+                return playlist
+        raise SystemExit(f"Unknown playlist alias: {token}")
+    if len(token) < 3:
+        raise SystemExit("Playlist name prefix must be at least 3 characters.")
+    matches = [
+        pl
+        for pl in playlists
+        if pl.get("title", "").lower().startswith(token.lower())
+    ]
+    if len(matches) == 1:
+        return matches[0]
+    if not matches:
+        raise SystemExit(f"No playlist matches prefix: {token!r}")
+    titles = ", ".join(pl["title"] for pl in matches[:5])
+    raise SystemExit(
+        f"Ambiguous playlist prefix {token!r}; use alias. Matches include: {titles}"
+    )
+
+
+def playlist_order(cached: dict) -> list[dict]:
+    return list(cached.get("playlists", []))
+
+
+def index_to_excel_alias(index: int) -> str:
+    """0 -> #A, 25 -> #Z, 26 -> #AA (Excel-style column letters)."""
+    n = index + 1
+    letters = ""
+    while n > 0:
+        n, rem = divmod(n - 1, 26)
+        letters = chr(65 + rem) + letters
+    return f"#{letters}"
+
+
+def assign_playlist_aliases(playlists: list[dict]) -> list[dict]:
+    for index, playlist in enumerate(playlists):
+        playlist["alias"] = index_to_excel_alias(index)
+    return playlists
+
+
 def build_playlists_payload(
     *,
     channel_id: str,
@@ -74,16 +130,18 @@ def build_playlists_payload(
     channel_name: str | None,
     entries: list[PlaylistEntry],
 ) -> dict:
+    playlists = [
+        {"id": entry.id, "title": entry.title, "folder": entry.folder}
+        for entry in entries
+    ]
+    assign_playlist_aliases(playlists)
     return {
         "channel_id": channel_id,
         "channel_handle": channel_handle,
         "channel_name": channel_name,
         "last_checked_date": date.today().isoformat(),
         "last_checked_at": datetime.now().isoformat(timespec="seconds"),
-        "playlists": [
-            {"id": entry.id, "title": entry.title, "folder": entry.folder}
-            for entry in entries
-        ],
+        "playlists": playlists,
     }
 
 
@@ -191,6 +249,8 @@ def sync_channel_playlists(
 
     need_fetch = force_fetch or cached is None or is_first_access_today(cached)
     if not need_fetch and cached:
+        if ensure_playlist_aliases(cached):
+            save_playlists_cache(cache_path, cached)
         if create_folders:
             ensure_playlist_folders(channel_root, cached.get("playlists", []), create=True)
         return cached
@@ -220,6 +280,7 @@ def sync_channel_playlists(
         )
 
     if update_cache or cached is None or force_fetch:
+        assign_playlist_aliases(payload["playlists"])
         save_playlists_cache(cache_path, payload)
     if create_folders:
         created = ensure_playlist_folders(

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from datetime import date
 from pathlib import Path
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
@@ -35,12 +36,21 @@ def browse_cache_path(channel_root: Path) -> Path:
     return channel_cache_dir(channel_root) / "browse.json"
 
 
+def videos_cache_path(channel_root: Path) -> Path:
+    return channel_cache_dir(channel_root) / "videos.json"
+
+
 def playlists_cache_path(channel_root: Path) -> Path:
     return channel_cache_dir(channel_root) / "playlists.json"
 
 
 def video_playlists_cache_path(channel_root: Path) -> Path:
     return channel_cache_dir(channel_root) / "video_playlists.json"
+
+
+def channel_summaries_dir(channel_root: Path, day: date | None = None) -> Path:
+    folder_day = (day or date.today()).isoformat()
+    return channel_root / "_summaries" / folder_day
 
 
 def sanitize_handle_for_path(handle: str) -> str:

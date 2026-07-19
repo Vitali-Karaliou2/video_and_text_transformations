@@ -44,7 +44,10 @@ def main() -> int:
     rc = build("organize_by_playlists", "organize_by_playlists.py")
     if rc != 0:
         return rc
-    return build("export_channel", "export_channel.py")
+    rc = build("get_summary_for_channel", "get_summary_for_channel.py")
+    if rc != 0:
+        return rc
+    return build("refresh_channel_cache", "refresh_channel_cache.py")
 
 
 if __name__ == "__main__":

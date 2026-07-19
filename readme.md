@@ -9,142 +9,154 @@
 yt-dlp/
   _channels/           ← папки отдельных YouTube-каналов (не в git)
     _Handle/
-      _cache/          ← кэш канала: browse.json, playlists.json, video_playlists.json
+      _cache/          ← кэш канала: videos.json, playlists.json, video_playlists.json
       _playlists/      ← папки плейлистов (имена без ведущего _)
+      _summaries/      ← summaries по датам: YYYY-MM-DD/_hh_mm_*.txt/xlsx
       ...
   misc/                ← прочие коллекции, не привязанные к каналу (не в git)
+  tests/               ← bat-файлы проверки плейлистов
   src/                 ← исходники Python
   scripts/             ← готовые exe для запуска
-  Prompts/             ← промпты и заметки
   readme.md
 ```
 
 ## Пайплайн
 
-1. **`export_channel`** — аннотации канала в `.txt` / `.xlsx` (+ столбец плейлиста)
+1. **`get_summary_for_channel`** — summaries канала в `.txt` / `.xlsx` (+ столбец плейлиста)
 2. *(скачивание видео — следующий шаг пайплайна)*
 3. **`organize_by_playlists`** — раскладка скачанных файлов по плейлистам
 
 Каждая подпапка в `_channels/` — один YouTube-канал. Имя папки формируется из
 пользовательского `@handle` канала с ведущим подчёркиванием, например
-`@Ekaterina_Schulmann` → `_Ekaterina_Schulmann` (внутренние `_` в handle
-сохраняются как на странице канала).
+`@Ekaterina_Schulmann` → `_Ekaterina_Schulmann`.
 
 ## Скрипты в `scripts/`
 
 | Файл | Назначение |
 |------|------------|
-| `export_channel.exe` | Шаг 1: экспорт списка видео канала в TXT/XLSX с кэшем и столбцом плейлиста |
-| `organize_by_playlists.exe` | Раскладывает видео из указанной папки по вложенным папкам плейлистов канала и (по желанию) нумерует файлы так, чтобы сортировка по имени совпадала с порядком на YouTube |
+| `get_summary_for_channel.exe` | Шаг 1: summaries видео канала в TXT/XLSX |
+| `refresh_channel_cache.exe` | Обновление кэша видео канала (_cache/videos.json) |
+| `organize_by_playlists.exe` | Раскладка видео по плейлистам и нумерация файлов |
 
-Исходники: `src/export_channel.py`, `src/organize_by_playlists.py`.  
-Зависимости Python: `pip install -r src/requirements.txt`  
+Исходники: `src/get_summary_for_channel.py`, `src/refresh_channel_cache.py`, `src/organize_by_playlists.py`.  
 Сборка exe: `python src/build_exe.py` (нужен `pyinstaller`).
 
-Требование: в `PATH` должен быть доступен `yt-dlp` (для столбца плейлиста, обязателен).  
-Разрешение `@handle` → `UC…` выполняется через страницу канала (без yt-dlp).
-
-При каждой загрузке страницы browse API в консоль выводится строка вида  
-`Page N: total X (+Y new, Z items from API)` — и при smart refresh, и при `--new`, и при `--refresh`.
+Требование: в `PATH` должен быть доступен `yt-dlp` (для столбца плейлиста).  
+Разрешение `@handle` → `UC…` — через страницу канала (без yt-dlp).
 
 ---
 
-## `export_channel.exe`
+## `get_summary_for_channel.exe`
 
 ### Минимальный запуск
 
 ```bat
-scripts\export_channel.exe @Ekaterina_Schulmann
+scripts\get_summary_for_channel.exe @Ekaterina_Schulmann
 ```
 
 или:
 
 ```bat
-python src\export_channel.py @Ekaterina_Schulmann
+python src\get_summary_for_channel.py @Ekaterina_Schulmann
 ```
 
 **Первый параметр (обязательный):** `UC…`, `@handle` или URL канала.  
-**Второй параметр (необязательный):** имя подпапки в `_channels/`.  
-Если не указан — формируется из `@handle` (`@Ekaterina_Schulmann` → `_Ekaterina_Schulmann`).
+**Второй параметр (необязательный, default: `bypls`):** режим или плейлист:
 
-Выходные файлы: `_channels/<folder>/<handle>.txt` и `.xlsx`  
-(для частичного диапазона — суффикс `_FROM_TO`; имена файлов без ведущего `_`).
+| Значение | Поведение |
+|----------|-----------|
+| `bypls` | Группировка по плейлистам (default) |
+| `allpls` | Общий порядок канала, плейлисты вперемешку |
+| `#A`, `#B`, … | Только указанный плейлист (алиас из `playlists.json`) |
+| префикс имени | ≥3 символов, совпадает с началом ровно одного плейлиста |
 
-### Столбцы XLSX
+Выходные файлы: `_channels/_Handle/_summaries/YYYY-MM-DD/_hh_mm_*.txt` и `.xlsx`  
+Имя файла **без** имени канала; начинается с `_hh_mm_` и отражает режим/флаги.
+
+| Шаблон | Условие |
+|--------|---------|
+| `_hh_mm_pls` | `--plsonly` |
+| `_hh_mm_plsall` | `allpls`, без `--from`/`--to` |
+| `_hh_mm_plsgrp` | `bypls` (default), без фильтра |
+| `_f_N`, `_t_N` | при `--from N` / `--to N` |
+| `_new` | при `--new` |
+| `_pls_A` | один плейлист по алиасу `#A` |
+
+### `--plsonly`
+
+Только список плейлистов (остальные аргументы игнорируются).  
+Создаёт `_cache/playlists.json`, если его нет. Каждому плейлисту присваивается
+алиас `#A`, `#B`, … `#Z`, `#AA`, … (как столбцы Excel).
+
+XLSX: строка 1 — `Playlists for channel <name>  (channel_id = UC… ):`,  
+далее столбцы: алиас, имя канала, название плейлиста.
+
+### Столбцы XLSX (summary видео)
 
 | Col | Поле |
 |-----|------|
-| 1 | № на канале (1 = новейшее) |
+| 1 | № (индекс на канале или в плейлисте — см. режим) |
 | 2 | Имя канала |
-| 3 | **Плейлист** (обязательный столбец; кэшируется в `_channels/_Handle/_cache/`) |
+| 3 | Плейлист |
 | 4 | URL |
 | 5 | Дата |
 | 6 | Длительность |
 | 7 | Заголовок |
 
-### Кэш
+**Нумерация:** при `bypls` без `--from`/`--to` — сквозная **внутри каждого плейлиста**
+(1, 2, 3… заново для каждого). При `allpls` или с фильтром — номера относительно
+**baseline**-списка (`length_old`). Новые видео (после последнего запуска без `--new`)
+при `--new` выводятся первыми с номером `new`.
 
-Каждый канал хранит кэш в `_channels/_Handle/_cache/`:
+### `--new`
+
+Сохраняет baseline-нумерацию (`length_old`) для запланированной поэтапной загрузки.
+`--from` / `--to` считаются относительно baseline, а не текущей длины канала.
+При `--new` в начало summary попадают все новые видео (номер `new`), затем диапазон
+`--from`…`--to`. Без `--new` после успешного экспорта `length_old` обновляется до
+текущей длины.
+
+Пример поэтапной загрузки (шаг 2 пайплайна, 900+ видео, ~200/день):
+
+```bat
+python src\get_summary_for_channel.py @Channel allpls --from 1 --to 200
+python src\get_summary_for_channel.py @Channel allpls --new --from 201 --to 400
+python src\get_summary_for_channel.py @Channel allpls --new --from 401 --to 600
+```
+
+### Кэш
 
 | Файл | Содержимое |
 |------|------------|
-| `browse.json` | Список видео канала (pretty-printed JSON) |
-| `playlists.json` | `@handle`, `channel_id`, список плейлистов канала |
-| `video_playlists.json` | Сопоставление `video_id → playlist title` для экспорта |
+| `videos.json` | Список видео канала, `length_curr`, `length_old`, длины по плейлистам |
+| `playlists.json` | Плейлисты канала + алиасы `#A`… |
+| `video_playlists.json` | `video_id → playlist title` |
 
-`playlists.json` создаётся при первом обращении к каналу. При первом обращении
-**за календарные сутки** (локальное время) список плейлистов сверяется с YouTube;
-изменения выводятся в консоль (новые / удалённые плейлисты).
+**Smart refresh** (автоматически при каждом обращении):
 
-Проверка согласованности `_playlists/` с `playlists.json`:
+- `length_curr` уменьшилась → аварийный полный refresh, команда прерывается (в `_summaries` — notice)
+- `length_curr` не изменилась → если кэш старше 24 ч, сверка 4 видео; иначе кэш без изменений
+- `length_curr` выросла → сверка со сдвигом (новые в начале); при успехе — подкачка без полного refresh
 
-```bat
-tests\check_playlists.bat
-tests\update_playlists.bat
-```
+Полный refresh вручную: `python src/refresh_channel_cache.py @Channel --force`  
+Инкрементальный (по умолчанию): `python src/refresh_channel_cache.py @Channel`
 
-Файл `browse.json` — список видео канала (pretty-printed JSON).  
-При повторных запусках по умолчанию используется **умное постраничное обновление**:
-проверяется только первая страница (~30 видео); дальнейшие страницы подгружаются ровно
-до `--to`. В кэше сохраняются `count`, `pages_fetched` и `continuation_token`, чтобы при
-следующем расширении диапазона не перезапрашивать уже загруженные страницы.
-
-YouTube отдаёт **не ровно 30** элементов на страницу (часто 28–29) — это нормально;
-номера видео на канале при этом не «сдвигаются».
-
-| Режим | Поведение |
-|-------|-----------|
-| *(по умолчанию)* | Умное обновление + `--from` / `--to` |
-| `--new` | Только новые видео с прошлого экспорта; с `--from`/`--to` — объединение с диапазоном |
-| `--refresh` | Полная перезагрузка списка с YouTube, затем `--from` / `--to` |
-| нет кэша | `--new` / `--refresh` игнорируются |
-
-### Параметры
-
-| Параметр | Описание |
-|----------|----------|
-| `channel` | **Обязательный.** `UC…`, `@handle` или URL |
-| `output` | Имя подпапки в `_channels/` (обычно не нужно) |
-| `--from N` | Первый номер на канале (default: 1) |
-| `--to N` | Последний номер включительно (default: 10000) |
-| `--new` | Только новые видео с прошлого раза |
-| `--refresh` | Игнорировать кэш, загрузить всё заново |
-| `--output-dir`, `--workspace`, `--cookies-from-browser`, `--yt-dlp` | Как у `organize_by_playlists` |
+Флаг `--refresh` **убран**. Флаг `--new` — см. выше.
 
 ### Примеры
 
 ```bat
-:: Новый канал по @handle, папка _channels/_Ekaterina_Schulmann/
-scripts\export_channel.exe @Ekaterina_Schulmann
+:: Summary по плейлистам (default bypls)
+python src\get_summary_for_channel.py @Ekaterina_Schulmann
 
-:: Только новые видео с прошлого экспорта
-scripts\export_channel.exe @Ekaterina_Schulmann --new
+:: Общий список канала
+python src\get_summary_for_channel.py @Ekaterina_Schulmann allpls --from 1 --to 50
 
-:: Новые + видео 10–20 из кэша
-scripts\export_channel.exe @Ekaterina_Schulmann --new --from 10 --to 20
+:: Один плейлист по алиасу
+python src\get_summary_for_channel.py @VladilenMinin "#A" --from 1 --to 20
 
-:: Полное обновление и экспорт первых 50
-scripts\export_channel.exe UCL1rJ0ROIw9V1qFeIN0ZTZQ --refresh --to 50
+:: Только список плейлистов
+python src\get_summary_for_channel.py @Ekaterina_Schulmann --plsonly
 ```
 
 ---
@@ -153,77 +165,31 @@ scripts\export_channel.exe UCL1rJ0ROIw9V1qFeIN0ZTZQ --refresh --to 50
 
 ### Минимальный запуск
 
-Из корня рабочей папки (`yt-dlp`):
-
 ```bat
 scripts\organize_by_playlists.exe _VladilenMinin
 ```
 
-или через Python:
+**Обязательный параметр:** имя подпапки канала в `_channels/`.
 
-```bat
-python src\organize_by_playlists.py _VladilenMinin
-```
-
-**Обязательный параметр:** имя подпапки канала в `_channels/`
-(например `_VladilenMinin`; можно указать и без ведущего `_` — `VladilenMinin`).
-
-Путь к коллекции: `_channels/<folder>/`.
-
-### Что делает скрипт
-
-1. Берёт все `*.mp4` / `*.mkv` / `*.webm` **в корне** `_channels/<folder>/`.
-2. Определяет YouTube-канал по метаданным нескольких роликов (`yt-dlp`),
-   либо использует `--channel`.
-3. Загружает список плейлистов канала и состав каждого плейлиста.
-4. Создаёт вложенные папки с «питоновскими» именами (`слова_через_подчёркивание`)
-   и переносит туда файлы. Ролики вне плейлистов → `misc/`.
-5. Для курсовых плейлистов применяет **гибридную нумерацию** (как в проекте
-   Alexander_Lamkov):
-   - `1.` → `01.`, `#1` → `#01`, `Урок 1.` → `Урок 01.` (с `10` и выше без изменений);
-   - если номера в начале имени нет — префикс `01_`, `02_`, … по индексу в плейлисте.
-6. Пишет отчёты `_organize_report.json` и `_order_renames.json` в целевую папку.
-
-Если ролик входит в несколько плейлистов, предпочтение отдаётся более «курсовым»
-и более узким подборкам (а не общим вроде «Курсы» / «Гайды»).
+Путь к коллекции: `_channels/<folder>/`. Видео раскладываются в `_playlists/<playlist>/`.
 
 ### Параметры
 
 | Параметр | Описание |
 |----------|----------|
 | `folder` | **Обязательный.** Имя подпапки канала в `_channels/` |
-| `--output-dir PATH` | Родительская папка каналов (по умолчанию `<workspace>/_channels`) |
-| `--channel URL` | URL или handle канала (`https://www.youtube.com/@VladilenMinin`, `@Name`, `UC…`). Если не указан — автоопределение |
-| `--workspace PATH` | Корень workspace (по умолчанию — родительская папка `src/`) |
-| `--order-mode courses\|all\|none` | Нумерация: только курсовые плейлисты (по умолчанию), все, или отключить |
-| `--dry-run` | Только план: ничего не перемещать и не переименовывать |
-| `--cookies-from-browser BROWSER` | Пробрасывается в `yt-dlp` (`chrome`, `edge`, `firefox`), если YouTube требует вход |
-| `--yt-dlp PATH` | Путь к исполняемому `yt-dlp`, если он не в `PATH` |
+| `--output-dir PATH` | Родительская папка каналов |
+| `--channel URL` | URL или handle канала |
+| `--order-mode courses\|all\|none` | Нумерация файлов |
+| `--dry-run` | Только план |
+| `--cookies-from-browser BROWSER` | Cookies для yt-dlp |
+| `--yt-dlp PATH` | Путь к yt-dlp |
 
-### Примеры
+### Проверка плейлистов
 
 ```bat
-:: Автоопределение канала + раскладка + нумерация курсов
-scripts\organize_by_playlists.exe _VladilenMinin
-
-:: Явно указать канал
-scripts\organize_by_playlists.exe _VladilenMinin --channel https://www.youtube.com/@VladilenMinin
-
-:: Только посмотреть план
-scripts\organize_by_playlists.exe _VladilenMinin --dry-run
-
-:: Без переименований (только папки)
-scripts\organize_by_playlists.exe _VladilenMinin --order-mode none
-
-:: Нумерация во всех плейлистах с 2+ локальными файлами
-scripts\organize_by_playlists.exe _VladilenMinin --order-mode all
+tests\check_playlists.bat
+tests\update_playlists.bat
 ```
 
-### Замечания
-
-- Скрипт обрабатывает только файлы **в корне** `_channels/<folder>/`; уже разложенные
-  по подпапкам ролики повторно не трогает.
-- Длинные названия плейлистов обрезаются (лимит пути Windows).
-- При блокировке YouTube («Sign in to confirm you’re not a bot») добавьте
-  `--cookies-from-browser chrome` (или другой браузер, где вы залогинены).
-- Папки `_channels/` и `misc/` исключены из git (см. `.gitignore`).
+Папки `_channels/` и `misc/` исключены из git (см. `.gitignore`).

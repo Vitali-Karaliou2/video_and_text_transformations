@@ -3,7 +3,7 @@ _channels/
 misc/
 Prompts/
 
-# Channel browse cache (export_channel.py) — legacy root cache, migrated per channel
+# Legacy root browse cache (migrated to _channels/_Handle/_cache/browse.json)
 cache/
 
 # Python / PyInstaller
