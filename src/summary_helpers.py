@@ -65,7 +65,9 @@ def scope_mode(scope: str) -> str:
 
 
 def range_explicit(args: argparse.Namespace, default_from: int, default_to: int) -> bool:
-    return args.from_index != default_from or args.to_index != default_to
+    from_explicit = getattr(args, "from_explicit", args.from_index != default_from)
+    to_explicit = getattr(args, "to_explicit", args.to_index != default_to)
+    return from_explicit or to_explicit
 
 
 def format_display_index(display_number: int) -> int | str:
@@ -167,10 +169,14 @@ def summary_output_stem(
     if use_new:
         name += "_new"
     if not plsonly and range_explicit(args, default_from, default_to):
-        if args.from_index != default_from:
+        if getattr(args, "from_explicit", args.from_index != default_from):
             name += f"_f_{args.from_index}"
-        if args.to_index != default_to:
+        if getattr(args, "to_explicit", args.to_index != default_to):
             name += f"_t_{args.to_index}"
+        if getattr(args, "range_end_source", None) == "next":
+            next_count = getattr(args, "next_count", None)
+            if next_count is not None:
+                name += f"_n_{next_count}"
     return out_dir / name
 
 

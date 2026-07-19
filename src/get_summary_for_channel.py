@@ -5,7 +5,8 @@ Examples:
   python src/get_summary_for_channel.py @Ekaterina_Schulmann
   python src/get_summary_for_channel.py @VladilenMinin --plsonly
   python src/get_summary_for_channel.py @VladilenMinin allpls --from 1 --to 50
-  python src/get_summary_for_channel.py @VladilenMinin allpls --new --from 401 --to 600
+  python src/get_summary_for_channel.py @VladilenMinin allpls --new --from 401 --next 200
+  python src/get_summary_for_channel.py @VladilenMinin allpls --from "Some unique title prefix"
   python src/get_summary_for_channel.py @VladilenMinin #A --from 1 --to 20
 """
 
@@ -29,7 +30,6 @@ from summary_helpers import (
     VideoRecord,
     build_summary_sections,
     normalize_scope,
-    range_explicit,
     scope_mode,
     selected_export_slots,
     summary_output_stem,
@@ -56,6 +56,11 @@ from project_paths import (
     channel_folder_name,
     find_channel_folder,
     normalize_channel_folder_arg,
+)
+from range_args import (
+    apply_resolved_range,
+    numeric_required_to,
+    resolve_range_args,
 )
 from video_cache import (
     commit_length_old,
@@ -504,17 +509,32 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--from",
-        dest="from_index",
-        type=int,
-        default=DEFAULT_FROM,
-        help=f"First video number relative to baseline list (default: {DEFAULT_FROM})",
+        dest="from_raw",
+        default=str(DEFAULT_FROM),
+        help=(
+            f"First video number relative to baseline (default: {DEFAULT_FROM}), "
+            "or a unique video title / title prefix (>=3 characters, quote if spaced)"
+        ),
     )
     parser.add_argument(
         "--to",
-        dest="to_index",
+        dest="to_raw",
+        default=str(DEFAULT_TO),
+        help=(
+            f"Last video number inclusive relative to baseline (default: {DEFAULT_TO}), "
+            "or a unique video title / title prefix (>=3 characters, quote if spaced)"
+        ),
+    )
+    parser.add_argument(
+        "--next",
+        dest="next_count",
         type=int,
-        default=DEFAULT_TO,
-        help=f"Last video number inclusive relative to baseline (default: {DEFAULT_TO})",
+        default=None,
+        metavar="N",
+        help=(
+            "Export the next N videos starting from --from (alternative to --to; "
+            "if both are given, the later flag on the command line wins)"
+        ),
     )
     parser.add_argument(
         "--workspace",
@@ -538,7 +558,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="yt-dlp",
         help="yt-dlp executable (default: yt-dlp)",
     )
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    args.from_index = DEFAULT_FROM
+    args.to_index = DEFAULT_TO
+    args.from_explicit = False
+    args.to_explicit = False
+    args.range_end_source = None
+    return args
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -575,10 +601,11 @@ def main(argv: list[str] | None = None) -> int:
         load_video_playlist_map(channel_root) is None,
     )
 
-    required = (
-        args.to_index
-        if range_explicit(args, DEFAULT_FROM, DEFAULT_TO)
-        else None
+    required = numeric_required_to(
+        args,
+        default_from=DEFAULT_FROM,
+        default_to=DEFAULT_TO,
+        argv=argv,
     )
     cache_result = ensure_video_cache(
         channel_id,
@@ -614,6 +641,53 @@ def main(argv: list[str] | None = None) -> int:
     channel_name = cache_result.channel_name or channel_name
     length_curr = cache_result.length_curr
     length_old = cache_result.length_old
+
+    from_index, to_index, from_explicit, to_explicit, range_error, end_source = (
+        resolve_range_args(
+            args,
+            browse_videos,
+            length_curr,
+            length_old,
+            default_from=DEFAULT_FROM,
+            default_to=DEFAULT_TO,
+            argv=argv,
+        )
+    )
+    if range_error:
+        notice_path = stem.with_suffix(".txt")
+        write_emergency_notice(notice_path, range_error)
+        print(range_error, flush=True)
+        print(f"Notice: {notice_path}", flush=True)
+        return 1
+
+    apply_resolved_range(
+        args,
+        from_index,
+        to_index,
+        from_explicit=from_explicit,
+        to_explicit=to_explicit,
+        range_end_source=end_source,
+    )
+
+    if to_index > len(browse_videos):
+        cache_result = ensure_video_cache(
+            channel_id,
+            channel_root,
+            handle,
+            required=to_index,
+            playlist_map=playlist_map,
+        )
+        if cache_result.emergency_refresh:
+            notice_path = stem.with_suffix(".txt")
+            message = cache_result.emergency_message or "Emergency full cache refresh."
+            write_emergency_notice(notice_path, message)
+            print(message, flush=True)
+            print(f"Notice: {notice_path}", flush=True)
+            return 1
+        browse_videos = cache_result.videos
+        channel_name = cache_result.channel_name or channel_name
+        length_curr = cache_result.length_curr
+        length_old = cache_result.length_old
 
     export_slots = selected_export_slots(
         length_curr,

@@ -79,6 +79,7 @@ python src\get_summary_for_channel.py @Ekaterina_Schulmann
 | `_hh_mm_plsall` | `allpls`, без `--from`/`--to` |
 | `_hh_mm_plsgrp` | `bypls` (default), без фильтра |
 | `_f_N`, `_t_N` | при `--from N` / `--to N` |
+| `_n_N` | при `--next N` (если `--next` задан позже `--to` или вместо него) |
 | `_new` | при `--new` |
 | `_pls_A` | один плейлист по алиасу `#A` |
 
@@ -120,9 +121,21 @@ XLSX: строка 1 — `Playlists for channel <name>  (channel_id = UC… ):`,
 
 ```bat
 python src\get_summary_for_channel.py @Channel allpls --from 1 --to 200
-python src\get_summary_for_channel.py @Channel allpls --new --from 201 --to 400
-python src\get_summary_for_channel.py @Channel allpls --new --from 401 --to 600
+python src\get_summary_for_channel.py @Channel allpls --new --from 201 --next 200
+python src\get_summary_for_channel.py @Channel allpls --new --from 401 --next 200
 ```
+
+`--next N` — альтернатива `--to`: экспорт N видео начиная с `--from`
+(`--to = --from + N - 1`). Если указаны оба, учитывается **более поздний** флаг
+в командной строке.
+
+### `--from` / `--to` по названию видео
+
+Значение может быть числом или строкой **не короче 3 символов** (при пробелах — в кавычках).
+Строка сопоставляется с полным названием или с **единственным** префиксом названия
+в кэшированном списке; найденному видео присваивается его baseline-номер.
+Если совпадений нет или их несколько — скрипт завершается, в `_summaries` пишется
+однострочный notice `.txt`.
 
 ### Кэш
 
