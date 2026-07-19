@@ -63,6 +63,7 @@ from range_args import (
     resolve_range_args,
 )
 from video_cache import (
+    cache_is_complete,
     commit_length_old,
     ensure_video_cache,
     load_videos_cache,
@@ -670,24 +671,26 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if to_index > len(browse_videos):
-        cache_result = ensure_video_cache(
-            channel_id,
-            channel_root,
-            handle,
-            required=to_index,
-            playlist_map=playlist_map,
-        )
-        if cache_result.emergency_refresh:
-            notice_path = stem.with_suffix(".txt")
-            message = cache_result.emergency_message or "Emergency full cache refresh."
-            write_emergency_notice(notice_path, message)
-            print(message, flush=True)
-            print(f"Notice: {notice_path}", flush=True)
-            return 1
-        browse_videos = cache_result.videos
-        channel_name = cache_result.channel_name or channel_name
-        length_curr = cache_result.length_curr
-        length_old = cache_result.length_old
+        loaded_cache = load_videos_cache(channel_root)
+        if loaded_cache and not cache_is_complete(loaded_cache):
+            cache_result = ensure_video_cache(
+                channel_id,
+                channel_root,
+                handle,
+                required=to_index,
+                playlist_map=playlist_map,
+            )
+            if cache_result.emergency_refresh:
+                notice_path = stem.with_suffix(".txt")
+                message = cache_result.emergency_message or "Emergency full cache refresh."
+                write_emergency_notice(notice_path, message)
+                print(message, flush=True)
+                print(f"Notice: {notice_path}", flush=True)
+                return 1
+            browse_videos = cache_result.videos
+            channel_name = cache_result.channel_name or channel_name
+            length_curr = cache_result.length_curr
+            length_old = cache_result.length_old
 
     export_slots = selected_export_slots(
         length_curr,

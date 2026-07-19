@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import random
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -10,9 +9,7 @@ from pathlib import Path
 
 from channel_browse import (
     browse_api_header,
-    extract_channel_name,
     fetch_all_browse_videos,
-    fetch_browse_page,
     fetch_browse_up_to_count,
     fetch_channel_name,
     fetch_first_browse_page,
@@ -174,7 +171,6 @@ def validation_sample_indices(length: int) -> list[int]:
         return [0] if length else []
     if length == 2:
         return [0, 1]
-    mid = length // 2
     candidates = list(range(1, length - 1))
     random.shuffle(candidates)
     picks = candidates[:2] if len(candidates) >= 2 else candidates[:1]
@@ -198,6 +194,8 @@ def validate_cache_samples(
         return False
     for cached_index in validation_sample_indices(len(cached)):
         live_index = live_offset + cached_index
+        if live_index >= len(live):
+            return False
         if not videos_match(live[live_index], cached[cached_index]):
             return False
     return True
@@ -217,28 +215,26 @@ def merge_new_with_cache(new_videos: list[dict], cached_videos: list[dict]) -> l
     return ordered
 
 
+def extend_target_count(required: int | None, cached_len: int, *, complete: bool) -> int | None:
+    """How many videos to fetch while extending a partial cache."""
+    if required is None:
+        return None
+    if complete:
+        return required
+    return max(required, cached_len)
+
+
 def full_cache_refresh(
     channel_id: str,
     channel_root: Path,
     cache: dict | None,
     handle: str | None,
     *,
-    required: int | None,
     playlist_map: dict[str, str] | None,
     reset_length_old: bool = True,
 ) -> VideoCacheResult:
     print("Performing full cache refresh...", flush=True)
-    if required is not None:
-        browse_api_header()
-        body = fetch_browse_page(channel_id)
-        channel_name = extract_channel_name(body)
-        videos, channel_name, next_token, pages_fetched = fetch_browse_up_to_count(
-            channel_id, required, [], body
-        )
-    else:
-        videos, channel_name, next_token, pages_fetched = fetch_all_browse_videos(
-            channel_id
-        )
+    videos, channel_name, next_token, pages_fetched = fetch_all_browse_videos(channel_id)
     length = len(videos)
     payload = {
         "channel_id": channel_id,
@@ -273,9 +269,108 @@ def full_cache_refresh(
     )
 
 
+def emergency_full_refresh(
+    channel_id: str,
+    channel_root: Path,
+    cache: dict | None,
+    handle: str | None,
+    *,
+    playlist_map: dict[str, str] | None,
+    length_old: int,
+    channel_name: str,
+) -> VideoCacheResult:
+    full_cache_refresh(
+        channel_id,
+        channel_root,
+        cache,
+        handle,
+        playlist_map=playlist_map,
+    )
+    return VideoCacheResult(
+        videos=[],
+        channel_name=channel_name,
+        cache_used=False,
+        length_curr=0,
+        length_old=length_old,
+        emergency_refresh=True,
+        emergency_message=EMERGENCY_NOTICE,
+    )
+
+
 def touch_cache_validation(cache: dict, channel_root: Path) -> None:
     cache["last_validated_at"] = datetime.now().isoformat(timespec="seconds")
     save_videos_cache(channel_root, cache)
+
+
+def fetch_complete_live_list(
+    channel_id: str,
+    first_body: dict | None = None,
+) -> tuple[list[dict], str | None]:
+    """Walk all browse pages once (used for stale validation or decrease checks)."""
+    if first_body is not None:
+        videos, channel_name, next_token, _ = fetch_browse_up_to_count(
+            channel_id,
+            None,
+            [],
+            first_body,
+        )
+    else:
+        browse_api_header()
+        videos, channel_name, next_token, _ = fetch_all_browse_videos(channel_id)
+    if next_token is not None:
+        return videos, None
+    return videos, channel_name
+
+
+def extend_partial_cache(
+    channel_id: str,
+    channel_root: Path,
+    cache: dict,
+    handle: str | None,
+    *,
+    required: int | None,
+    playlist_map: dict[str, str] | None,
+) -> VideoCacheResult:
+    cached_videos: list[dict] = list(cache["videos"])
+    length_curr = len(cached_videos)
+    channel_name = cache.get("channel_name") or fetch_channel_name(channel_id)
+    length_old = int(cache.get("length_old", length_curr))
+    target = extend_target_count(required, length_curr, complete=False)
+
+    print(
+        f"Extending partial cache ({length_curr} videos, "
+        f"pages 1-{cache.get('pages_fetched') or '?'})...",
+        flush=True,
+    )
+    browse_api_header()
+    videos, channel_name, next_token, pages_fetched = fetch_browse_up_to_count(
+        channel_id,
+        target,
+        cached_videos,
+        None,
+        resume_token=cache.get("continuation_token"),
+        resume_after_page=int(cache.get("pages_fetched") or 0),
+    )
+    cache["videos"] = videos
+    cache["channel_name"] = channel_name
+    cache["channel_handle"] = handle or cache.get("channel_handle")
+    cache["continuation_token"] = next_token
+    cache["pages_fetched"] = pages_fetched
+    cache["length_curr"] = len(videos)
+    if next_token is None:
+        cache["length_old"] = len(videos)
+        cache["last_validated_at"] = datetime.now().isoformat(timespec="seconds")
+        if playlist_map is not None:
+            cache["playlist_lengths"] = compute_playlist_lengths(videos, playlist_map)
+    save_videos_cache(channel_root, cache)
+    return VideoCacheResult(
+        videos=videos,
+        channel_name=channel_name,
+        cache_used=True,
+        length_curr=len(videos),
+        length_old=int(cache.get("length_old", length_old)),
+        emergency_refresh=False,
+    )
 
 
 def ensure_video_cache(
@@ -289,15 +384,13 @@ def ensure_video_cache(
 ) -> VideoCacheResult:
     cache = load_videos_cache(channel_root)
     if not cache or not cache.get("videos"):
-        result = full_cache_refresh(
+        return full_cache_refresh(
             channel_id,
             channel_root,
             cache,
             handle,
-            required=required,
             playlist_map=playlist_map,
         )
-        return result
 
     cached_videos: list[dict] = list(cache["videos"])
     channel_name = cache.get("channel_name") or fetch_channel_name(channel_id)
@@ -305,130 +398,108 @@ def ensure_video_cache(
     length_old = int(cache.get("length_old", length_curr))
 
     if not cache_is_complete(cache):
-        print(
-            f"Extending partial cache ({length_curr} videos, "
-            f"pages 1-{cache.get('pages_fetched') or '?'})...",
-            flush=True,
-        )
-        browse_api_header()
-        videos, channel_name, next_token, pages_fetched = fetch_browse_up_to_count(
+        return extend_partial_cache(
             channel_id,
-            required if required is not None else length_curr,
-            cached_videos,
-            None,
-            resume_token=cache.get("continuation_token"),
-            resume_after_page=int(cache.get("pages_fetched") or 0),
-        )
-        cache["videos"] = videos
-        cache["channel_name"] = channel_name
-        cache["channel_handle"] = handle or cache.get("channel_handle")
-        cache["continuation_token"] = next_token
-        cache["pages_fetched"] = pages_fetched
-        cache["length_curr"] = len(videos)
-        if next_token is None:
-            cache["length_old"] = len(videos)
-            if playlist_map is not None:
-                cache["playlist_lengths"] = compute_playlist_lengths(videos, playlist_map)
-        save_videos_cache(channel_root, cache)
-        return VideoCacheResult(
-            videos=videos,
-            channel_name=channel_name,
-            cache_used=True,
-            length_curr=len(videos),
-            length_old=int(cache.get("length_old", len(videos))),
-            emergency_refresh=False,
+            channel_root,
+            cache,
+            handle,
+            required=required,
+            playlist_map=playlist_map,
         )
 
     print("Smart refresh: checking channel video list...", flush=True)
     first_page, live_channel_name, first_body = fetch_first_browse_page(channel_id)
     channel_name = live_channel_name or channel_name
     new_head = new_videos_at_head(first_page, cached_videos)
-    n_new_head = len(new_head)
+    n_new = len(new_head)
 
-    live_target = length_curr + n_new_head
-    live_videos, _, _, _ = fetch_browse_up_to_count(
-        channel_id,
-        live_target,
-        [],
-        first_body,
-    )
-    live_count = len(live_videos)
-
-    if live_count < length_curr:
-        print(
-            f"Channel video count decreased ({live_count} < {length_curr}).",
-            flush=True,
+    if n_new == 0 and not cache_is_stale(cache):
+        print("Cache is fresh; no validation needed.", flush=True)
+        return VideoCacheResult(
+            videos=cached_videos,
+            channel_name=channel_name,
+            cache_used=True,
+            length_curr=length_curr,
+            length_old=length_old,
+            emergency_refresh=False,
         )
-        if allow_emergency_refresh:
-            full_cache_refresh(
-                channel_id,
-                channel_root,
-                cache,
-                handle,
-                required=required,
-                playlist_map=playlist_map,
-            )
-            return VideoCacheResult(
-                videos=[],
-                channel_name=channel_name,
-                cache_used=False,
-                length_curr=0,
-                length_old=length_old,
-                emergency_refresh=True,
-                emergency_message=EMERGENCY_NOTICE,
-            )
-        raise SystemExit("Channel video count decreased; run refresh_channel_cache.py.")
 
-    if live_count == length_curr and n_new_head == 0:
-        if cache_is_stale(cache):
-            print("Cache older than 24h; validating sample videos...", flush=True)
-            if not validate_cache_samples(live_videos, cached_videos):
-                print("Cache validation failed.", flush=True)
-                if allow_emergency_refresh:
-                    full_cache_refresh(
-                        channel_id,
-                        channel_root,
-                        cache,
-                        handle,
-                        required=required,
-                        playlist_map=playlist_map,
-                    )
-                    return VideoCacheResult(
-                        videos=[],
-                        channel_name=channel_name,
-                        cache_used=False,
-                        length_curr=0,
-                        length_old=length_old,
-                        emergency_refresh=True,
-                        emergency_message=EMERGENCY_NOTICE,
-                    )
-                raise SystemExit("Cache validation failed; run refresh_channel_cache.py.")
-            touch_cache_validation(cache, channel_root)
-        else:
-            print("Cache is fresh; no validation needed.", flush=True)
-        videos = cached_videos
-    elif live_count > length_curr:
-        n_new = live_count - length_curr
-        print(f"Detected {n_new} new video(s) at channel head.", flush=True)
-        if not validate_cache_samples(live_videos, cached_videos, live_offset=n_new):
-            print("Cache validation failed for shifted head.", flush=True)
+    if n_new == 0 and cache_is_stale(cache):
+        print("Cache older than 24h; validating sample videos...", flush=True)
+        live_videos, _ = fetch_complete_live_list(channel_id, first_body)
+        if len(live_videos) < length_curr:
+            print(
+                f"Channel video count decreased ({len(live_videos)} < {length_curr}).",
+                flush=True,
+            )
             if allow_emergency_refresh:
-                full_cache_refresh(
+                return emergency_full_refresh(
                     channel_id,
                     channel_root,
                     cache,
                     handle,
-                    required=required,
                     playlist_map=playlist_map,
-                )
-                return VideoCacheResult(
-                    videos=[],
-                    channel_name=channel_name,
-                    cache_used=False,
-                    length_curr=0,
                     length_old=length_old,
-                    emergency_refresh=True,
-                    emergency_message=EMERGENCY_NOTICE,
+                    channel_name=channel_name,
+                )
+            raise SystemExit("Channel video count decreased; run refresh_channel_cache.py.")
+        if not validate_cache_samples(live_videos, cached_videos):
+            print("Cache validation failed.", flush=True)
+            if allow_emergency_refresh:
+                return emergency_full_refresh(
+                    channel_id,
+                    channel_root,
+                    cache,
+                    handle,
+                    playlist_map=playlist_map,
+                    length_old=length_old,
+                    channel_name=channel_name,
+                )
+            raise SystemExit("Cache validation failed; run refresh_channel_cache.py.")
+        touch_cache_validation(cache, channel_root)
+        return VideoCacheResult(
+            videos=cached_videos,
+            channel_name=channel_name,
+            cache_used=True,
+            length_curr=length_curr,
+            length_old=length_old,
+            emergency_refresh=False,
+        )
+
+    if n_new > 0:
+        print(f"Detected {n_new} new video(s) at channel head.", flush=True)
+        need = n_new + length_curr
+        live_videos, _, _, _ = fetch_browse_up_to_count(
+            channel_id,
+            need,
+            [],
+            first_body,
+        )
+        if len(live_videos) < need:
+            print(
+                "Could not fetch enough live videos to validate new head; "
+                "treating as unchanged cache.",
+                flush=True,
+            )
+            return VideoCacheResult(
+                videos=cached_videos,
+                channel_name=channel_name,
+                cache_used=True,
+                length_curr=length_curr,
+                length_old=length_old,
+                emergency_refresh=False,
+            )
+        if not validate_cache_samples(live_videos, cached_videos, live_offset=n_new):
+            print("Cache validation failed for shifted head.", flush=True)
+            if allow_emergency_refresh:
+                return emergency_full_refresh(
+                    channel_id,
+                    channel_root,
+                    cache,
+                    handle,
+                    playlist_map=playlist_map,
+                    length_old=length_old,
+                    channel_name=channel_name,
                 )
             raise SystemExit("Cache validation failed; run refresh_channel_cache.py.")
         new_videos = live_videos[:n_new]
@@ -444,38 +515,21 @@ def ensure_video_cache(
             )
         save_videos_cache(channel_root, cache)
         print(f"Prepended {n_new} new video(s) to cache.", flush=True)
-    else:
-        videos = cached_videos
-
-    if required is not None and len(videos) < required:
-        browse_api_header()
-        videos, channel_name, next_token, pages_fetched = fetch_browse_up_to_count(
-            channel_id,
-            required,
-            videos,
-            None,
-            resume_token=None,
-            resume_after_page=int(cache.get("pages_fetched") or 0),
+        return VideoCacheResult(
+            videos=videos,
+            channel_name=channel_name,
+            cache_used=True,
+            length_curr=len(videos),
+            length_old=length_old,
+            emergency_refresh=False,
         )
-        cache["videos"] = videos
-        cache["channel_name"] = channel_name
-        cache["continuation_token"] = next_token
-        cache["pages_fetched"] = pages_fetched
-        cache["length_curr"] = len(videos)
-        if next_token is None and playlist_map is not None:
-            cache["playlist_lengths"] = sync_playlist_lengths(
-                cache.get("playlist_lengths", empty_playlist_lengths()),
-                videos,
-                playlist_map,
-            )
-        save_videos_cache(channel_root, cache)
 
     return VideoCacheResult(
-        videos=videos,
+        videos=cached_videos,
         channel_name=channel_name,
         cache_used=True,
-        length_curr=len(videos),
-        length_old=int(cache.get("length_old", length_old)),
+        length_curr=length_curr,
+        length_old=length_old,
         emergency_refresh=False,
     )
 

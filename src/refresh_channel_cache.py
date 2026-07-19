@@ -107,7 +107,6 @@ def main(argv: list[str] | None = None) -> int:
             channel_root,
             load_videos_cache(channel_root),
             handle,
-            required=None,
             playlist_map=playlist_map,
             reset_length_old=True,
         )
