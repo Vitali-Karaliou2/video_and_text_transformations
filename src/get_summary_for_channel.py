@@ -340,10 +340,24 @@ def split_display_title(display_title: str, channel_name: str) -> tuple[str, str
 
 
 def format_txt_line(record: VideoRecord) -> str:
-    display_title = build_display_title(record.title, record.channel_name)
+    if record.playlist:
+        display_title = f"{record.channel_name} | {record.playlist} : {record.title}"
+    else:
+        display_title = build_display_title(record.title, record.channel_name)
     return (
         f"{record.url} ({display_title} ) {record.date_text} {record.duration_bracket}"
     )
+
+
+def console_channel_label(
+    channel_id: str,
+    handle: str | None,
+    channel_name: str,
+) -> str:
+    """Prefer @handle in console output; YouTube display title may be non-ASCII."""
+    if handle:
+        return f"{handle} ({channel_id})"
+    return f"{channel_name} ({channel_id})"
 
 
 def parse_excel_date(value: str) -> date | None:
@@ -472,9 +486,7 @@ def run_plsonly(
     write_plsonly_txt(txt_path, header, rows)
     write_plsonly_xlsx(xlsx_path, header, rows)
 
-    print(f"Channel: {channel_name} ({channel_id})", flush=True)
-    if handle:
-        print(f"Handle: {handle}", flush=True)
+    print(f"Channel: {console_channel_label(channel_id, handle, channel_name)}", flush=True)
     print(f"Playlists: {len(rows)}", flush=True)
     print(f"TXT:   {txt_path}", flush=True)
     print(f"XLSX:  {xlsx_path}", flush=True)
@@ -761,9 +773,7 @@ def main(argv: list[str] | None = None) -> int:
         save_videos_cache(channel_root, cache)
 
     exported = sum(len(section.records) for section in sections)
-    print(f"Channel: {channel_name} ({channel_id})", flush=True)
-    if handle:
-        print(f"Handle: {handle}", flush=True)
+    print(f"Channel: {console_channel_label(channel_id, handle, channel_name)}", flush=True)
     print(f"Scope: {scope}", flush=True)
     print(f"Summary folder: {out_dir}", flush=True)
     print(f"Baseline length: {length_old}", flush=True)

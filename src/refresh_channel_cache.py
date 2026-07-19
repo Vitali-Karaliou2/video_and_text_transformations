@@ -120,9 +120,7 @@ def main(argv: list[str] | None = None) -> int:
             allow_emergency_refresh=True,
         )
 
-    print(f"Channel: {channel_name} ({channel_id})", flush=True)
-    if handle:
-        print(f"Handle: {handle}", flush=True)
+    print(f"Channel: {handle or channel_name} ({channel_id})", flush=True)
     print(f"Videos in cache: {result.length_curr}", flush=True)
     print(f"Baseline length_old: {result.length_old}", flush=True)
     print(f"Cache file: {channel_root / '_cache' / 'videos.json'}", flush=True)
