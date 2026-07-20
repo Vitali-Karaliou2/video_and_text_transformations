@@ -343,7 +343,7 @@ def format_txt_line(record: VideoRecord) -> str:
     if record.playlist:
         display_title = f"{record.channel_name} | {record.playlist} : {record.title}"
     else:
-        display_title = build_display_title(record.title, record.channel_name)
+        display_title = f"{record.channel_name} : {record.title}"
     return (
         f"{record.url} ({display_title} ) {record.date_text} {record.duration_bracket}"
     )
