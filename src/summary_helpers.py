@@ -127,8 +127,25 @@ def selected_export_slots(
     return slots
 
 
+def format_duration_hms(total_seconds: int) -> str:
+    hours, remainder = divmod(max(0, total_seconds), 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{hours}:{minutes:02d}:{seconds:02d}"
+
+
+def records_total_duration_seconds(records: list[VideoRecord]) -> int:
+    return sum(record.duration_seconds or 0 for record in records)
+
+
+def selection_parenthetical(records: list[VideoRecord]) -> str:
+    return (
+        f"{len(records)} selected, "
+        f"{format_duration_hms(records_total_duration_seconds(records))} in total"
+    )
+
+
 def summary_line(
-    slots: list[ExportSlot],
+    records: list[VideoRecord],
     length_curr: int,
     length_old: int,
     *,
@@ -136,20 +153,28 @@ def summary_line(
     use_new: bool = False,
 ) -> str:
     suffix = f' in playlist "{playlist}"' if playlist else ""
-    new_count = sum(1 for slot in slots if is_new_display_number(slot.display_number))
-    old_numbers = [slot.display_number for slot in slots if not is_new_display_number(slot.display_number)]
-    parts: list[str] = []
-    if use_new and new_count:
-        parts.append(f"{new_count} new video(s)")
-    if old_numbers:
-        if len(old_numbers) == 1:
-            parts.append(f"video {old_numbers[0]}")
-        else:
-            parts.append(
-                f"videos {old_numbers[0]} to {old_numbers[-1]} ({len(old_numbers)} selected)"
-            )
-    if not parts:
+    if not records:
         return f"Videos none selected from total {length_old} baseline / {length_curr} current{suffix}."
+
+    selection = selection_parenthetical(records)
+    new_records = [record for record in records if record.display_index == DISPLAY_NEW]
+    old_records = [record for record in records if record.display_index != DISPLAY_NEW]
+    old_indices = [record.channel_index for record in old_records]
+
+    parts: list[str] = []
+    if use_new and new_records and old_records:
+        parts.append(f"{len(new_records)} new video(s)")
+        if len(old_indices) == 1:
+            parts.append(f"video {old_indices[0]} ({selection})")
+        else:
+            parts.append(f"videos {old_indices[0]} to {old_indices[-1]} ({selection})")
+    elif use_new and new_records:
+        parts.append(f"{len(new_records)} new video(s) ({selection})")
+    elif len(old_indices) == 1:
+        parts.append(f"video {old_indices[0]} ({selection})")
+    else:
+        parts.append(f"videos {old_indices[0]} to {old_indices[-1]} ({selection})")
+
     body = ", ".join(parts)
     return (
         f"{body} from baseline {length_old} / current {length_curr} on channel{suffix}."
@@ -330,7 +355,7 @@ def build_summary_sections(
             [
                 SummarySection(
                     summary_line(
-                        pl_slots,
+                        records,
                         total,
                         length_old,
                         playlist=playlist["title"],
@@ -360,7 +385,7 @@ def build_summary_sections(
         return (
             [
                 SummarySection(
-                    summary_line(export_slots, total, length_old, use_new=use_new),
+                    summary_line(records, total, length_old, use_new=use_new),
                     records,
                 )
             ],
@@ -394,7 +419,7 @@ def build_summary_sections(
         sections.append(
             SummarySection(
                 summary_line(
-                    pl_slots,
+                    records,
                     total,
                     length_old,
                     playlist=playlist["title"],
@@ -427,7 +452,7 @@ def build_summary_sections(
         sections.append(
             SummarySection(
                 summary_line(
-                    other_slots,
+                    records,
                     total,
                     length_old,
                     playlist="(no playlist)",
