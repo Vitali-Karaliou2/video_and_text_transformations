@@ -150,11 +150,19 @@ def probe_duration(path: Path, ffprobe: str) -> float:
     )
     if result.returncode != 0:
         raise RuntimeError(f"ffprobe failed for {path.name}:\n{result.stderr}")
-    return float(result.stdout.strip())
+    value = result.stdout.strip()
+    try:
+        return float(value)
+    except ValueError:
+        raise RuntimeError(f"ffprobe returned no duration for {path.name}: {value!r}")
 
 
-def extract_audio_chunks(video: Path, tmp_dir: Path, ffmpeg: str) -> list[Path]:
-    """Extract 16 kHz mono mp3 chunks that fit the whisper-1 request limit."""
+def extract_audio_chunks(
+    video: Path, tmp_dir: Path, ffmpeg: str, ffprobe: str
+) -> list[tuple[Path, float]]:
+    """Extract 16 kHz mono mp3 chunks (with durations) that fit the whisper-1
+    request limit. The segment muxer can emit a degenerate near-empty trailing
+    chunk (duration N/A); such chunks are dropped."""
     pattern = tmp_dir / "chunk_%03d.mp3"
     result = run_tool(
         [
@@ -174,7 +182,14 @@ def extract_audio_chunks(video: Path, tmp_dir: Path, ffmpeg: str) -> list[Path]:
     )
     if result.returncode != 0:
         raise RuntimeError(f"ffmpeg failed for {video.name}:\n{result.stderr}")
-    chunks = sorted(tmp_dir.glob("chunk_*.mp3"))
+    chunks: list[tuple[Path, float]] = []
+    for path in sorted(tmp_dir.glob("chunk_*.mp3")):
+        try:
+            seconds = probe_duration(path, ffprobe)
+        except RuntimeError:
+            seconds = 0.0
+        if seconds > 0.1:
+            chunks.append((path, seconds))
     if not chunks:
         raise RuntimeError(f"ffmpeg produced no audio chunks for {video.name}")
     return chunks
@@ -238,6 +253,30 @@ def call_audio_api(
     raise SystemExit(f"OpenAI API request failed after retries: {last_error}")
 
 
+class ProgressCalibration:
+    """Estimate chunk processing time from chunks already completed.
+
+    The API gives no real progress, so the percentage shown is elapsed time
+    vs. an expected total. The first chunk uses a static guess for whisper-1
+    speed; every completed chunk records its actual processing-time-to-audio
+    ratio, and later chunks (including the EN pass and further videos in the
+    session) use the average of the observed ratios.
+    """
+
+    def __init__(self) -> None:
+        self.ratios: list[float] = []
+
+    def expected_seconds(self, chunk_seconds: float) -> float:
+        if self.ratios:
+            avg_ratio = sum(self.ratios) / len(self.ratios)
+            return max(5.0, avg_ratio * chunk_seconds)
+        return 15.0 + 0.15 * chunk_seconds
+
+    def record(self, chunk_seconds: float, elapsed: float) -> None:
+        if chunk_seconds > 0 and elapsed > 0:
+            self.ratios.append(elapsed / chunk_seconds)
+
+
 def call_audio_api_with_progress(
     url: str,
     api_key: str,
@@ -246,13 +285,11 @@ def call_audio_api_with_progress(
     *,
     prefix: str,
     chunk_seconds: float,
+    calibration: ProgressCalibration,
 ) -> dict:
-    """Run the blocking API call in a worker; report progress every 2 seconds.
-
-    The API gives no real progress, so the percentage is estimated from
-    elapsed time vs. the typical whisper-1 processing speed and capped at 99%.
-    """
-    expected = 15.0 + 0.15 * chunk_seconds
+    """Run the blocking API call in a worker; report progress every 5 seconds
+    (estimated percentage, capped at 99% until the response arrives)."""
+    expected = calibration.expected_seconds(chunk_seconds)
     interactive = sys.stdout.isatty()
     start = time.monotonic()
     with ThreadPoolExecutor(max_workers=1) as pool:
@@ -268,6 +305,7 @@ def call_audio_api_with_progress(
                     print(f"\r{prefix}  {percent}%", end="", flush=True)
                 else:
                     print(f"{prefix}  {percent}%", flush=True)
+    calibration.record(chunk_seconds, time.monotonic() - start)
     if interactive:
         print(f"\r{prefix}  100%", flush=True)
     else:
@@ -276,19 +314,18 @@ def call_audio_api_with_progress(
 
 
 def transcribe_chunks(
-    chunks: list[Path],
+    chunks: list[tuple[Path, float]],
     api_key: str,
-    ffprobe: str,
     *,
     url: str,
     fields: dict[str, str],
     label: str,
+    calibration: ProgressCalibration,
 ) -> tuple[str, list[Segment]]:
     texts: list[str] = []
     segments: list[Segment] = []
     offset = 0.0
-    for index, chunk in enumerate(chunks, start=1):
-        chunk_seconds = probe_duration(chunk, ffprobe)
+    for index, (chunk, chunk_seconds) in enumerate(chunks, start=1):
         data = call_audio_api_with_progress(
             url,
             api_key,
@@ -296,6 +333,7 @@ def transcribe_chunks(
             chunk,
             prefix=f"    {label}: chunk {index}/{len(chunks)}",
             chunk_seconds=chunk_seconds,
+            calibration=calibration,
         )
         texts.append(str(data.get("text", "")).strip())
         for seg in data.get("segments", []):
@@ -433,13 +471,14 @@ def transcribe_video(
     en_dir: Path,
     ffmpeg: str,
     ffprobe: str,
+    calibration: ProgressCalibration,
 ) -> float:
     """Transcribe one video (original language + EN pass); return audio minutes."""
     tmp_dir = Path(tempfile.mkdtemp(prefix="transcribe_"))
     try:
         print(f"  Extracting audio ({video.name})...", flush=True)
-        chunks = extract_audio_chunks(video, tmp_dir, ffmpeg)
-        minutes = sum(probe_duration(chunk, ffprobe) for chunk in chunks) / 60.0
+        chunks = extract_audio_chunks(video, tmp_dir, ffmpeg, ffprobe)
+        minutes = sum(seconds for _, seconds in chunks) / 60.0
         print(f"  Audio: {minutes:.1f} min, {len(chunks)} chunk(s).", flush=True)
 
         playlist_dir = orig_dir.parent
@@ -447,7 +486,6 @@ def transcribe_video(
         text, segments = transcribe_chunks(
             chunks,
             api_key,
-            ffprobe,
             url=TRANSCRIPTIONS_URL,
             fields={
                 "model": MODEL,
@@ -455,6 +493,7 @@ def transcribe_video(
                 "response_format": "verbose_json",
             },
             label=lang.upper(),
+            calibration=calibration,
         )
         for path in write_results(orig_dir, video.stem, text, segments):
             print(f"  Saved: {path.relative_to(playlist_dir)}", flush=True)
@@ -463,10 +502,10 @@ def transcribe_video(
             text_en, segments_en = transcribe_chunks(
                 chunks,
                 api_key,
-                ffprobe,
                 url=TRANSLATIONS_URL,
                 fields={"model": MODEL, "response_format": "verbose_json"},
                 label="EN",
+                calibration=calibration,
             )
             for path in write_results(en_dir, video.stem, text_en, segments_en):
                 print(f"  Saved: {path.relative_to(playlist_dir)}", flush=True)
@@ -567,6 +606,7 @@ def main(argv: list[str] | None = None) -> int:
     print("Press 'p' to stop after the current video.", flush=True)
 
     watcher = PauseWatcher()
+    calibration = ProgressCalibration()
     passes = 2 if needs_en else 1
     total_minutes = 0.0
     processed = 0
@@ -586,6 +626,7 @@ def main(argv: list[str] | None = None) -> int:
             en_dir=en_dir,
             ffmpeg=args.ffmpeg,
             ffprobe=args.ffprobe,
+            calibration=calibration,
         )
         processed += 1
         if watcher.pause_requested() and processed < len(session):
