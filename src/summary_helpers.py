@@ -35,6 +35,7 @@ class VideoRecord:
     duration_bracket: str
     duration_seconds: int | None
     playlist: str
+    cost_usd: float | None = None
 
 
 @dataclass
@@ -484,6 +485,19 @@ def write_plsonly_xlsx(path: Path, header: str, rows: list[tuple[str, str, str]]
     wb.save(path)
 
 
+def format_txt_cost(cost_usd: float | None, width: int) -> str:
+    text = "$?" if cost_usd is None else f"${cost_usd:.2f}"
+    return text.rjust(width)
+
+
+def txt_cost_field_width(records: list[VideoRecord]) -> int:
+    widths = [
+        len("$?" if record.cost_usd is None else f"${record.cost_usd:.2f}")
+        for record in records
+    ]
+    return max(widths, default=2)
+
+
 def write_summary_txt(
     path: Path,
     sections: list[SummarySection],
@@ -492,6 +506,7 @@ def write_summary_txt(
 ) -> None:
     all_records = [record for section in sections for record in section.records]
     index_width = txt_index_field_width(all_records)
+    cost_width = txt_cost_field_width(all_records)
     lines: list[str] = []
     for index, section in enumerate(sections):
         if index:
@@ -499,7 +514,8 @@ def write_summary_txt(
         lines.append(section.summary)
         for record in section.records:
             prefix = format_txt_index_prefix(record.display_index, index_width)
-            lines.append(f"{prefix} {format_txt_line(record)}")
+            cost = format_txt_cost(record.cost_usd, cost_width)
+            lines.append(f"{prefix} {cost} {format_txt_line(record)}")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -524,10 +540,13 @@ def write_summary_xlsx(
         for record in section.records:
             parsed_date = parse_excel_date(record.date_text)
             ws.cell(row=row, column=1, value=record.display_index)
-            ws.cell(row=row, column=2, value=record.channel_name)
-            ws.cell(row=row, column=3, value=record.playlist)
-            ws.cell(row=row, column=4, value=record.url)
-            date_cell = ws.cell(row=row, column=5, value=parsed_date)
+            if record.cost_usd is not None:
+                cost_cell = ws.cell(row=row, column=2, value=record.cost_usd)
+                cost_cell.number_format = '"$"0.00'
+            ws.cell(row=row, column=3, value=record.channel_name)
+            ws.cell(row=row, column=4, value=record.playlist)
+            ws.cell(row=row, column=5, value=record.url)
+            date_cell = ws.cell(row=row, column=6, value=parsed_date)
             if parsed_date is not None:
                 date_cell.number_format = (
                     "yyyy-mm-dd" if len(record.date_text) == 10 else "yyyy-mm"
@@ -536,10 +555,10 @@ def write_summary_xlsx(
                 record.duration_bracket
             )
             if duration_seconds is not None:
-                duration_cell = ws.cell(row=row, column=6, value=duration_seconds / 86400)
+                duration_cell = ws.cell(row=row, column=7, value=duration_seconds / 86400)
                 duration_cell.number_format = "[h]:mm:ss"
             display_title = build_display_title(record.title, record.channel_name)
             title_only, _ = split_display_title(display_title, record.channel_name)
-            ws.cell(row=row, column=7, value=title_only)
+            ws.cell(row=row, column=8, value=title_only)
             row += 1
     wb.save(path)

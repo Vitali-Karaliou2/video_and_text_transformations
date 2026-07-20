@@ -62,6 +62,11 @@ from range_args import (
     numeric_required_to,
     resolve_range_args,
 )
+from transcription_pricing import (
+    estimate_cost_usd,
+    get_transcription_rate,
+    transcription_passes,
+)
 from video_cache import (
     cache_is_complete,
     commit_length_old,
@@ -550,6 +555,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--lang",
+        default="ru",
+        metavar="XX",
+        help=(
+            "Original language of the channel videos (two-letter code, default: ru). "
+            "Non-English videos are costed for two transcription passes "
+            "(original + English)"
+        ),
+    )
+    parser.add_argument(
         "--workspace",
         type=Path,
         default=WORKSPACE_ROOT,
@@ -737,6 +752,15 @@ def main(argv: list[str] | None = None) -> int:
     if not any(section.records for section in sections):
         print("No videos matched the requested scope/filter.", flush=True)
         return 0
+
+    usd_per_minute = get_transcription_rate(args.workspace)
+    passes = transcription_passes(args.lang)
+    for section in sections:
+        for record in section.records:
+            seconds = record.duration_seconds or duration_bracket_to_seconds(
+                record.duration_bracket
+            )
+            record.cost_usd = estimate_cost_usd(seconds, usd_per_minute, passes)
 
     single_playlist = (
         resolve_playlist_selection(scope, playlists_cache)

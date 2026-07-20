@@ -6,6 +6,12 @@ Prompts/
 # Legacy root browse cache (migrated to _channels/_Handle/_cache/browse.json)
 cache/
 
+# Shared root cache (transcription pricing, etc.)
+/_cache/
+
+# Secrets
+.env
+
 # Python / PyInstaller
 __pycache__/
 *.py[cod]
