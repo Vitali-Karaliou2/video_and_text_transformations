@@ -74,6 +74,20 @@ def format_display_index(display_number: int) -> int | str:
     return DISPLAY_NEW if is_new_display_number(display_number) else display_number
 
 
+def txt_index_field_width(records: list[VideoRecord]) -> int:
+    """Width for the leading index column in TXT (min 3; grows with max number)."""
+    numeric = [record.display_index for record in records if isinstance(record.display_index, int)]
+    if not numeric:
+        return 3
+    return max(3, len(str(max(numeric))))
+
+
+def format_txt_index_prefix(display_index: int | str, width: int) -> str:
+    if display_index == DISPLAY_NEW:
+        return "new"
+    return str(display_index).rjust(width)
+
+
 def selected_export_slots(
     length_curr: int,
     length_old: int,
@@ -451,12 +465,16 @@ def write_summary_txt(
     *,
     format_txt_line,
 ) -> None:
+    all_records = [record for section in sections for record in section.records]
+    index_width = txt_index_field_width(all_records)
     lines: list[str] = []
     for index, section in enumerate(sections):
         if index:
             lines.append("")
         lines.append(section.summary)
-        lines.extend(format_txt_line(record) for record in section.records)
+        for record in section.records:
+            prefix = format_txt_index_prefix(record.display_index, index_width)
+            lines.append(f"{prefix} {format_txt_line(record)}")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 

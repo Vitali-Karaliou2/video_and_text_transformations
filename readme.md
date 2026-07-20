@@ -104,8 +104,9 @@ XLSX: строка 1 — `Playlists for channel <name>  (channel_id = UC… ):`,
 | 6 | Длительность |
 | 7 | Заголовок |
 
-**Строка TXT (видео):** `{url} ({channel} | {playlist} : {title} ) {date} {duration}` —
-если плейлист известен; иначе `{url} ({channel} : {title} ) …`.  
+**Строка TXT (видео):** `{index} {url} ({channel} | {playlist} : {title} ) {date} {duration}` —
+если плейлист известен; иначе `{index} {url} ({channel} : {title} ) …`.  
+`{index}` — номер как в XLSX (min 3 символа; шире при номерах ≥1000); при `--new` для новых видео — `new`.  
 Консоль: `@handle (UC…)`; в XLSX/TXT — display name канала с YouTube.
 
 **Нумерация:** при `bypls` без `--from`/`--to` — сквозная **внутри каждого плейлиста**
