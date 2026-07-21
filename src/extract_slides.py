@@ -151,6 +151,36 @@ class ScanProgressStream:
         return getattr(self._stream, name)
 
 
+def scene_fps(scene: tuple) -> float | None:
+    """Frame rate computed from one scene: length in frames / length in seconds."""
+    start, end = scene
+    frames = end.frame_num - start.frame_num
+    seconds = end.seconds - start.seconds
+    if frames <= 0 or seconds <= 0:
+        return None
+    return frames / seconds
+
+
+def append_fps_column(csv_path: Path, scenes: list[tuple]) -> None:
+    """Add a computed 'Frame Rate (fps)' column to scenes.csv, separated from
+    the last standard column by one empty column."""
+    lines = csv_path.read_text(encoding="utf-8").splitlines()
+    out: list[str] = []
+    scene_index = 0
+    in_scene_rows = False
+    for line in lines:
+        if line.startswith("Scene Number"):
+            out.append(line + ",,Frame Rate (fps)")
+            in_scene_rows = True
+        elif in_scene_rows and line.strip() and scene_index < len(scenes):
+            fps = scene_fps(scenes[scene_index])
+            scene_index += 1
+            out.append(line + (f",,{fps:.4f}" if fps is not None else ",,"))
+        else:
+            out.append(line)
+    csv_path.write_text("\n".join(out) + "\n", encoding="utf-8")
+
+
 def extract_video_slides(
     video: Path,
     out_dir: Path,
@@ -193,8 +223,10 @@ def extract_video_slides(
         output_dir=str(tmp_dir),
         show_progress=False,
     )
-    with (tmp_dir / "scenes.csv").open("w", encoding="utf-8", newline="") as csv_file:
+    csv_path = tmp_dir / "scenes.csv"
+    with csv_path.open("w", encoding="utf-8", newline="") as csv_file:
         write_scene_list(csv_file, scenes)
+    append_fps_column(csv_path, scenes)
 
     shutil.rmtree(out_dir, ignore_errors=True)
     tmp_dir.rename(out_dir)
