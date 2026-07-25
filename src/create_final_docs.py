@@ -477,6 +477,9 @@ def make_docx(
     subsection_style = pick("Heading 4", "Heading 2")
     slide_style = pick("ds-markdown-paragraph")
 
+    if template is None:
+        apply_default_formatting(document)
+
     def para(text: str, style: str | None = None, *, italic: bool = False):
         paragraph = document.add_paragraph()
         if style:
@@ -519,6 +522,39 @@ def make_docx(
                 para(paragraph)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     document.save(str(out_path))
+
+
+def apply_default_formatting(document) -> None:
+    """Default look of the generated .docx (used when --doc is not given).
+
+    - the page number is shown centered in the page header;
+    - non-heading paragraph styles get Calibri, 6 pt spacing above and
+      below and justified alignment; heading styles keep their spacing.
+    """
+    from docx.enum.style import WD_STYLE_TYPE
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+    from docx.shared import Pt
+
+    for style in document.styles:
+        if style.type != WD_STYLE_TYPE.PARAGRAPH:
+            continue
+        name = style.name.lower()
+        if name.startswith("heading") or name == "title":
+            continue
+        style.font.name = "Calibri"
+        style.paragraph_format.space_before = Pt(6)
+        style.paragraph_format.space_after = Pt(6)
+        style.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+    header = document.sections[0].header
+    header.is_linked_to_previous = False
+    paragraph = header.paragraphs[0]
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    field = OxmlElement("w:fldSimple")
+    field.set(qn("w:instr"), "PAGE")
+    paragraph._p.append(field)
 
 
 def make_pdf(docx_path: Path, pdf_path: Path, attempts: int = 3) -> bool:
