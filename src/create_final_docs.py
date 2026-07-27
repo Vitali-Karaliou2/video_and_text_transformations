@@ -657,7 +657,110 @@ def dismiss_word_dialogs(pids: set[int]) -> None:
     win32gui.EnumWindows(visit, None)
 
 
+def wps_progid() -> str | None:
+    """COM ProgID of WPS Writer when WPS Office is installed, else None."""
+    import winreg
+
+    for progid in ("Kwps.Application", "wps.Application"):
+        try:
+            winreg.CloseKey(
+                winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, progid)
+            )
+            return progid
+        except OSError:
+            continue
+    return None
+
+
+def image_pids(image_name: str) -> set[int]:
+    """PIDs of the running processes with the given executable name."""
+    import subprocess
+
+    try:
+        listing = subprocess.run(
+            ["tasklist", "/FI", f"IMAGENAME eq {image_name}", "/FO", "CSV",
+             "/NH"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        ).stdout
+    except Exception:
+        return set()
+    pids: set[int] = set()
+    for line in listing.splitlines():
+        cells = [cell.strip('"') for cell in line.strip().split('","')]
+        if len(cells) >= 2 and cells[0].lower() == image_name.lower():
+            try:
+                pids.add(int(cells[1]))
+            except ValueError:
+                pass
+    return pids
+
+
+def convert_docx_to_pdf_wps(docx_path: Path, pdf_path: Path,
+                            progid: str) -> int:
+    """One PDF conversion attempt via WPS Writer COM (Word-compatible API).
+
+    WPS shows no activation nags and does not conflict with a Microsoft
+    Word window the user is working in, so it is preferred over Word when
+    installed. The application is Quit() only when this call actually
+    started the wps.exe process - if a running WPS instance was reused,
+    quitting would close the user's own documents.
+    """
+    WD_FORMAT_PDF = 17
+    import pythoncom
+    import win32com.client
+
+    before = image_pids("wps.exe")
+    pythoncom.CoInitialize()
+    try:
+        app = win32com.client.DispatchEx(progid)
+        started = image_pids("wps.exe") - before
+        try:
+            app.Visible = False
+            try:
+                app.DisplayAlerts = 0
+            except Exception:
+                pass
+            document = app.Documents.Open(
+                str(docx_path), ReadOnly=True, AddToRecentFiles=False
+            )
+            try:
+                document.ExportAsFixedFormat(str(pdf_path), WD_FORMAT_PDF)
+            finally:
+                document.Close(False)
+        finally:
+            if started:
+                try:
+                    app.Quit()
+                except Exception:
+                    pass
+    finally:
+        pythoncom.CoUninitialize()
+    return 0 if pdf_path.is_file() else 1
+
+
 def convert_docx_to_pdf(docx_path: Path, pdf_path: Path) -> int:
+    """One PDF conversion attempt; runs in a child process.
+
+    WPS Writer is used when installed (no activation nags, no clashes with
+    a user's Word session); otherwise - or if WPS fails - Microsoft Word
+    COM is the fallback.
+    """
+    # COM servers resolve relative paths against their own cwd, not ours.
+    docx_path, pdf_path = docx_path.resolve(), pdf_path.resolve()
+    progid = wps_progid()
+    if progid is not None:
+        try:
+            if convert_docx_to_pdf_wps(docx_path, pdf_path, progid) == 0:
+                return 0
+        except Exception as exc:
+            print(f"WPS conversion failed ({exc}); trying Word...",
+                  file=sys.stderr, flush=True)
+    return convert_docx_to_pdf_word(docx_path, pdf_path)
+
+
+def convert_docx_to_pdf_word(docx_path: Path, pdf_path: Path) -> int:
     """One PDF conversion attempt via Word COM; runs in a child process.
 
     A dedicated Word instance (DispatchEx) is created and always Quit() in
@@ -879,9 +982,9 @@ def kill_winword(pids: set[int]) -> None:
 
 
 def make_pdf(docx_path: Path, pdf_path: Path, attempts: int = 3) -> bool:
-    """Render the .docx to PDF via Microsoft Word; False on failure.
+    """Render the .docx to PDF (WPS Writer, or Word); False on failure.
 
-    Word COM occasionally dies with a native access violation (0xC0000005)
+    Office COM occasionally dies with a native access violation (0xC0000005)
     that would kill the whole script and lose the money already spent on
     editing, so the conversion runs in a disposable child process. A Word
     instance left behind by a crashed attempt is killed before the retry -
@@ -892,7 +995,9 @@ def make_pdf(docx_path: Path, pdf_path: Path, attempts: int = 3) -> bool:
 
     # Hidden Word instances surviving from earlier crashes make new
     # conversions fail too ("call rejected" avalanche) - clean them first.
-    kill_winword(winword_pids())
+    # Irrelevant when WPS does the conversion, so skip in that case.
+    if wps_progid() is None:
+        kill_winword(winword_pids())
 
     last_note = ""
     for attempt in range(1, attempts + 1):
@@ -926,7 +1031,7 @@ def make_pdf(docx_path: Path, pdf_path: Path, attempts: int = 3) -> bool:
         if attempt < attempts:
             time.sleep(3)
     print(f"  WARNING: PDF conversion failed: {last_note}", flush=True)
-    if user_word_running():
+    if wps_progid() is None and user_word_running():
         print(
             "  NOTE: a Word window is open; working in Word can block the "
             "hidden conversion. Close Word and re-run the script - missing "
