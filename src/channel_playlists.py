@@ -347,14 +347,26 @@ def load_video_playlist_map(channel_root: Path) -> dict[str, str] | None:
     return mapping if isinstance(mapping, dict) else None
 
 
-def save_video_playlist_map(channel_root: Path, mapping: dict[str, str]) -> None:
-    write_json(
-        video_playlists_cache_path(channel_root),
-        {
-            "updated_at": datetime.now().isoformat(timespec="seconds"),
-            "map": mapping,
-        },
-    )
+def load_video_playlist_details(channel_root: Path) -> dict[str, dict] | None:
+    data = read_json(video_playlists_cache_path(channel_root))
+    if not data:
+        return None
+    details = data.get("details")
+    return details if isinstance(details, dict) else None
+
+
+def save_video_playlist_map(
+    channel_root: Path,
+    mapping: dict[str, str],
+    details: dict[str, dict] | None = None,
+) -> None:
+    payload: dict = {
+        "updated_at": datetime.now().isoformat(timespec="seconds"),
+        "map": mapping,
+    }
+    if details is not None:
+        payload["details"] = details
+    write_json(video_playlists_cache_path(channel_root), payload)
 
 
 def iter_channel_roots(channels_root: Path) -> list[Path]:

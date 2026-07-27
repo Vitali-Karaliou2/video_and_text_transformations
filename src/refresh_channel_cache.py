@@ -94,7 +94,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     channel_id, handle, channel_name, channel_root = setup_channel_root(args)
 
-    playlist_map = resolve_playlist_map(
+    playlist_map, _details = resolve_playlist_map(
         channel_root,
         channel_id,
         args,

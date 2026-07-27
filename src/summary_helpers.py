@@ -208,6 +208,8 @@ def summary_output_stem(
             name += "_plsgrp"
     if use_new:
         name += "_new"
+    if getattr(args, "include_playlist_only", False):
+        name += "_plo"
     if not plsonly and range_explicit(args, default_from, default_to):
         if getattr(args, "from_explicit", args.from_index != default_from):
             name += f"_f_{args.from_index}"

@@ -41,6 +41,7 @@ from summary_helpers import (
 from channel_browse import fetch_channel_name
 from channel_playlists import (
     ensure_playlist_aliases,
+    load_video_playlist_details,
     load_video_playlist_map,
     migrate_legacy_browse_cache,
     save_video_playlist_map,
@@ -106,7 +107,10 @@ RELATIVE_RE = re.compile(
     re.IGNORECASE,
 )
 
-from playlist_mapping import build_video_playlist_map
+from playlist_mapping import (
+    build_video_playlist_catalog,
+    playlist_only_browse_entries,
+)
 
 
 def yt_dlp_run(args: argparse.Namespace, *extra: str) -> subprocess.CompletedProcess[str]:
@@ -378,26 +382,65 @@ def resolve_playlist_map(
     channel_id: str,
     args: argparse.Namespace,
     force_refresh: bool,
-) -> dict[str, str]:
+    *,
+    need_details: bool = False,
+) -> tuple[dict[str, str], dict[str, dict]]:
+    """Return (video_id -> playlist title, video_id -> detail fields).
+
+    Detail fields are required when --include-playlist-only is set; an older
+    cache that only has the map is rebuilt in that case.
+    """
     if not force_refresh:
         cached_map = load_video_playlist_map(channel_root)
-        if cached_map:
+        cached_details = load_video_playlist_details(channel_root) or {}
+        if cached_map and (cached_details or not need_details):
             print(
                 f"Using cached video playlist map ({len(cached_map)} entries).",
                 flush=True,
             )
-            return cached_map
+            return cached_map, cached_details
+        if cached_map and need_details and not cached_details:
+            print(
+                "Cached playlist map has no video details; rebuilding for "
+                "--include-playlist-only...",
+                flush=True,
+            )
     print("Fetching playlists via yt-dlp...", flush=True)
     try:
-        mapping = build_video_playlist_map(
+        mapping, details = build_video_playlist_catalog(
             channel_id, lambda *a, **k: yt_dlp_run(args, *a, **k)
         )
     except RuntimeError as exc:
         raise SystemExit(
             f"Playlist lookup failed (playlist column is required):\n{exc}"
         ) from exc
-    save_video_playlist_map(channel_root, mapping)
-    return mapping
+    save_video_playlist_map(channel_root, mapping, details)
+    return mapping, details
+
+
+def append_playlist_only_videos(
+    browse_videos: list[dict],
+    export_slots: list,
+    playlist_map: dict[str, str],
+    details: dict[str, dict],
+) -> tuple[list[dict], list, int]:
+    """Append playlist-only videos to the browse list and export slots."""
+    from summary_helpers import ExportSlot
+
+    known = {entry["id"] for entry in browse_videos if entry.get("id")}
+    extras = playlist_only_browse_entries(playlist_map, details, known)
+    if not extras:
+        return browse_videos, export_slots, 0
+
+    extended = list(browse_videos)
+    slots = list(export_slots)
+    base = len(extended)
+    for offset, entry in enumerate(extras):
+        extended.append(entry)
+        # display_number is only used when numbering="channel"; for bypls
+        # playlist numbering the counter is rebuilt per section.
+        slots.append(ExportSlot(base + offset, base + offset + 1))
+    return extended, slots, len(extras)
 
 
 def setup_channel(
@@ -565,6 +608,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--include-playlist-only",
+        action="store_true",
+        help=(
+            "Also export videos that appear in channel playlists but not in the "
+            "Videos/uploads feed (typical for some live VODs)"
+        ),
+    )
+    parser.add_argument(
         "--workspace",
         type=Path,
         default=WORKSPACE_ROOT,
@@ -622,11 +673,12 @@ def main(argv: list[str] | None = None) -> int:
         args,
     )
 
-    playlist_map = resolve_playlist_map(
+    playlist_map, playlist_details = resolve_playlist_map(
         channel_root,
         channel_id,
         args,
         load_video_playlist_map(channel_root) is None,
+        need_details=args.include_playlist_only,
     )
 
     required = numeric_required_to(
@@ -727,6 +779,20 @@ def main(argv: list[str] | None = None) -> int:
         DEFAULT_TO,
         use_new=args.new,
     )
+    playlist_only_added = 0
+    if args.include_playlist_only:
+        browse_videos, export_slots, playlist_only_added = append_playlist_only_videos(
+            browse_videos,
+            export_slots,
+            playlist_map,
+            playlist_details,
+        )
+        if playlist_only_added:
+            print(
+                f"Included {playlist_only_added} playlist-only video(s) "
+                f"(not in the channel Videos feed).",
+                flush=True,
+            )
     if not export_slots:
         print("No videos selected for export.", flush=True)
         return 0
@@ -804,6 +870,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Current length: {length_curr}", flush=True)
     print(f"Selected slots: {len(export_slots)}", flush=True)
     print(f"Exported videos: {exported}", flush=True)
+    if playlist_only_added:
+        print(f"Playlist-only extras: {playlist_only_added}", flush=True)
     if excluded:
         print(
             f"Excluded from export: {excluded} "

@@ -106,18 +106,39 @@ def yt_dlp_flat_json(run_yt_dlp: Callable[..., subprocess.CompletedProcess], url
     return entries
 
 
-def build_video_playlist_map(
+def seconds_to_duration_text(seconds: object) -> str | None:
+    """Convert yt-dlp duration (seconds) to the browse-cache text form."""
+    try:
+        total = int(seconds)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return None
+    if total < 0:
+        return None
+    hours, rem = divmod(total, 3600)
+    minutes, secs = divmod(rem, 60)
+    if hours:
+        return f"{hours}:{minutes:02d}:{secs:02d}"
+    return f"{minutes}:{secs:02d}"
+
+
+def build_video_playlist_catalog(
     channel_id: str,
     run_yt_dlp: Callable[..., subprocess.CompletedProcess],
-) -> dict[str, str]:
-    """Return video_id -> chosen playlist title (empty if none)."""
+) -> tuple[dict[str, str], dict[str, dict]]:
+    """Return (video_id -> playlist title, video_id -> detail fields).
+
+    Details cover every video seen in any channel playlist (title, duration,
+    url, index in the winning playlist) so summaries can also list videos that
+    appear only in playlists and not in the channel Videos/uploads feed.
+    """
     playlists_url = f"https://www.youtube.com/channel/{channel_id}/playlists"
     playlists_meta = yt_dlp_flat_json(run_yt_dlp, playlists_url)
     if not playlists_meta:
-        return {}
+        return {}, {}
 
     video_to_playlists: dict[str, list[tuple[str, str, int]]] = {}
     playlist_info: dict[str, dict] = {}
+    details: dict[str, dict] = {}
 
     for pl in playlists_meta:
         pl_id = pl.get("id") or ""
@@ -147,6 +168,14 @@ def build_video_playlist_map(
             except (TypeError, ValueError):
                 idx = 0
             video_to_playlists.setdefault(vid, []).append((folder_name, pl_title, idx))
+            prev = details.get(vid) or {}
+            details[vid] = {
+                "title": entry.get("title") or prev.get("title") or vid,
+                "duration_text": seconds_to_duration_text(entry.get("duration"))
+                or prev.get("duration_text"),
+                "url": f"https://www.youtube.com/watch?v={vid}",
+                "playlist_index": idx,
+            }
 
     playlist_sizes = {folder: info["size"] for folder, info in playlist_info.items()}
     numbered_ratio = {
@@ -161,4 +190,55 @@ def build_video_playlist_map(
             key=lambda item: playlist_priority(item, playlist_sizes, numbered_ratio),
         )[0]
         result[vid] = best[1]
-    return result
+        if vid in details:
+            details[vid]["playlist_index"] = best[2]
+    return result, details
+
+
+def build_video_playlist_map(
+    channel_id: str,
+    run_yt_dlp: Callable[..., subprocess.CompletedProcess],
+) -> dict[str, str]:
+    """Return video_id -> chosen playlist title (empty if none)."""
+    mapping, _details = build_video_playlist_catalog(channel_id, run_yt_dlp)
+    return mapping
+
+
+def playlist_only_browse_entries(
+    playlist_map: dict[str, str],
+    details: dict[str, dict],
+    known_ids: set[str],
+) -> list[dict]:
+    """Browse-shaped entries for playlist videos missing from channel uploads.
+
+    Ordered by (playlist title, playlist_index, video id) so bypls sections
+    stay stable when the extras are appended to the uploads list.
+    """
+    extras: list[tuple[str, int, str, dict]] = []
+    for vid, pl_title in playlist_map.items():
+        if vid in known_ids:
+            continue
+        meta = details.get(vid) or {}
+        title = (meta.get("title") or vid).strip()
+        try:
+            index = int(meta.get("playlist_index") or 0)
+        except (TypeError, ValueError):
+            index = 0
+        extras.append(
+            (
+                pl_title or "",
+                index,
+                vid,
+                {
+                    "id": vid,
+                    "title": title,
+                    "duration_text": meta.get("duration_text"),
+                    "relative_published": None,
+                    "url": meta.get("url")
+                    or f"https://www.youtube.com/watch?v={vid}",
+                    "playlist_only": True,
+                },
+            )
+        )
+    extras.sort(key=lambda item: (item[0].lower(), item[1], item[2]))
+    return [item[3] for item in extras]
