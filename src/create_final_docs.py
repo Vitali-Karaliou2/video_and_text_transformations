@@ -6,10 +6,15 @@ Inputs per video:
   where ORIG is the original-language folder (e.g. RU); for English
   originals only EN/ is used;
 - slide texts and document structure in <playlist>/SLIDES/<short-key>/
-  slides.json (produced by text_from_slides.py).
+  slides.json (produced by text_from_slides.py); with --no-slides a video
+  may instead have <playlist>/INFO/<stem>.json (saved by
+  transcribe_videos.py in remote mode) - then the document title is built
+  in the summary format (<channel> | <playlist> : <title>) and the
+  sections come from the video timecodes (chapters).
 
-Outputs: edited documents in <ORIG>/OUTPUT/ and EN/OUTPUT/, three formats
-each: <stem>.md, <stem>.docx and <stem>.pdf.
+Outputs: edited documents in <ORIG>/OUTPUT/ and EN/OUTPUT/ (--orig-only
+limits this to <ORIG>/OUTPUT/), three formats each: <stem>.md, <stem>.docx
+and <stem>.pdf.
 
 How a document is built:
 
@@ -37,8 +42,13 @@ Formats:
 - .docx - styles follow the --doc template (default: built-in defaults
   modeled on RU/Docs_Edited/01_Introduction.V2.docx: heading 2 for the
   title, heading 3/4 for sections/subsections, "ds-markdown-paragraph"
-  for verbatim slide text).
-- .pdf - the .docx rendered to PDF via Microsoft Word (docx2pdf); --pdf
+  for verbatim slide text). The Table of Contents is a real Word TOC
+  field: entries are internal hyperlinks with right-aligned page numbers
+  (regardless of the ToC source - slides or timecodes); the file asks
+  Word/WPS to update fields on open.
+- .pdf - the .docx rendered to PDF via WPS Writer when installed (no
+  activation nags, no clashes with a user's Word session), otherwise via
+  Microsoft Word; fields (the ToC) are updated before the export. --pdf
   may name a different .docx style template for the PDF rendering.
 
 Costs and safety:
@@ -75,7 +85,13 @@ if str(_SRC_DIR) not in sys.path:
 from extract_slides import SLIDES_DIRNAME, short_slide_keys, slides_out_dir
 from project_paths import WORKSPACE_ROOT, channels_dir
 from text_from_slides import LANGUAGE_NAMES, MODEL, RESULT_FILENAME, chat_json
-from transcribe_videos import Segment, group_paragraphs, list_videos, read_api_key
+from transcribe_videos import (
+    INFO_DIRNAME,
+    Segment,
+    group_paragraphs,
+    list_videos,
+    read_api_key,
+)
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -86,6 +102,8 @@ OUTPUT_DIRNAME = "OUTPUT"
 MD_WIDTH = 80
 TOC_HEADING = "Table of Contents"
 CONCLUSION_HEADINGS = {"EN": "Conclusion", "RU": "Заключение"}
+# Heading of the single section when a video has neither slides nor timecodes.
+TRANSCRIPT_HEADINGS = {"EN": "Transcript", "RU": "Транскрипт"}
 
 # Editing results are cached next to slides.json, so a re-run after a
 # failure (or after a formatting-only change) does not pay the API again.
@@ -159,7 +177,9 @@ Reply with JSON only:
 }
 "subsections" may be []. When the original language is English, fill only
 the *_en fields and leave "intro_orig"/"paragraphs_orig"/"heading_orig" as
-empty lists / empty strings."""
+empty lists / empty strings. When "transcript_english" is empty, do NOT
+translate: edit only the original language and leave "intro_en" and every
+"paragraphs_en" as empty lists."""
 
 
 @dataclass
@@ -266,10 +286,81 @@ def build_sections(slides_data: dict, video_end: float) -> list[Section]:
             )
     if not sections:
         sections.append(Section("Transcript", None, None, 0.0))
+    close_section_ranges(sections, video_end)
+    return sections
+
+
+def close_section_ranges(sections: list[Section], video_end: float) -> None:
     sections[0].start = 0.0
     for current, following in zip(sections, sections[1:]):
         current.end = following.start
     sections[-1].end = max(video_end, sections[-1].start + 1.0)
+
+
+# --------------------------------------------------------------------------
+# Section list and document header without slides (INFO/<stem>.json written
+# by transcribe_videos.py in remote mode: title, date, duration, timecodes)
+
+
+def load_video_info(playlist_dir: Path, stem: str) -> dict:
+    path = playlist_dir / INFO_DIRNAME / f"{stem}.json"
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def info_document_header(info: dict, stem: str) -> tuple[str, list[str]]:
+    """Document title (summary format: <channel> | <playlist> : <title>)
+    and meta lines from the saved video metadata."""
+    title = str(info.get("title") or stem)
+    channel = str(info.get("channel") or "")
+    playlist = str(info.get("playlist") or "")
+    if channel and playlist:
+        doc_title = f"{channel} | {playlist} : {title}"
+    elif channel:
+        doc_title = f"{channel} : {title}"
+    else:
+        doc_title = title
+    meta_lines = [
+        f"{label}: {value}"
+        for label, value in (
+            ("Date", info.get("date")),
+            ("Duration", f"[{info['duration_text']}]"
+             if info.get("duration_text") else None),
+            ("URL", info.get("url")),
+        )
+        if value
+    ]
+    return doc_title, meta_lines
+
+
+def build_sections_from_info(
+    info: dict, video_end: float, orig_code: str
+) -> list[Section]:
+    """One numbered section per video chapter (timecode); a single
+    'Transcript' section when the video has no timecodes. Chapter titles are
+    the author's own headings, so they are used verbatim in every language."""
+    sections: list[Section] = []
+    for index, chapter in enumerate(info.get("chapters") or [], start=1):
+        title = str(chapter.get("title") or f"Part {index}").strip()
+        sections.append(
+            Section(
+                title,
+                str(index),
+                None,
+                float(chapter.get("start") or 0.0),
+                fixed_headings={orig_code: title, "EN": title},
+            )
+        )
+    if not sections:
+        sections.append(
+            Section(
+                "Transcript", None, None, 0.0,
+                fixed_headings=TRANSCRIPT_HEADINGS,
+            )
+        )
+    close_section_ranges(sections, video_end)
     return sections
 
 
@@ -518,16 +609,21 @@ def make_docx(
     para(doc_title, title_style)
     for line in meta_lines:
         para(line)
-    para(TOC_HEADING, section_style)
-    for section in sections:
-        number = f"{section.number}. " if section.number else ""
-        para(f"{number}{section_heading_for(section, lang)}")
-        for index, sub in enumerate(section.subsections, start=1):
-            sub_number = (
-                f"{section.number}.{index}. " if section.number else ""
-            )
-            entry = para(f"{sub_number}{subsection_heading_for(sub, lang)}")
-            entry.paragraph_format.left_indent = Pt(18)
+    # The ToC caption must not use a heading style, or the TOC field below
+    # would list the caption itself as an entry.
+    caption = para(TOC_HEADING)
+    caption_run = caption.runs[0]
+    caption_run.bold = True
+    caption_size = (
+        document.styles[section_style].font.size if section_style else None
+    )
+    caption_run.font.size = caption_size or Pt(13)
+    add_toc_field(
+        document,
+        heading_level(section_style, 1),
+        heading_level(subsection_style, 2),
+    )
+    request_field_update_on_open(document)
     for section in sections:
         number = f"{section.number}. " if section.number else ""
         para(f"{number}{section_heading_for(section, lang)}", section_style)
@@ -548,6 +644,57 @@ def make_docx(
                 para(paragraph)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     document.save(str(out_path))
+
+
+def heading_level(style_name: str | None, default: int) -> int:
+    """Outline level of a built-in "Heading N" style name."""
+    match = re.search(r"(\d+)$", style_name or "")
+    return int(match.group(1)) if match else default
+
+
+def add_toc_field(document, top_level: int, bottom_level: int) -> None:
+    """Insert a real Word TOC field covering the given heading levels.
+
+    Word/WPS builds it into a table of contents with internal hyperlinks and
+    right-aligned page numbers when the fields are updated - the .docx asks
+    for that on open (see request_field_update_on_open), and the PDF
+    conversion updates the fields before exporting.
+    """
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+
+    paragraph = document.add_paragraph()
+    field_run = paragraph.add_run()
+    begin = OxmlElement("w:fldChar")
+    begin.set(qn("w:fldCharType"), "begin")
+    instruction = OxmlElement("w:instrText")
+    instruction.set(qn("xml:space"), "preserve")
+    instruction.text = f' TOC \\o "{top_level}-{bottom_level}" \\h \\z \\u '
+    separate = OxmlElement("w:fldChar")
+    separate.set(qn("w:fldCharType"), "separate")
+    for element in (begin, instruction, separate):
+        field_run._r.append(element)
+    placeholder = paragraph.add_run(
+        "Update the fields (Ctrl+A, F9) to build the table of contents."
+    )
+    placeholder.italic = True
+    end_run = paragraph.add_run()
+    end = OxmlElement("w:fldChar")
+    end.set(qn("w:fldCharType"), "end")
+    end_run._r.append(end)
+
+
+def request_field_update_on_open(document) -> None:
+    """Ask Word/WPS to recalculate fields (the ToC) when the file is opened."""
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+
+    settings = document.settings.element
+    update = settings.find(qn("w:updateFields"))
+    if update is None:
+        update = OxmlElement("w:updateFields")
+        settings.append(update)
+    update.set(qn("w:val"), "true")
 
 
 def apply_default_formatting(document) -> None:
@@ -697,6 +844,22 @@ def image_pids(image_name: str) -> set[int]:
     return pids
 
 
+def update_com_fields(document) -> None:
+    """Rebuild the tables of contents and other fields of an open document
+    (Word or WPS COM), so the exported PDF gets ToC page numbers and
+    hyperlinks. Best-effort: a document without fields is left as is."""
+    try:
+        tocs = document.TablesOfContents
+        for index in range(1, int(tocs.Count) + 1):
+            tocs(index).Update()
+    except Exception:
+        pass
+    try:
+        document.Fields.Update()
+    except Exception:
+        pass
+
+
 def convert_docx_to_pdf_wps(docx_path: Path, pdf_path: Path,
                             progid: str) -> int:
     """One PDF conversion attempt via WPS Writer COM (Word-compatible API).
@@ -723,9 +886,10 @@ def convert_docx_to_pdf_wps(docx_path: Path, pdf_path: Path,
             except Exception:
                 pass
             document = app.Documents.Open(
-                str(docx_path), ReadOnly=True, AddToRecentFiles=False
+                str(docx_path), ReadOnly=False, AddToRecentFiles=False
             )
             try:
+                update_com_fields(document)
                 document.ExportAsFixedFormat(str(pdf_path), WD_FORMAT_PDF)
             finally:
                 document.Close(False)
@@ -790,11 +954,14 @@ def convert_docx_to_pdf_word(docx_path: Path, pdf_path: Path) -> int:
             word.DisplayAlerts = 0
             document = com_retry(
                 lambda: word.Documents.Open(
-                    str(docx_path), ReadOnly=True, AddToRecentFiles=False
+                    str(docx_path), ReadOnly=False, AddToRecentFiles=False
                 ),
                 on_reject=unblock,
             )
             try:
+                com_retry(
+                    lambda: update_com_fields(document), on_reject=unblock
+                )
                 com_retry(
                     lambda: document.SaveAs(
                         str(pdf_path), FileFormat=WD_FORMAT_PDF
@@ -1058,9 +1225,8 @@ def transcripts_ready(lang_dir: Path, stem: str) -> bool:
     return (lang_dir / f"{stem}.srt").is_file()
 
 
-def is_processed(playlist_dir: Path, stem: str, orig_code: str) -> bool:
+def is_processed(playlist_dir: Path, stem: str, lang_codes: list[str]) -> bool:
     """md + docx in every language OUTPUT folder (pdf is best-effort)."""
-    lang_codes = {orig_code, "EN"}
     return all(
         output_files(playlist_dir / code, stem)[kind].is_file()
         for code in lang_codes
@@ -1144,32 +1310,28 @@ def process_video(
     video: Path,
     *,
     playlist_dir: Path,
-    slides_folder: Path,
+    slides_folder: Path | None,
     api_key: str,
     course: str,
     orig_code: str,
+    lang_codes: list[str],
     doc_template: Path | None,
     pdf_template: Path | None,
     auto_yes: bool = False,
 ) -> bool:
-    """Process one video; False when the user declined the cost estimate."""
-    slides_data = json.loads(
-        (slides_folder / RESULT_FILENAME).read_text(encoding="utf-8")
-    )
-    document = slides_data.get("document") or {}
-    doc_title = document.get("title") or video.stem
-    meta = document.get("meta") or {}
-    meta_lines = [
-        f"{label}: {value}"
-        for label, value in (
-            ("Date", meta.get("date")),
-            ("Recorded by", meta.get("recorded_by")),
-            ("Language", meta.get("language")),
-        )
-        if value
-    ]
+    """Process one video; False when the user declined the cost estimate.
 
-    lang_codes = [orig_code, "EN"] if orig_code != "EN" else ["EN"]
+    With slides (slides_folder holds slides.json) the document structure
+    comes from the slides; otherwise (--no-slides) the title is built in the
+    summary format and the sections come from the video timecodes, both
+    taken from INFO/<stem>.json.
+    """
+    slides_data = None
+    if slides_folder is not None and (slides_folder / RESULT_FILENAME).is_file():
+        slides_data = json.loads(
+            (slides_folder / RESULT_FILENAME).read_text(encoding="utf-8")
+        )
+
     segments = {
         code: parse_srt(playlist_dir / code / f"{video.stem}.srt")
         for code in lang_codes
@@ -1177,7 +1339,29 @@ def process_video(
     video_end = max(
         (segs[-1].end for segs in segments.values() if segs), default=0.0
     )
-    sections = build_sections(slides_data, video_end)
+
+    if slides_data is not None:
+        document = slides_data.get("document") or {}
+        doc_title = document.get("title") or video.stem
+        meta = document.get("meta") or {}
+        meta_lines = [
+            f"{label}: {value}"
+            for label, value in (
+                ("Date", meta.get("date")),
+                ("Recorded by", meta.get("recorded_by")),
+                ("Language", meta.get("language")),
+            )
+            if value
+        ]
+        sections = build_sections(slides_data, video_end)
+        cache_path = slides_folder / EDIT_CACHE_FILENAME
+    else:
+        info = load_video_info(playlist_dir, video.stem)
+        doc_title, meta_lines = info_document_header(info, video.stem)
+        sections = build_sections_from_info(info, video_end, orig_code)
+        info_dir = playlist_dir / INFO_DIRNAME
+        info_dir.mkdir(parents=True, exist_ok=True)
+        cache_path = info_dir / f"{video.stem}.{EDIT_CACHE_FILENAME}"
 
     texts: dict[str, tuple[str, str]] = {}
     for section in sections:
@@ -1186,10 +1370,13 @@ def process_video(
             if orig_code != "EN"
             else ""
         )
-        en_text = section_text(segments["EN"], section.start, section.end)
+        en_text = (
+            section_text(segments["EN"], section.start, section.end)
+            if "EN" in segments
+            else ""
+        )
         texts[section_cache_key(section)] = (orig_text, en_text)
 
-    cache_path = slides_folder / EDIT_CACHE_FILENAME
     cache = load_edit_cache(cache_path, video.stem)
     pending = [
         (section, *texts[section_cache_key(section)])
@@ -1329,6 +1516,24 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--orig-only",
+        action="store_true",
+        help=(
+            "Create the OUTPUT documents only for the original language "
+            "(skip the English versions)"
+        ),
+    )
+    parser.add_argument(
+        "--no-slides",
+        action="store_true",
+        help=(
+            "Also process videos without slides.json: the document title is "
+            "built in the summary format and the ToC comes from the video "
+            "timecodes (INFO/<stem>.json saved by transcribe_videos.py); "
+            "videos that do have slides.json still use the slides"
+        ),
+    )
+    parser.add_argument(
         "--yes",
         action="store_true",
         help="Skip the per-video cost confirmation prompt",
@@ -1360,28 +1565,54 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit(f"Playlist folder not found: {playlist_dir}")
 
     slides_dir = playlist_dir / SLIDES_DIRNAME
-    videos = list_videos(playlist_dir)
-    if not videos:
-        raise SystemExit(f"No video/audio files found in {playlist_dir}")
-    api_key = read_api_key(args.workspace)
-
-    keys = short_slide_keys([video.stem for video in videos])
     course = args.channel_folder.lstrip("_")
     orig_code = detect_original_code(playlist_dir)
-    lang_codes = [orig_code, "EN"] if orig_code != "EN" else ["EN"]
+    lang_codes = (
+        [orig_code]
+        if args.orig_only or orig_code == "EN"
+        else [orig_code, "EN"]
+    )
+
+    # SLIDES/ folder keys are derived from the set of *local media* stems -
+    # transcript-only videos (remote transcription) must not change them.
+    media_videos = list_videos(playlist_dir)
+    keys = short_slide_keys([video.stem for video in media_videos])
+    videos = media_videos
+    if args.no_slides:
+        known = {video.stem for video in media_videos}
+        extra = [
+            playlist_dir / f"{srt.stem}.mp4"
+            for srt in sorted((playlist_dir / orig_code).glob("*.srt"))
+            if srt.stem not in known
+        ]
+        videos = sorted(media_videos + extra, key=lambda path: path.name.lower())
+    if not videos:
+        raise SystemExit(
+            f"No video/audio files{' or transcripts' if args.no_slides else ''}"
+            f" found in {playlist_dir}"
+        )
+    api_key = read_api_key(args.workspace)
+
+    def slides_folder_for(video: Path) -> Path | None:
+        if video.stem not in keys:
+            return None
+        return slides_out_dir(slides_dir, video, keys)
 
     def inputs_ready(video: Path) -> bool:
-        folder = slides_out_dir(slides_dir, video, keys)
-        return (folder / RESULT_FILENAME).is_file() and all(
+        if not all(
             transcripts_ready(playlist_dir / code, video.stem)
             for code in lang_codes
-        )
+        ):
+            return False
+        folder = slides_folder_for(video)
+        has_slides = folder is not None and (folder / RESULT_FILENAME).is_file()
+        return has_slides or args.no_slides
 
     eligible = [video for video in videos if inputs_ready(video)]
     pending = [
         video
         for video in eligible
-        if not is_processed(playlist_dir, video.stem, orig_code)
+        if not is_processed(playlist_dir, video.stem, lang_codes)
     ]
     session = pending[: args.next_count]
 
@@ -1391,9 +1622,12 @@ def main(argv: list[str] | None = None) -> int:
         + ", ".join(f"{code}/{OUTPUT_DIRNAME}/" for code in lang_codes),
         flush=True,
     )
+    ready_note = (
+        "with transcripts" if args.no_slides else "with transcripts + slides.json"
+    )
     print(
-        f"Videos: {len(videos)} total, {len(eligible)} with transcripts + "
-        f"slides.json, {len(eligible) - len(pending)} already processed, "
+        f"Videos: {len(videos)} total, {len(eligible)} {ready_note}, "
+        f"{len(eligible) - len(pending)} already processed, "
         f"{len(session)} in this session (--next {args.next_count}).",
         flush=True,
     )
@@ -1425,10 +1659,11 @@ def main(argv: list[str] | None = None) -> int:
         if not process_video(
             video,
             playlist_dir=playlist_dir,
-            slides_folder=slides_out_dir(slides_dir, video, keys),
+            slides_folder=slides_folder_for(video),
             api_key=api_key,
             course=course,
             orig_code=orig_code,
+            lang_codes=lang_codes,
             doc_template=args.doc,
             pdf_template=args.pdf,
             auto_yes=args.yes,

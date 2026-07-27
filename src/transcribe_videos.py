@@ -10,15 +10,29 @@ The session start point is found by scanning the result folders: the first
 video without a complete result set is transcribed first. Press 'p' during a
 session to stop after the current video; the next run resumes automatically.
 
+Remote mode (--from-youtube / --url): videos are taken straight from the
+channel playlist on YouTube (mapped to the local folder via
+_cache/playlists.json) - the next untranscribed video in playlist order is
+picked, only its audio is downloaded into a temp folder, and the video
+metadata (title, date, duration, chapters/timecodes) is saved to
+<playlist>/INFO/<stem>.json for the final-editing stage.
+
+Pipeline flags: --orig-only skips the English pass; --edit chains
+create_final_docs.py right after transcription (slide stages are skipped,
+the document ToC then comes from the video timecodes).
+
 Examples:
   python src/transcribe_videos.py _Autotesting lectures --lang ru
   python src/transcribe_videos.py _Autotesting lectures --lang ru --next 3
+  python src/transcribe_videos.py _VladilenMinin start_it_karery_s_nulya_v_2025 \
+      --lang ru --orig-only --from-youtube --edit
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -61,6 +75,9 @@ TXT_WRAP_WIDTH = 80
 # A silence this long between segments starts a new paragraph in the .txt.
 PARAGRAPH_GAP_SECONDS = 1.5
 PARAGRAPH_MAX_CHARS = 1000
+# Video metadata (title, date, duration, chapters) saved in remote mode for
+# the final-editing stage (document title and timecode-based ToC).
+INFO_DIRNAME = "INFO"
 
 
 @dataclass
@@ -472,8 +489,14 @@ def transcribe_video(
     ffmpeg: str,
     ffprobe: str,
     calibration: ProgressCalibration,
+    stem: str | None = None,
 ) -> float:
-    """Transcribe one video (original language + EN pass); return audio minutes."""
+    """Transcribe one video (original language + EN pass); return audio minutes.
+
+    `stem` overrides the result file stem (remote mode: the media is a
+    temporary audio download whose own name is meaningless).
+    """
+    stem = stem or video.stem
     tmp_dir = Path(tempfile.mkdtemp(prefix="transcribe_"))
     try:
         print(f"  Extracting audio ({video.name})...", flush=True)
@@ -495,7 +518,7 @@ def transcribe_video(
             label=lang.upper(),
             calibration=calibration,
         )
-        for path in write_results(orig_dir, video.stem, text, segments):
+        for path in write_results(orig_dir, stem, text, segments):
             print(f"  Saved: {path.relative_to(playlist_dir)}", flush=True)
 
         if needs_en:
@@ -507,12 +530,326 @@ def transcribe_video(
                 label="EN",
                 calibration=calibration,
             )
-            for path in write_results(en_dir, video.stem, text_en, segments_en):
+            for path in write_results(en_dir, stem, text_en, segments_en):
                 print(f"  Saved: {path.relative_to(playlist_dir)}", flush=True)
 
         return minutes
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+# --------------------------------------------------------------------------
+# Remote mode: transcribe straight from the YouTube playlist (no local video)
+
+
+def video_id_from_url(url: str) -> str:
+    match = re.search(r"(?:v=|youtu\.be/|/shorts/|/live/)([\w-]{11})", url)
+    if not match:
+        raise SystemExit(f"Cannot extract a video id from URL: {url}")
+    return match.group(1)
+
+
+def watch_url(video_id: str) -> str:
+    return f"https://www.youtube.com/watch?v={video_id}"
+
+
+def load_playlist_meta(channel_dir: Path, playlist_folder: str) -> dict:
+    """YouTube playlist (id, title) behind a local playlist folder, plus the
+    channel name - resolved via _cache/playlists.json (built by the summary
+    scripts)."""
+    cache_path = channel_dir / "_cache" / "playlists.json"
+    try:
+        data = json.loads(cache_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        raise SystemExit(
+            f"Playlist cache not found or invalid: {cache_path}\n"
+            "Run the summary script for this channel first."
+        )
+    for playlist in data.get("playlists") or []:
+        if playlist.get("folder") == playlist_folder:
+            return {
+                "id": playlist.get("id") or "",
+                "title": playlist.get("title") or playlist_folder,
+                "channel_name": data.get("channel_name") or "",
+            }
+    raise SystemExit(
+        f"Playlist folder {playlist_folder!r} not found in {cache_path}"
+    )
+
+
+def yt_dlp_json(args_list: list[str]) -> dict:
+    result = run_tool([sys.executable, "-m", "yt_dlp", *args_list])
+    if result.returncode != 0:
+        raise SystemExit(f"yt-dlp failed:\n{result.stderr.strip()}")
+    try:
+        return json.loads(result.stdout)
+    except ValueError:
+        raise SystemExit("yt-dlp returned invalid JSON")
+
+
+def fetch_playlist_entries(playlist_id: str) -> list[dict]:
+    """(id, title, duration, index, url) per playlist entry, in playlist order."""
+    data = yt_dlp_json(
+        ["--flat-playlist", "-J",
+         f"https://www.youtube.com/playlist?list={playlist_id}"]
+    )
+    entries = []
+    for index, entry in enumerate(data.get("entries") or [], start=1):
+        if entry and entry.get("id"):
+            entries.append(
+                {
+                    "id": entry["id"],
+                    "title": str(entry.get("title") or "").strip(),
+                    "duration": entry.get("duration"),
+                    "index": index,
+                    "url": watch_url(entry["id"]),
+                }
+            )
+    return entries
+
+
+def fetch_video_info(url: str) -> dict:
+    return yt_dlp_json(["--no-playlist", "-J", url])
+
+
+def duration_to_text(seconds: float | None) -> str:
+    if not seconds:
+        return ""
+    total = int(round(seconds))
+    hours, remainder = divmod(total, 3600)
+    minutes, secs = divmod(remainder, 60)
+    return f"{hours}:{minutes:02d}:{secs:02d}" if hours else f"{minutes}:{secs:02d}"
+
+
+def remote_stem(index: int, title: str, video_id: str) -> str:
+    """Result-file stem in the local naming convention:
+    NN_<sanitized title> [<id>]."""
+    try:
+        from yt_dlp.utils import sanitize_filename
+
+        clean = sanitize_filename(title) if title else video_id
+    except ImportError:
+        clean = re.sub(r'[\\/:*?"<>|]', "_", title) if title else video_id
+    prefix = f"{index:02d}_" if index else ""
+    return f"{prefix}{clean} [{video_id}]"
+
+
+def local_media_by_id(playlist_dir: Path) -> dict[str, Path]:
+    """Local media files keyed by the [video id] marker in their names."""
+    by_id: dict[str, Path] = {}
+    for video in list_videos(playlist_dir):
+        match = re.search(r"\[([\w-]{11})\]$", video.stem)
+        if match:
+            by_id[match.group(1)] = video
+    return by_id
+
+
+def remote_transcribed(
+    video_id: str, orig_dir: Path, en_dir: Path, needs_en: bool
+) -> bool:
+    """A result .srt with the [video id] marker exists in every needed folder."""
+    marker = f"[{video_id}]"
+    for folder in [orig_dir] + ([en_dir] if needs_en else []):
+        if not folder.is_dir() or not any(
+            marker in path.stem for path in folder.glob("*.srt")
+        ):
+            return False
+    return True
+
+
+def write_video_info(
+    playlist_dir: Path, stem: str, info: dict, playlist_meta: dict, index: int
+) -> Path:
+    chapters = [
+        {
+            "start": float(chapter.get("start_time") or 0.0),
+            "end": (
+                float(chapter["end_time"])
+                if chapter.get("end_time") is not None
+                else None
+            ),
+            "title": str(chapter.get("title") or "").strip(),
+        }
+        for chapter in info.get("chapters") or []
+    ]
+    upload = str(info.get("upload_date") or "")
+    payload = {
+        "id": info.get("id"),
+        "url": info.get("webpage_url") or watch_url(str(info.get("id"))),
+        "title": info.get("title"),
+        "channel": (
+            playlist_meta.get("channel_name")
+            or info.get("channel")
+            or info.get("uploader")
+        ),
+        "playlist": playlist_meta.get("title"),
+        "playlist_index": index,
+        "date": f"{upload[:4]}-{upload[4:6]}" if len(upload) == 8 else "",
+        "duration_seconds": info.get("duration"),
+        "duration_text": duration_to_text(info.get("duration")),
+        "chapters": chapters,
+    }
+    out_dir = playlist_dir / INFO_DIRNAME
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / f"{stem}.json"
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    return path
+
+
+def download_audio(url: str, tmp_dir: Path) -> Path:
+    """Download only the audio track of the video into tmp_dir."""
+    result = run_tool(
+        [
+            sys.executable, "-m", "yt_dlp",
+            "-f", "bestaudio/best",
+            "--no-playlist",
+            "-o", str(tmp_dir / "audio.%(ext)s"),
+            url,
+        ]
+    )
+    if result.returncode != 0:
+        raise SystemExit(f"Audio download failed:\n{result.stderr.strip()}")
+    for path in tmp_dir.iterdir():
+        if path.is_file() and path.stem == "audio":
+            return path
+    raise SystemExit("Audio download produced no file")
+
+
+def remote_session(
+    args: argparse.Namespace,
+    *,
+    lang: str,
+    needs_en: bool,
+    playlist_dir: Path,
+    orig_dir: Path,
+    en_dir: Path,
+    api_key: str,
+    usd_per_minute: float,
+) -> int:
+    """Transcribe the next video(s) straight from the YouTube playlist;
+    return the number of videos transcribed."""
+    channel_dir = playlist_dir.parent.parent
+    playlist_meta = load_playlist_meta(channel_dir, args.playlist_folder)
+    print(
+        f'YouTube playlist: "{playlist_meta["title"]}" ({playlist_meta["id"]})',
+        flush=True,
+    )
+    print("Fetching the playlist entry list...", flush=True)
+    entries = fetch_playlist_entries(playlist_meta["id"])
+
+    if args.url:
+        wanted = video_id_from_url(args.url)
+        entries = [e for e in entries if e["id"] == wanted] or [
+            {"id": wanted, "title": "", "duration": None, "index": 0,
+             "url": watch_url(wanted)}
+        ]
+
+    local_media = local_media_by_id(playlist_dir)
+    pending = [
+        entry
+        for entry in entries
+        if not remote_transcribed(entry["id"], orig_dir, en_dir, needs_en)
+    ]
+    session = pending[: args.next_count]
+    print(
+        f"Videos: {len(entries)} in the playlist, "
+        f"{len(entries) - len(pending)} already transcribed, "
+        f"{len(session)} in this session (--next {args.next_count}).",
+        flush=True,
+    )
+    if not session:
+        print("Nothing to do: all playlist videos are transcribed.", flush=True)
+        return 0
+    print("Press 'p' to stop after the current video.", flush=True)
+
+    watcher = PauseWatcher()
+    calibration = ProgressCalibration()
+    passes = 2 if needs_en else 1
+    total_minutes = 0.0
+    processed = 0
+    for entry in session:
+        print(
+            f"[{processed + 1}/{len(session)}] "
+            f"{entry['title'] or entry['id']}",
+            flush=True,
+        )
+        print("  Fetching video metadata...", flush=True)
+        info = fetch_video_info(entry["url"])
+        title = str(info.get("title") or entry["title"] or entry["id"])
+        seconds = float(info.get("duration") or entry.get("duration") or 0.0)
+        local = local_media.get(entry["id"])
+        stem = (
+            local.stem if local is not None
+            else remote_stem(entry["index"], title, entry["id"])
+        )
+
+        minutes = seconds / 60.0
+        cost = minutes * usd_per_minute * passes
+        pass_note = (
+            "2 passes: original + English" if passes == 2
+            else f"1 pass: {lang.upper()} only" if lang != "en"
+            else "1 pass: English only"
+        )
+        print(
+            f"  Duration {minutes:.1f} min -> estimated cost ${cost:.2f} "
+            f"({pass_note}).",
+            flush=True,
+        )
+        if not args.yes:
+            print("  Transcribe this video? (y/n)", flush=True)
+            try:
+                answer = input().strip().lower()
+            except EOFError:
+                answer = ""
+            if answer not in ("y", "yes"):
+                print("Session stopped: transcription not confirmed.",
+                      flush=True)
+                break
+
+        info_path = write_video_info(
+            playlist_dir, stem, info, playlist_meta, entry["index"]
+        )
+        print(f"  Saved: {info_path.relative_to(playlist_dir)}", flush=True)
+
+        tmp_dir: Path | None = None
+        try:
+            if local is not None:
+                print(f"  Using the local file: {local.name}", flush=True)
+                source = local
+            else:
+                tmp_dir = Path(tempfile.mkdtemp(prefix="yt_audio_"))
+                print("  Downloading the audio track...", flush=True)
+                source = download_audio(entry["url"], tmp_dir)
+            total_minutes += transcribe_video(
+                source,
+                api_key=api_key,
+                lang=lang,
+                needs_en=needs_en,
+                orig_dir=orig_dir,
+                en_dir=en_dir,
+                ffmpeg=args.ffmpeg,
+                ffprobe=args.ffprobe,
+                calibration=calibration,
+                stem=stem,
+            )
+        finally:
+            if tmp_dir is not None:
+                shutil.rmtree(tmp_dir, ignore_errors=True)
+        processed += 1
+        if watcher.pause_requested() and processed < len(session):
+            print("Pause requested: stopping after the current video.",
+                  flush=True)
+            break
+
+    print(
+        f"Session done: {processed} video(s), {total_minutes:.1f} audio "
+        f"minutes, estimated cost "
+        f"${total_minutes * usd_per_minute * passes:.2f}.",
+        flush=True,
+    )
+    return processed
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -545,6 +882,42 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="How many videos to transcribe this session (default: 1)",
     )
     parser.add_argument(
+        "--orig-only",
+        action="store_true",
+        help=(
+            "Transcribe only the original language (skip the English pass "
+            "for non-English originals)"
+        ),
+    )
+    parser.add_argument(
+        "--from-youtube",
+        action="store_true",
+        help=(
+            "Take the next untranscribed video straight from the YouTube "
+            "playlist (audio only is downloaded to a temp folder; metadata "
+            "with timecodes is saved to INFO/)"
+        ),
+    )
+    parser.add_argument(
+        "--url",
+        default=None,
+        metavar="URL",
+        help=(
+            "Transcribe this specific YouTube video (implies remote mode; "
+            "the video is matched against the playlist for numbering)"
+        ),
+    )
+    parser.add_argument(
+        "--edit",
+        action="store_true",
+        help=(
+            "After transcription run create_final_docs.py for the same "
+            "playlist, skipping the slide stages (the ToC then comes from "
+            "the video timecodes); the editing stage asks its own cost "
+            "confirmation"
+        ),
+    )
+    parser.add_argument(
         "--yes",
         action="store_true",
         help="Skip the per-video cost confirmation prompt",
@@ -564,28 +937,18 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def main(argv: list[str] | None = None) -> int:
-    args = parse_args(argv)
-    lang = normalize_lang(args.lang)
-    needs_en = lang != "en"
-
-    if args.next_count < 1:
-        raise SystemExit("--next must be a positive number")
-    for tool, name in ((args.ffmpeg, "ffmpeg"), (args.ffprobe, "ffprobe")):
-        if not shutil.which(tool):
-            raise SystemExit(f"{name} not found: {tool}")
-
-    playlist_dir = (
-        channels_dir(args.workspace) / args.channel_folder / "_playlists" / args.playlist_folder
-    )
-    if not playlist_dir.is_dir():
-        raise SystemExit(f"Playlist folder not found: {playlist_dir}")
-
-    orig_dir = playlist_dir / lang.upper()
-    en_dir = playlist_dir / "EN"
-    api_key = read_api_key(args.workspace)
-    usd_per_minute = get_transcription_rate(args.workspace)
-
+def local_session(
+    args: argparse.Namespace,
+    *,
+    lang: str,
+    needs_en: bool,
+    playlist_dir: Path,
+    orig_dir: Path,
+    en_dir: Path,
+    api_key: str,
+    usd_per_minute: float,
+) -> int:
+    """Transcribe the next downloaded video(s); return the number done."""
     videos = list_videos(playlist_dir)
     if not videos:
         raise SystemExit(f"No video/audio files found in {playlist_dir}")
@@ -594,7 +957,6 @@ def main(argv: list[str] | None = None) -> int:
     done_count = len(videos) - len(
         [v for v in videos if not is_transcribed(v, orig_dir, en_dir, needs_en)]
     )
-    print(f"Playlist folder: {playlist_dir}", flush=True)
     print(
         f"Videos: {len(videos)} total, {done_count} already transcribed, "
         f"{len(session)} in this session (--next {args.next_count}).",
@@ -638,6 +1000,67 @@ def main(argv: list[str] | None = None) -> int:
         f"estimated cost ${total_minutes * usd_per_minute * passes:.2f}.",
         flush=True,
     )
+    return processed
+
+
+def run_final_editing(args: argparse.Namespace, count: int) -> int:
+    """Chain create_final_docs.py for the just-transcribed videos (--edit)."""
+    import create_final_docs
+
+    argv = [
+        args.channel_folder,
+        args.playlist_folder,
+        "--next", str(count),
+        "--no-slides",
+    ]
+    if args.orig_only:
+        argv.append("--orig-only")
+    if args.yes:
+        argv.append("--yes")
+    print("", flush=True)
+    print("=== Final editing (create_final_docs) ===", flush=True)
+    return create_final_docs.main(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
+    lang = normalize_lang(args.lang)
+    needs_en = lang != "en" and not args.orig_only
+
+    if args.next_count < 1:
+        raise SystemExit("--next must be a positive number")
+    for tool, name in ((args.ffmpeg, "ffmpeg"), (args.ffprobe, "ffprobe")):
+        if not shutil.which(tool):
+            raise SystemExit(f"{name} not found: {tool}")
+
+    playlist_dir = (
+        channels_dir(args.workspace) / args.channel_folder / "_playlists" / args.playlist_folder
+    )
+    if not playlist_dir.is_dir():
+        raise SystemExit(f"Playlist folder not found: {playlist_dir}")
+
+    orig_dir = playlist_dir / lang.upper()
+    en_dir = playlist_dir / "EN"
+    api_key = read_api_key(args.workspace)
+    usd_per_minute = get_transcription_rate(args.workspace)
+
+    print(f"Playlist folder: {playlist_dir}", flush=True)
+    session_kwargs = dict(
+        lang=lang,
+        needs_en=needs_en,
+        playlist_dir=playlist_dir,
+        orig_dir=orig_dir,
+        en_dir=en_dir,
+        api_key=api_key,
+        usd_per_minute=usd_per_minute,
+    )
+    if args.from_youtube or args.url:
+        processed = remote_session(args, **session_kwargs)
+    else:
+        processed = local_session(args, **session_kwargs)
+
+    if args.edit and processed:
+        return run_final_editing(args, processed)
     return 0
 
 
