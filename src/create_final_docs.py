@@ -41,6 +41,16 @@ Formats:
 - .pdf - the .docx rendered to PDF via Microsoft Word (docx2pdf); --pdf
   may name a different .docx style template for the PDF rendering.
 
+Costs and safety:
+- before editing, the script prints the estimated gpt-4o cost for the video
+  and waits for a y/n confirmation (--yes skips the prompt);
+- editing results are cached in SLIDES/<key>/edited_sections.json after
+  every section, so a re-run after a failure (or a formatting-only change)
+  does not pay the API again; delete that file to force fresh editing;
+- the PDF conversion runs in a disposable child process: a native Word COM
+  crash cannot kill the run, and a Word instance left behind by a crashed
+  attempt is killed automatically (the user's own Word is never touched).
+
 Examples:
   python src/create_final_docs.py _Autotesting lectures
   python src/create_final_docs.py _Autotesting lectures --next 3
@@ -64,7 +74,7 @@ if str(_SRC_DIR) not in sys.path:
 
 from extract_slides import SLIDES_DIRNAME, short_slide_keys, slides_out_dir
 from project_paths import WORKSPACE_ROOT, channels_dir
-from text_from_slides import LANGUAGE_NAMES, RESULT_FILENAME, chat_json
+from text_from_slides import LANGUAGE_NAMES, MODEL, RESULT_FILENAME, chat_json
 from transcribe_videos import Segment, group_paragraphs, list_videos, read_api_key
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -76,6 +86,22 @@ OUTPUT_DIRNAME = "OUTPUT"
 MD_WIDTH = 80
 TOC_HEADING = "Table of Contents"
 CONCLUSION_HEADINGS = {"EN": "Conclusion", "RU": "Заключение"}
+
+# Editing results are cached next to slides.json, so a re-run after a
+# failure (or after a formatting-only change) does not pay the API again.
+EDIT_CACHE_FILENAME = "edited_sections.json"
+
+# gpt-4o API prices as of 2026-07, USD per 1M tokens (see
+# https://platform.openai.com/docs/pricing).
+USD_PER_MTOKEN_PROMPT = 2.50
+USD_PER_MTOKEN_COMPLETION = 10.00
+# Rough tokenizer ratios for the cost estimate: ~4 chars per token for
+# English, ~2.5 for other languages (Cyrillic packs fewer chars per token).
+CHARS_PER_TOKEN_EN = 4.0
+CHARS_PER_TOKEN_OTHER = 2.5
+# Fixed per-section prompt overhead: system prompt + payload wrapper +
+# slide title/bullets.
+SECTION_OVERHEAD_TOKENS = 900
 
 EDIT_SYSTEM_PROMPT = """\
 You edit one section of an auto-transcribed lecture into its final form.
@@ -557,42 +583,356 @@ def apply_default_formatting(document) -> None:
     paragraph._p.append(field)
 
 
-def make_pdf(docx_path: Path, pdf_path: Path, attempts: int = 3) -> bool:
-    """Render the .docx to PDF via Microsoft Word COM; False on failure.
+RPC_E_CALL_REJECTED = -2147418111  # "Call was rejected by callee": Word busy
 
-    A dedicated Word instance (DispatchEx) is created and always Quit() in
-    the end, so no zombie WINWORD process stays behind holding file locks
-    (docx2pdf reuses a shared instance and is prone to exactly that).
-    """
-    WD_FORMAT_PDF = 17
-    last_error: Exception | None = None
+
+def com_retry(call, attempts: int = 8, on_reject=None):
+    """Run a COM call, waiting out transient 'call rejected' rejections
+    (Word keeps servicing its message loop for a while after startup);
+    `on_reject` runs before each retry (e.g. to dismiss a nag dialog)."""
     for attempt in range(1, attempts + 1):
         try:
-            import pythoncom
-            import win32com.client
-
-            pythoncom.CoInitialize()
-            try:
-                word = win32com.client.DispatchEx("Word.Application")
-                word.Visible = False
-                word.DisplayAlerts = 0
+            return call()
+        except Exception as exc:
+            if (
+                getattr(exc, "hresult", None) != RPC_E_CALL_REJECTED
+                or attempt == attempts
+            ):
+                raise
+            if on_reject is not None:
                 try:
-                    document = word.Documents.Open(
-                        str(docx_path), ReadOnly=True, AddToRecentFiles=False
-                    )
-                    document.SaveAs(str(pdf_path), FileFormat=WD_FORMAT_PDF)
-                    document.Close(False)
-                finally:
-                    word.Quit()
-            finally:
-                pythoncom.CoUninitialize()
-            if pdf_path.is_file():
-                return True
-        except Exception as exc:  # Word missing/busy must not kill the run
-            last_error = exc
+                    on_reject()
+                except Exception:
+                    pass
+            time.sleep(attempt)
+
+
+def dismiss_word_dialogs(pids: set[int]) -> None:
+    """Close nag dialogs of the given (hidden) Word processes.
+
+    Word occasionally pops modal prompts even in automation - e.g. "Word
+    is not your default program for documents, choose file types?" - and
+    then rejects every COM call until somebody answers. Press the safest
+    button (No/Cancel) or close the dialog.
+    """
+    import win32con
+    import win32gui
+    import win32process
+
+    BM_CLICK = 0x00F5
+    PREFERRED = ("нет", "no", "отмена", "cancel", "закрыть", "close")
+
+    def handle_dialog(hwnd) -> None:
+        buttons: list[tuple[int, str]] = []
+
+        def collect(child, _):
+            if win32gui.GetClassName(child) == "Button":
+                text = (
+                    win32gui.GetWindowText(child)
+                    .replace("&", "").strip().lower()
+                )
+                buttons.append((child, text))
+            return True
+
+        try:
+            win32gui.EnumChildWindows(hwnd, collect, None)
+        except Exception:
+            pass
+        for preferred in PREFERRED:
+            for handle, text in buttons:
+                if preferred in text:
+                    win32gui.PostMessage(handle, BM_CLICK, 0, 0)
+                    return
+        win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
+
+    def visit(hwnd, _):
+        if (
+            win32gui.IsWindowVisible(hwnd)
+            and win32gui.GetClassName(hwnd) == "#32770"
+            and win32process.GetWindowThreadProcessId(hwnd)[1] in pids
+        ):
+            handle_dialog(hwnd)
+        return True
+
+    win32gui.EnumWindows(visit, None)
+
+
+def convert_docx_to_pdf(docx_path: Path, pdf_path: Path) -> int:
+    """One PDF conversion attempt via Word COM; runs in a child process.
+
+    A dedicated Word instance (DispatchEx) is created and always Quit() in
+    the end, so no zombie WINWORD process stays behind holding file locks,
+    and a Word instance the user works in is never used (docx2pdf reuses a
+    shared instance and is prone to both problems).
+
+    Early binding (a generated type-library wrapper) is required: dynamic
+    dispatch proved unreliable for Word Document objects on this setup -
+    GetIDsOfNames fails with "AttributeError: Open.SaveAs". A corrupted
+    gen_py cache (e.g. half-written by a crashed run) is dropped so that
+    the next attempt regenerates it.
+    """
+    WD_FORMAT_PDF = 17
+    import pythoncom
+    import win32com.client
+
+    drop_word_resiliency_entries(WORKSPACE_ROOT)
+    before = winword_pids()
+    pythoncom.CoInitialize()
+    try:
+        word = win32com.client.DispatchEx("Word.Application")
+        mine = winword_pids() - before  # the instance just started
+        unblock = lambda: dismiss_word_dialogs(mine)  # noqa: E731
+        try:
+            word.Visible = False
+            word.DisplayAlerts = 0
+            document = com_retry(
+                lambda: word.Documents.Open(
+                    str(docx_path), ReadOnly=True, AddToRecentFiles=False
+                ),
+                on_reject=unblock,
+            )
+            try:
+                com_retry(
+                    lambda: document.SaveAs(
+                        str(pdf_path), FileFormat=WD_FORMAT_PDF
+                    ),
+                    on_reject=unblock,
+                )
+            except AttributeError:
+                # Broken name resolution: drop the (likely corrupted)
+                # gen_py cache; the retry in the parent starts a fresh
+                # child that rebuilds it.
+                clear_gen_py_cache()
+                raise
+            com_retry(lambda: document.Close(False), on_reject=unblock)
+        finally:
+            try:
+                com_retry(lambda: word.Quit(), attempts=3, on_reject=unblock)
+            except Exception:
+                pass
+            # A Word that refused to Quit would linger, hold file locks and
+            # make every following conversion fail too ("call rejected"
+            # avalanche) - kill this child's own instance if still alive.
+            kill_winword(mine)
+    finally:
+        pythoncom.CoUninitialize()
+    return 0 if pdf_path.is_file() else 1
+
+
+def drop_word_resiliency_entries(scope: Path) -> None:
+    """Remove Word's crash-bookkeeping registry entries for our documents.
+
+    When a WINWORD process dies while a document is open, Word records the
+    document under HKCU ...\\Word\\Resiliency (DisabledItems /
+    DocumentRecovery). On the next automated start Word then waits forever
+    on a hidden prompt ("open the problem document?" / recovery / safe
+    mode) and every COM call fails with 'Call was rejected by callee'.
+    Entries for any document inside `scope` (the workspace) are removed;
+    the user's own documents elsewhere are not touched.
+    """
+    import winreg
+
+    target = str(scope).lower()
+
+    def mentions_target(data) -> bool:
+        return isinstance(data, bytes) and target in data.decode(
+            "utf-16-le", errors="ignore"
+        ).lower()
+
+    def matching_values(key) -> list[str]:
+        names = []
+        index = 0
+        while True:
+            try:
+                name, data, _ = winreg.EnumValue(key, index)
+            except OSError:
+                return names
+            if mentions_target(data):
+                names.append(name)
+            index += 1
+
+    def data_mentions_target(key) -> bool:
+        return bool(matching_values(key))
+
+    def subkeys(key) -> list[str]:
+        names = []
+        index = 0
+        while True:
+            try:
+                names.append(winreg.EnumKey(key, index))
+            except OSError:
+                return names
+            index += 1
+
+    try:
+        with winreg.OpenKey(
+            winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Office"
+        ) as office:
+            versions = subkeys(office)
+    except OSError:
+        return
+    for version in versions:
+        base = (
+            rf"Software\Microsoft\Office\{version}\Word\Resiliency"
+        )
+        # DisabledItems: flat values, the file path inside the binary data.
+        try:
+            with winreg.OpenKey(
+                winreg.HKEY_CURRENT_USER,
+                base + r"\DisabledItems",
+                0,
+                winreg.KEY_ALL_ACCESS,
+            ) as key:
+                for name in matching_values(key):
+                    winreg.DeleteValue(key, name)
+        except OSError:
+            pass
+        # DocumentRecovery: one subkey per remembered document.
+        try:
+            with winreg.OpenKey(
+                winreg.HKEY_CURRENT_USER,
+                base + r"\DocumentRecovery",
+                0,
+                winreg.KEY_ALL_ACCESS,
+            ) as key:
+                for name in subkeys(key):
+                    with winreg.OpenKey(key, name) as sub:
+                        drop = data_mentions_target(sub)
+                    if drop:
+                        winreg.DeleteKey(key, name)
+        except OSError:
+            pass
+        # StartupItems: "Word crashed while starting" markers; they make a
+        # hidden Word ask "start in safe mode?" and reject all COM calls.
+        try:
+            winreg.DeleteKey(
+                winreg.HKEY_CURRENT_USER, base + r"\StartupItems"
+            )
+        except OSError:
+            pass
+
+
+def clear_gen_py_cache() -> None:
+    import shutil
+
+    try:
+        import win32com
+
+        shutil.rmtree(win32com.__gen_path__, ignore_errors=True)
+    except Exception:
+        pass
+
+
+def winword_processes() -> dict[int, str]:
+    """PID -> window title for the running WINWORD processes ("N/A" for
+    hidden automation instances without a window)."""
+    import subprocess
+
+    try:
+        listing = subprocess.run(
+            ["tasklist", "/V", "/FI", "IMAGENAME eq WINWORD.EXE", "/FO",
+             "CSV", "/NH"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        ).stdout
+    except Exception:
+        return {}
+    processes: dict[int, str] = {}
+    for line in listing.splitlines():
+        cells = [cell.strip('"') for cell in line.strip().split('","')]
+        if len(cells) >= 2 and cells[0].upper() == "WINWORD.EXE":
+            try:
+                processes[int(cells[1])] = cells[-1]
+            except ValueError:
+                pass
+    return processes
+
+
+def winword_pids() -> set[int]:
+    return set(winword_processes())
+
+
+# Window titles of hidden automation Word instances (no real document
+# window): tasklist reports "N/A" or Word's internal helper window.
+HIDDEN_WORD_TITLES = ("", "N/A", "HardwareMonitorWindow")
+
+
+def user_word_running() -> bool:
+    """True when a Word with a visible document window (the user's) runs."""
+    return any(
+        title not in HIDDEN_WORD_TITLES
+        for title in winword_processes().values()
+    )
+
+
+def kill_winword(pids: set[int]) -> None:
+    """Force-kill the given WINWORD processes, sparing windowed (user) ones."""
+    import subprocess
+
+    for pid, title in winword_processes().items():
+        if pid in pids and title in HIDDEN_WORD_TITLES:
+            subprocess.run(
+                ["taskkill", "/PID", str(pid), "/T", "/F"],
+                capture_output=True,
+            )
+
+
+def make_pdf(docx_path: Path, pdf_path: Path, attempts: int = 3) -> bool:
+    """Render the .docx to PDF via Microsoft Word; False on failure.
+
+    Word COM occasionally dies with a native access violation (0xC0000005)
+    that would kill the whole script and lose the money already spent on
+    editing, so the conversion runs in a disposable child process. A Word
+    instance left behind by a crashed attempt is killed before the retry -
+    but only Word processes that appeared during the attempt, so a Word the
+    user is working in is never touched.
+    """
+    import subprocess
+
+    # Hidden Word instances surviving from earlier crashes make new
+    # conversions fail too ("call rejected" avalanche) - clean them first.
+    kill_winword(winword_pids())
+
+    last_note = ""
+    for attempt in range(1, attempts + 1):
+        before = winword_pids()
+        try:
+            child = subprocess.run(
+                [
+                    sys.executable,
+                    str(Path(__file__).resolve()),
+                    "--convert-pdf",
+                    str(docx_path),
+                    str(pdf_path),
+                ],
+                capture_output=True,
+                text=True,
+                timeout=300,
+            )
+            failed = child.returncode != 0
+            last_note = (
+                (child.stderr or child.stdout).strip().splitlines()[-1]
+                if failed and (child.stderr or child.stdout).strip()
+                else f"exit code {child.returncode}"
+            )
+        except subprocess.TimeoutExpired:
+            failed, last_note = True, "conversion timed out"
+        if not failed and pdf_path.is_file():
+            return True
+        # Clean up Word instances left by the failed attempt; a windowed
+        # Word (the user's, even one opened during the attempt) is spared.
+        kill_winword(winword_pids() - before)
         if attempt < attempts:
             time.sleep(3)
-    print(f"  WARNING: PDF conversion failed: {last_error}", flush=True)
+    print(f"  WARNING: PDF conversion failed: {last_note}", flush=True)
+    if user_word_running():
+        print(
+            "  NOTE: a Word window is open; working in Word can block the "
+            "hidden conversion. Close Word and re-run the script - missing "
+            "PDFs are then rebuilt from the .docx at no API cost.",
+            flush=True,
+        )
     return False
 
 
@@ -623,6 +963,78 @@ def is_processed(playlist_dir: Path, stem: str, orig_code: str) -> bool:
     )
 
 
+# --------------------------------------------------------------------------
+# Editing cache and cost estimate
+
+
+def section_cache_key(section: Section) -> str:
+    return f"{section.heading} @ {section.start:.1f}"
+
+
+def load_edit_cache(cache_path: Path, stem: str) -> dict[str, dict]:
+    try:
+        data = json.loads(cache_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return data.get("sections") or {} if data.get("video") == stem else {}
+
+
+def section_to_cache(section: Section) -> dict:
+    return {
+        "heading_en": section.heading_en,
+        "intro": section.intro,
+        "subsections": section.subsections,
+    }
+
+
+def section_from_cache(section: Section, entry: dict) -> None:
+    section.heading_en = entry.get("heading_en") or section.heading
+    section.intro = entry.get("intro") or {}
+    section.subsections = entry.get("subsections") or []
+
+
+def save_edit_cache(
+    cache_path: Path, stem: str, cache: dict[str, dict]
+) -> None:
+    cache_path.write_text(
+        json.dumps(
+            {"video": stem, "model": MODEL, "sections": cache},
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+
+def estimate_tokens(text: str, code: str) -> int:
+    ratio = CHARS_PER_TOKEN_EN if code == "EN" else CHARS_PER_TOKEN_OTHER
+    return int(len(text) / ratio)
+
+
+def estimate_cost(
+    pending: list[tuple[Section, str, str]], orig_code: str
+) -> tuple[int, int, float]:
+    """(prompt tokens, completion tokens, USD) for the sections still to edit.
+
+    The prompt carries both transcripts plus a fixed per-section overhead;
+    the completion re-emits the edited text in both languages, so it is
+    close to the size of the transcripts themselves.
+    """
+    prompt = completion = 0
+    for _, orig_text, en_text in pending:
+        text_tokens = (
+            estimate_tokens(orig_text, orig_code)
+            + estimate_tokens(en_text, "EN")
+        )
+        prompt += SECTION_OVERHEAD_TOKENS + text_tokens
+        completion += text_tokens
+    cost = (
+        prompt * USD_PER_MTOKEN_PROMPT
+        + completion * USD_PER_MTOKEN_COMPLETION
+    ) / 1_000_000
+    return prompt, completion, cost
+
+
 def process_video(
     video: Path,
     *,
@@ -633,7 +1045,9 @@ def process_video(
     orig_code: str,
     doc_template: Path | None,
     pdf_template: Path | None,
-) -> None:
+    auto_yes: bool = False,
+) -> bool:
+    """Process one video; False when the user declined the cost estimate."""
     slides_data = json.loads(
         (slides_folder / RESULT_FILENAME).read_text(encoding="utf-8")
     )
@@ -659,23 +1073,65 @@ def process_video(
         (segs[-1].end for segs in segments.values() if segs), default=0.0
     )
     sections = build_sections(slides_data, video_end)
-    print(f"  Sections: {len(sections)}, editing via {len(sections)} API "
-          f"call(s)...", flush=True)
 
-    usage: dict[str, int] = {}
-    for index, section in enumerate(sections, start=1):
-        minutes = (section.end - section.start) / 60.0
-        print(
-            f"  [{index}/{len(sections)}] {section.heading} "
-            f"({minutes:.1f} min)...",
-            flush=True,
-        )
+    texts: dict[str, tuple[str, str]] = {}
+    for section in sections:
         orig_text = (
             section_text(segments[orig_code], section.start, section.end)
             if orig_code != "EN"
             else ""
         )
         en_text = section_text(segments["EN"], section.start, section.end)
+        texts[section_cache_key(section)] = (orig_text, en_text)
+
+    cache_path = slides_folder / EDIT_CACHE_FILENAME
+    cache = load_edit_cache(cache_path, video.stem)
+    pending = [
+        (section, *texts[section_cache_key(section)])
+        for section in sections
+        if section_cache_key(section) not in cache
+    ]
+
+    prompt_est, completion_est, cost_est = estimate_cost(pending, orig_code)
+    print(
+        f"  Sections: {len(sections)} total, "
+        f"{len(sections) - len(pending)} already edited (cached), "
+        f"{len(pending)} to edit via the API.",
+        flush=True,
+    )
+    print(
+        f"  Estimated cost: ~{prompt_est} prompt + ~{completion_est} "
+        f"completion tokens -> ~${cost_est:.2f} ({MODEL}).",
+        flush=True,
+    )
+    if not auto_yes:
+        print("  Create the final documents for this video? (y/n)",
+              flush=True)
+        try:
+            answer = input().strip().lower()
+        except EOFError:
+            answer = ""
+        if answer not in ("y", "yes"):
+            return False
+
+    usage: dict[str, int] = {}
+    for index, section in enumerate(sections, start=1):
+        key = section_cache_key(section)
+        minutes = (section.end - section.start) / 60.0
+        if key in cache:
+            print(
+                f"  [{index}/{len(sections)}] {section.heading} "
+                f"({minutes:.1f} min): cached.",
+                flush=True,
+            )
+            section_from_cache(section, cache[key])
+            continue
+        print(
+            f"  [{index}/{len(sections)}] {section.heading} "
+            f"({minutes:.1f} min)...",
+            flush=True,
+        )
+        orig_text, en_text = texts[key]
         edit_section(
             api_key,
             section,
@@ -686,6 +1142,10 @@ def process_video(
             en_text=en_text,
             usage=usage,
         )
+        # Persist after every section: a crash later in the run (e.g. during
+        # the PDF stage) must not lose paid editing results.
+        cache[key] = section_to_cache(section)
+        save_edit_cache(cache_path, video.stem, cache)
 
     for code in lang_codes:
         files = output_files(playlist_dir / code, video.stem)
@@ -710,11 +1170,17 @@ def process_video(
                     f"  Saved: {files[kind].relative_to(playlist_dir)}",
                     flush=True,
                 )
+    actual_cost = (
+        usage.get("prompt_tokens", 0) * USD_PER_MTOKEN_PROMPT
+        + usage.get("completion_tokens", 0) * USD_PER_MTOKEN_COMPLETION
+    ) / 1_000_000
     print(
         f"  Tokens used: {usage.get('prompt_tokens', 0)} prompt + "
-        f"{usage.get('completion_tokens', 0)} completion.",
+        f"{usage.get('completion_tokens', 0)} completion "
+        f"(~${actual_cost:.2f}).",
         flush=True,
     )
+    return True
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -756,6 +1222,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "A .docx style template used only for the PDF rendering "
             "(default: the PDF is rendered from the generated .docx)"
         ),
+    )
+    parser.add_argument(
+        "--yes",
+        action="store_true",
+        help="Skip the per-video cost confirmation prompt",
     )
     parser.add_argument(
         "--workspace",
@@ -821,14 +1292,32 @@ def main(argv: list[str] | None = None) -> int:
         f"{len(session)} in this session (--next {args.next_count}).",
         flush=True,
     )
+    # Self-healing: the PDF stage is best-effort (Word may fail or be
+    # blocked), so processed videos may lack PDFs. Rebuild them from the
+    # existing .docx - this costs no API tokens.
+    if args.pdf is None:
+        for video in eligible:
+            if video in session:
+                continue
+            for code in lang_codes:
+                files = output_files(playlist_dir / code, video.stem)
+                if files["docx"].is_file() and not files["pdf"].is_file():
+                    print(
+                        "PDF backfill: "
+                        f"{files['pdf'].relative_to(playlist_dir)}...",
+                        flush=True,
+                    )
+                    make_pdf(files["docx"], files["pdf"])
+
     if not session:
         print("Nothing to do: final documents exist for every ready video.",
               flush=True)
         return 0
 
+    done = 0
     for index, video in enumerate(session, start=1):
         print(f"[{index}/{len(session)}] {video.name}", flush=True)
-        process_video(
+        if not process_video(
             video,
             playlist_dir=playlist_dir,
             slides_folder=slides_out_dir(slides_dir, video, keys),
@@ -837,11 +1326,21 @@ def main(argv: list[str] | None = None) -> int:
             orig_code=orig_code,
             doc_template=args.doc,
             pdf_template=args.pdf,
-        )
+            auto_yes=args.yes,
+        ):
+            print("Session stopped: not confirmed.", flush=True)
+            break
+        done += 1
 
-    print(f"Session done: {len(session)} video(s).", flush=True)
+    print(f"Session done: {done} video(s).", flush=True)
     return 0
 
 
 if __name__ == "__main__":
+    if len(sys.argv) == 4 and sys.argv[1] == "--convert-pdf":
+        # Internal entry point: one PDF conversion in a disposable child
+        # process (see make_pdf).
+        raise SystemExit(
+            convert_docx_to_pdf(Path(sys.argv[2]), Path(sys.argv[3]))
+        )
     raise SystemExit(main())
