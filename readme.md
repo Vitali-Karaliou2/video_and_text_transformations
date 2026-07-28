@@ -14,7 +14,7 @@ yt-dlp/
       _summaries/      ← summaries по датам: YYYY-MM-DD/_hh_mm_*.txt/xlsx
       ...
   misc/                ← прочие коллекции, не привязанные к каналу (не в git)
-  tests/               ← bat-файлы проверки плейлистов
+  _run_scripts/        ← bat-файлы проверки плейлистов (корень проекта)
   src/                 ← исходники Python
   scripts/             ← готовые exe для запуска
   readme.md
@@ -245,8 +245,8 @@ scripts\organize_by_playlists.exe _VladilenMinin
 ### Проверка плейлистов
 
 ```bat
-tests\check_playlists.bat
-tests\update_playlists.bat
+_run_scripts\check_playlists.bat
+_run_scripts\update_playlists.bat
 ```
 
 Папки `_channels/` и `misc/` исключены из git (см. `.gitignore`).

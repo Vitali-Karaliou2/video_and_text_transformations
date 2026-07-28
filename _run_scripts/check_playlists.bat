@@ -19,7 +19,7 @@ if "%EXITCODE%"=="0" (
     echo [BAT] Finished successfully.
 ) else (
     echo [BAT] Finished with errors. Exit code: %EXITCODE%
-    echo [BAT] To fix: run tests\update_playlists.bat
+    echo [BAT] To fix: run _run_scripts\update_playlists.bat
 )
 echo.
 pause

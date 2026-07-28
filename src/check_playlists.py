@@ -114,7 +114,7 @@ def check_channel(channel_root: Path, args: argparse.Namespace) -> int:
     cached = load_playlists_cache(cache_path) if cache_path.is_file() else None
     if cached is None:
         print("  Status:   MISSING playlists.json")
-        print("  Hint:     run tests\\update_playlists.bat to fetch from YouTube")
+        print("  Hint:     run _run_scripts\\update_playlists.bat to fetch from YouTube")
         issues += 1
         if not args.update:
             return issues
@@ -227,7 +227,7 @@ def main(argv: list[str] | None = None) -> int:
         print("Overall result:   PASSED")
     else:
         print(f"Overall result:   FAILED ({total_issues} issue(s))")
-        print("Hint: run tests\\update_playlists.bat to refresh cache and create folders")
+        print("Hint: run _run_scripts\\update_playlists.bat to refresh cache and create folders")
 
     return 1 if total_issues else 0
 
