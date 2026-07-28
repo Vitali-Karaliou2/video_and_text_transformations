@@ -179,7 +179,14 @@ Reply with JSON only:
 the *_en fields and leave "intro_orig"/"paragraphs_orig"/"heading_orig" as
 empty lists / empty strings. When "transcript_english" is empty, do NOT
 translate: edit only the original language and leave "intro_en" and every
-"paragraphs_en" as empty lists."""
+"paragraphs_en" as empty lists.
+
+When "section_part" is present ("i/N"), you are editing part i of N of one
+long section split only for processing: edit the COMPLETE given fragment
+from its first sentence to its last (it may start or end mid-topic - that
+is expected; do not add openings or conclusions of your own), keep the
+layout flat ("subsections": []) and remember: re-emit ALL the content,
+paragraph by paragraph - never compress the fragment."""
 
 
 ANNOTATION_CACHE_KEY = "__annotation__"
@@ -405,6 +412,7 @@ def edit_section(
     orig_text: str,
     en_text: str,
     usage: dict[str, int],
+    part: tuple[int, int] | None = None,
 ) -> None:
     slide = section.slide or {}
     orig_name = LANGUAGE_NAMES.get(orig_code, orig_code)
@@ -420,6 +428,8 @@ def edit_section(
         "transcript_original": orig_text if orig_code != "EN" else "",
         "transcript_english": en_text,
     }
+    if part is not None:
+        payload["section_part"] = f"{part[0]}/{part[1]}"
     result = chat_json(
         api_key,
         [
@@ -464,6 +474,108 @@ def flatten_section(section: Section) -> None:
     for sub in section.subsections:
         for code in section.intro:
             section.intro[code].extend(sub.get(code) or [])
+    section.subsections = []
+
+
+# gpt-4o silently compresses long re-emissions: asked to edit a whole
+# 20-minute transcript in one call it returns a couple of paragraphs. Long
+# sections (typical for timecode-less videos, where the whole video is one
+# section) are therefore edited in ~4-minute chunks and concatenated.
+EDIT_CHUNK_SECONDS = 240.0
+EDIT_CHUNK_TRIGGER_SECONDS = 360.0
+
+
+def split_section_ranges(
+    section: Section,
+    segments: list[Segment],
+    chunk_seconds: float = EDIT_CHUNK_SECONDS,
+) -> list[tuple[float, float]]:
+    """Split [start, end) into roughly equal windows of ~chunk_seconds,
+    snapping each boundary to the nearest transcript segment boundary so
+    that no sentence is cut in half (both languages are sliced by the same
+    time boundaries, staying parallel)."""
+    duration = section.end - section.start
+    parts = max(1, round(duration / chunk_seconds))
+    if parts == 1:
+        return [(section.start, section.end)]
+    candidates = [
+        seg.start
+        for seg in segments
+        if section.start < seg.start < section.end
+    ]
+    boundaries: list[float] = []
+    for index in range(1, parts):
+        target = section.start + duration * index / parts
+        snapped = (
+            min(candidates, key=lambda t: abs(t - target))
+            if candidates
+            else target
+        )
+        if boundaries and snapped <= boundaries[-1]:
+            continue
+        boundaries.append(snapped)
+    edges = [section.start, *boundaries, section.end]
+    return [
+        (edges[i], edges[i + 1])
+        for i in range(len(edges) - 1)
+        if edges[i + 1] > edges[i]
+    ]
+
+
+def edit_section_in_chunks(
+    api_key: str,
+    section: Section,
+    *,
+    course: str,
+    doc_title: str,
+    orig_code: str,
+    segments: dict[str, list[Segment]],
+    usage: dict[str, int],
+) -> None:
+    """Edit one long section chunk by chunk; the result is always flat."""
+    ranges = split_section_ranges(section, segments.get(orig_code) or [])
+    intro: dict[str, list[str]] = {orig_code: [], "EN": []}
+    heading_en = ""
+    for index, (start, end) in enumerate(ranges, start=1):
+        print(
+            f"    part {index}/{len(ranges)} "
+            f"({(end - start) / 60.0:.1f} min)...",
+            flush=True,
+        )
+        part = Section(
+            heading=section.heading,
+            number=section.number,
+            slide=section.slide,
+            start=start,
+            end=end,
+        )
+        orig_text = (
+            section_text(segments[orig_code], start, end)
+            if orig_code != "EN"
+            else ""
+        )
+        en_text = (
+            section_text(segments["EN"], start, end)
+            if "EN" in segments
+            else ""
+        )
+        edit_section(
+            api_key,
+            part,
+            course=course,
+            doc_title=doc_title,
+            orig_code=orig_code,
+            orig_text=orig_text,
+            en_text=en_text,
+            usage=usage,
+            part=(index, len(ranges)),
+        )
+        flatten_section(part)
+        heading_en = heading_en or part.heading_en
+        for code, paragraphs in part.intro.items():
+            intro.setdefault(code, []).extend(paragraphs)
+    section.heading_en = heading_en or section.heading
+    section.intro = intro
     section.subsections = []
 
 
@@ -1643,17 +1755,28 @@ def process_video(
             f"({minutes:.1f} min)...",
             flush=True,
         )
-        orig_text, en_text = texts[key]
-        edit_section(
-            api_key,
-            section,
-            course=course,
-            doc_title=doc_title,
-            orig_code=orig_code,
-            orig_text=orig_text,
-            en_text=en_text,
-            usage=usage,
-        )
+        if section.end - section.start > EDIT_CHUNK_TRIGGER_SECONDS:
+            edit_section_in_chunks(
+                api_key,
+                section,
+                course=course,
+                doc_title=doc_title,
+                orig_code=orig_code,
+                segments=segments,
+                usage=usage,
+            )
+        else:
+            orig_text, en_text = texts[key]
+            edit_section(
+                api_key,
+                section,
+                course=course,
+                doc_title=doc_title,
+                orig_code=orig_code,
+                orig_text=orig_text,
+                en_text=en_text,
+                usage=usage,
+            )
         # Persist after every section: a crash later in the run (e.g. during
         # the PDF stage) must not lose paid editing results.
         cache[key] = section_to_cache(section)
