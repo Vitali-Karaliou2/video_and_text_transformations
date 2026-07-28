@@ -1104,20 +1104,34 @@ def wps_progid() -> str | None:
     return None
 
 
-def image_pids(image_name: str) -> set[int]:
-    """PIDs of the running processes with the given executable name."""
+def run_tasklist(args: list[str]) -> str:
+    """tasklist output, decoded safely.
+
+    tasklist writes in the console OEM code page; the default locale codec
+    (e.g. cp1252) chokes on Cyrillic window titles or localized messages,
+    the decode error kills subprocess' reader thread and stdout comes back
+    as None - so decode as OEM with replacement.
+    """
     import subprocess
 
     try:
-        listing = subprocess.run(
-            ["tasklist", "/FI", f"IMAGENAME eq {image_name}", "/FO", "CSV",
-             "/NH"],
+        return subprocess.run(
+            ["tasklist", *args],
             capture_output=True,
             text=True,
+            encoding="oem",
+            errors="replace",
             timeout=30,
-        ).stdout
+        ).stdout or ""
     except Exception:
-        return set()
+        return ""
+
+
+def image_pids(image_name: str) -> set[int]:
+    """PIDs of the running processes with the given executable name."""
+    listing = run_tasklist(
+        ["/FI", f"IMAGENAME eq {image_name}", "/FO", "CSV", "/NH"]
+    )
     pids: set[int] = set()
     for line in listing.splitlines():
         cells = [cell.strip('"') for cell in line.strip().split('","')]
@@ -1381,18 +1395,9 @@ def clear_gen_py_cache() -> None:
 def winword_processes() -> dict[int, str]:
     """PID -> window title for the running WINWORD processes ("N/A" for
     hidden automation instances without a window)."""
-    import subprocess
-
-    try:
-        listing = subprocess.run(
-            ["tasklist", "/V", "/FI", "IMAGENAME eq WINWORD.EXE", "/FO",
-             "CSV", "/NH"],
-            capture_output=True,
-            text=True,
-            timeout=30,
-        ).stdout
-    except Exception:
-        return {}
+    listing = run_tasklist(
+        ["/V", "/FI", "IMAGENAME eq WINWORD.EXE", "/FO", "CSV", "/NH"]
+    )
     processes: dict[int, str] = {}
     for line in listing.splitlines():
         cells = [cell.strip('"') for cell in line.strip().split('","')]
@@ -1804,6 +1809,21 @@ def process_video(
             print(
                 f"  Annotation ({'/'.join(needed)}): cached.", flush=True
             )
+        # Write the annotation files before the docs stage: a failure there
+        # (e.g. PDF conversion) must not lose the generated annotation.
+        for code in annotation_languages(orig_code):
+            text = annotations.get(code)
+            if not text:
+                print(
+                    f"  WARNING: no {code} annotation was generated.",
+                    flush=True,
+                )
+                continue
+            path = annotation_path(playlist_dir, code, video.stem)
+            write_annotation(path, doc_title, text)
+            print(
+                f"  Saved: {path.relative_to(playlist_dir)}", flush=True
+            )
 
     for code in lang_codes:
         files = output_files(playlist_dir / code, video.stem)
@@ -1828,20 +1848,6 @@ def process_video(
                     f"  Saved: {files[kind].relative_to(playlist_dir)}",
                     flush=True,
                 )
-    if annotate:
-        for code in annotation_languages(orig_code):
-            text = annotations.get(code)
-            if not text:
-                print(
-                    f"  WARNING: no {code} annotation was generated.",
-                    flush=True,
-                )
-                continue
-            path = annotation_path(playlist_dir, code, video.stem)
-            write_annotation(path, doc_title, text)
-            print(
-                f"  Saved: {path.relative_to(playlist_dir)}", flush=True
-            )
     actual_cost = (
         usage.get("prompt_tokens", 0) * USD_PER_MTOKEN_PROMPT
         + usage.get("completion_tokens", 0) * USD_PER_MTOKEN_COMPLETION
