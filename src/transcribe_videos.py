@@ -17,15 +17,26 @@ picked, only its audio is downloaded into a temp folder, and the video
 metadata (title, date, duration, chapters/timecodes) is saved to
 <playlist>/INFO/<stem>.json for the final-editing stage.
 
+When the playlist folder is omitted in remote mode, the flat channel-wide
+video list is used instead (_cache/videos.json built by the summary script,
+newest first); each video's results go to its own playlist folder (or to
+misc/ for videos outside any playlist).
+
 Pipeline flags: --orig-only skips the English pass; --edit chains
-create_final_docs.py right after transcription (slide stages are skipped,
-the document ToC then comes from the video timecodes).
+create_final_docs.py per video right after transcription (slide stages are
+skipped, the document ToC then comes from the video timecodes). With --edit
+the "next" video is the next one that is not fully *edited* yet: an already
+transcribed but unedited video skips the transcription stage and goes
+straight to editing. --annotate adds the 200-250 word annotation .txt
+(see create_final_docs.py).
 
 Examples:
   python src/transcribe_videos.py _Autotesting lectures --lang ru
   python src/transcribe_videos.py _Autotesting lectures --lang ru --next 3
   python src/transcribe_videos.py _VladilenMinin start_it_karery_s_nulya_v_2025 \
       --lang ru --orig-only --from-youtube --edit
+  python src/transcribe_videos.py _AbbasGallyamov \
+      --lang ru --orig-only --from-youtube --edit --annotate
 """
 
 from __future__ import annotations
@@ -717,69 +728,237 @@ def download_audio(url: str, tmp_dir: Path) -> Path:
     raise SystemExit("Audio download produced no file")
 
 
+def read_json_file(path: Path) -> dict | None:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def find_transcribed_stem(video_id: str, orig_dir: Path) -> str | None:
+    """Stem of an existing transcript with the [video id] marker, if any."""
+    marker = f"[{video_id}]"
+    if orig_dir.is_dir():
+        for path in sorted(orig_dir.glob("*.srt")):
+            if marker in path.stem:
+                return path.stem
+    return None
+
+
+def remote_edited(
+    playlist_dir: Path, stem: str, *, lang: str, needs_en: bool, annotate: bool
+) -> bool:
+    """Final documents (per create_final_docs rules) exist for this stem."""
+    import create_final_docs as cfd
+
+    orig_code = lang.upper()
+    lang_codes = [orig_code] + (["EN"] if needs_en else [])
+    return cfd.is_processed(
+        playlist_dir, stem, lang_codes, annotate=annotate, orig_code=orig_code
+    )
+
+
+def load_channel_flat_jobs(channel_dir: Path) -> tuple[list[dict], str]:
+    """Channel-wide flat job list (newest first) from the summary caches:
+    _cache/videos.json (video order), _cache/video_playlists.json (video ->
+    playlist title) and _cache/playlists.json (playlist title -> folder).
+    Videos outside any playlist go to the misc/ folder."""
+    cache = read_json_file(channel_dir / "_cache" / "videos.json")
+    if not cache or not cache.get("videos"):
+        raise SystemExit(
+            f"Video cache not found or empty: {channel_dir / '_cache' / 'videos.json'}\n"
+            "Run the summary script for this channel first."
+        )
+    channel_name = str(cache.get("channel_name") or "")
+
+    playlists_data = read_json_file(channel_dir / "_cache" / "playlists.json") or {}
+    folder_by_title: dict[str, str] = {}
+    id_by_title: dict[str, str] = {}
+    for playlist in playlists_data.get("playlists") or []:
+        title = playlist.get("title") or ""
+        folder_by_title[title] = playlist.get("folder") or ""
+        id_by_title[title] = playlist.get("id") or ""
+    misc_folder = "misc"
+    while misc_folder in set(folder_by_title.values()):
+        misc_folder = f"_{misc_folder}"
+
+    vp_data = read_json_file(channel_dir / "_cache" / "video_playlists.json") or {}
+    video_map = vp_data.get("map") or {}
+    details = vp_data.get("details") or {}
+
+    jobs: list[dict] = []
+    for video in cache["videos"]:
+        video_id = video.get("id")
+        if not video_id:
+            continue
+        pl_title = str(video_map.get(video_id) or "")
+        detail = details.get(video_id) or {}
+        jobs.append(
+            {
+                "id": video_id,
+                "title": str(video.get("title") or "").strip(),
+                "duration": None,
+                "index": int(detail.get("playlist_index") or 0),
+                "url": watch_url(video_id),
+                "folder": folder_by_title.get(pl_title) or misc_folder,
+                "playlist_meta": {
+                    "id": id_by_title.get(pl_title, ""),
+                    "title": pl_title,
+                    "channel_name": channel_name,
+                },
+            }
+        )
+    return jobs, channel_name
+
+
 def remote_session(
     args: argparse.Namespace,
     *,
     lang: str,
     needs_en: bool,
-    playlist_dir: Path,
-    orig_dir: Path,
-    en_dir: Path,
+    channel_dir: Path,
+    playlist_dir: Path | None,
     api_key: str,
     usd_per_minute: float,
-) -> int:
-    """Transcribe the next video(s) straight from the YouTube playlist;
-    return the number of videos transcribed."""
-    channel_dir = playlist_dir.parent.parent
-    playlist_meta = load_playlist_meta(channel_dir, args.playlist_folder)
-    print(
-        f'YouTube playlist: "{playlist_meta["title"]}" ({playlist_meta["id"]})',
-        flush=True,
-    )
-    print("Fetching the playlist entry list...", flush=True)
-    entries = fetch_playlist_entries(playlist_meta["id"])
+) -> tuple[int, list[tuple[str, str]]]:
+    """Transcribe the next video(s) straight from YouTube.
+
+    playlist_dir=None means the flat channel-wide mode. Returns the number
+    of videos transcribed and, for --edit, the list of
+    (playlist folder, stem) pairs to chain into final editing.
+    """
+    if playlist_dir is None:
+        jobs, channel_name = load_channel_flat_jobs(channel_dir)
+        print(
+            f'Channel: "{channel_name}" - flat video list '
+            f"({len(jobs)} videos, newest first).",
+            flush=True,
+        )
+        scope_note = "in the channel"
+    else:
+        playlist_meta = load_playlist_meta(channel_dir, args.playlist_folder)
+        print(
+            f'YouTube playlist: "{playlist_meta["title"]}" '
+            f'({playlist_meta["id"]})',
+            flush=True,
+        )
+        print("Fetching the playlist entry list...", flush=True)
+        jobs = [
+            {**entry, "folder": args.playlist_folder,
+             "playlist_meta": playlist_meta}
+            for entry in fetch_playlist_entries(playlist_meta["id"])
+        ]
+        scope_note = "in the playlist"
 
     if args.url:
         wanted = video_id_from_url(args.url)
-        entries = [e for e in entries if e["id"] == wanted] or [
-            {"id": wanted, "title": "", "duration": None, "index": 0,
-             "url": watch_url(wanted)}
-        ]
+        matched = [job for job in jobs if job["id"] == wanted]
+        if matched:
+            jobs = matched
+        elif playlist_dir is not None:
+            jobs = [
+                {"id": wanted, "title": "", "duration": None, "index": 0,
+                 "url": watch_url(wanted), "folder": args.playlist_folder,
+                 "playlist_meta": playlist_meta}
+            ]
+        else:
+            raise SystemExit(
+                f"--url video {wanted} is not in the channel video cache; "
+                "refresh the summary or pass the playlist folder explicitly."
+            )
 
-    local_media = local_media_by_id(playlist_dir)
-    pending = [
-        entry
-        for entry in entries
-        if not remote_transcribed(entry["id"], orig_dir, en_dir, needs_en)
-    ]
+    def job_dirs(job: dict) -> tuple[Path, Path, Path]:
+        pdir = channel_dir / "_playlists" / job["folder"]
+        return pdir, pdir / lang.upper(), pdir / "EN"
+
+    pending: list[dict] = []
+    transcribed_count = 0
+    for job in jobs:
+        pdir, orig_dir, en_dir = job_dirs(job)
+        job["transcribed"] = remote_transcribed(
+            job["id"], orig_dir, en_dir, needs_en
+        )
+        if job["transcribed"]:
+            transcribed_count += 1
+            if not args.edit:
+                continue
+            stem = find_transcribed_stem(job["id"], orig_dir)
+            if stem and remote_edited(
+                pdir, stem, lang=lang, needs_en=needs_en,
+                annotate=args.annotate,
+            ):
+                continue
+            job["stem"] = stem
+        pending.append(job)
+
     session = pending[: args.next_count]
+    edited_note = (
+        f", {transcribed_count - sum(1 for j in pending if j['transcribed'])}"
+        " fully edited" if args.edit else ""
+    )
     print(
-        f"Videos: {len(entries)} in the playlist, "
-        f"{len(entries) - len(pending)} already transcribed, "
+        f"Videos: {len(jobs)} {scope_note}, "
+        f"{transcribed_count} already transcribed{edited_note}, "
         f"{len(session)} in this session (--next {args.next_count}).",
         flush=True,
     )
     if not session:
-        print("Nothing to do: all playlist videos are transcribed.", flush=True)
-        return 0
+        print(
+            "Nothing to do: every video is "
+            + ("edited." if args.edit else "transcribed."),
+            flush=True,
+        )
+        return 0, []
     print("Press 'p' to stop after the current video.", flush=True)
 
+    local_media_cache: dict[str, dict[str, Path]] = {}
     watcher = PauseWatcher()
     calibration = ProgressCalibration()
     passes = 2 if needs_en else 1
     total_minutes = 0.0
     processed = 0
-    for entry in session:
+    edit_jobs: list[tuple[str, str]] = []
+    for position, entry in enumerate(session, start=1):
+        pdir, orig_dir, en_dir = job_dirs(entry)
         print(
-            f"[{processed + 1}/{len(session)}] "
-            f"{entry['title'] or entry['id']}",
+            f"[{position}/{len(session)}] "
+            f"{entry['title'] or entry['id']}"
+            + (f"  [{entry['folder']}]" if playlist_dir is None else ""),
             flush=True,
         )
+
+        if entry["transcribed"]:
+            stem = entry.get("stem")
+            if not stem:
+                print(
+                    "  WARNING: transcribed, but the transcript stem was "
+                    "not found; skipping.",
+                    flush=True,
+                )
+                continue
+            print(
+                "  Already transcribed - queueing for final editing only.",
+                flush=True,
+            )
+            if not (pdir / INFO_DIRNAME / f"{stem}.json").is_file():
+                print("  Fetching video metadata (INFO was missing)...",
+                      flush=True)
+                info = fetch_video_info(entry["url"])
+                info_path = write_video_info(
+                    pdir, stem, info, entry["playlist_meta"], entry["index"]
+                )
+                print(f"  Saved: {info_path.relative_to(pdir)}", flush=True)
+            edit_jobs.append((entry["folder"], stem))
+            continue
+
         print("  Fetching video metadata...", flush=True)
         info = fetch_video_info(entry["url"])
         title = str(info.get("title") or entry["title"] or entry["id"])
         seconds = float(info.get("duration") or entry.get("duration") or 0.0)
-        local = local_media.get(entry["id"])
+        if entry["folder"] not in local_media_cache:
+            pdir.mkdir(parents=True, exist_ok=True)
+            local_media_cache[entry["folder"]] = local_media_by_id(pdir)
+        local = local_media_cache[entry["folder"]].get(entry["id"])
         stem = (
             local.stem if local is not None
             else remote_stem(entry["index"], title, entry["id"])
@@ -809,9 +988,9 @@ def remote_session(
                 break
 
         info_path = write_video_info(
-            playlist_dir, stem, info, playlist_meta, entry["index"]
+            pdir, stem, info, entry["playlist_meta"], entry["index"]
         )
-        print(f"  Saved: {info_path.relative_to(playlist_dir)}", flush=True)
+        print(f"  Saved: {info_path.relative_to(pdir)}", flush=True)
 
         tmp_dir: Path | None = None
         try:
@@ -838,18 +1017,19 @@ def remote_session(
             if tmp_dir is not None:
                 shutil.rmtree(tmp_dir, ignore_errors=True)
         processed += 1
-        if watcher.pause_requested() and processed < len(session):
+        edit_jobs.append((entry["folder"], stem))
+        if watcher.pause_requested() and position < len(session):
             print("Pause requested: stopping after the current video.",
                   flush=True)
             break
 
     print(
-        f"Session done: {processed} video(s), {total_minutes:.1f} audio "
-        f"minutes, estimated cost "
+        f"Session done: {processed} video(s) transcribed, "
+        f"{total_minutes:.1f} audio minutes, estimated cost "
         f"${total_minutes * usd_per_minute * passes:.2f}.",
         flush=True,
     )
-    return processed
+    return processed, edit_jobs
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -862,7 +1042,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "playlist_folder",
-        help="Playlist folder name under <channel>/_playlists (e.g. lectures)",
+        nargs="?",
+        default=None,
+        help=(
+            "Playlist folder name under <channel>/_playlists (e.g. "
+            "lectures). May be omitted in remote mode (--from-youtube / "
+            "--url): the flat channel-wide video list is used then"
+        ),
     )
     parser.add_argument(
         "--lang",
@@ -911,10 +1097,20 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--edit",
         action="store_true",
         help=(
-            "After transcription run create_final_docs.py for the same "
-            "playlist, skipping the slide stages (the ToC then comes from "
-            "the video timecodes); the editing stage asks its own cost "
-            "confirmation"
+            "After transcription run create_final_docs.py per video, "
+            "skipping the slide stages (the ToC then comes from the video "
+            "timecodes); the editing stage asks its own cost confirmation. "
+            "In remote mode the next video is the next *unedited* one: "
+            "already transcribed videos go straight to editing"
+        ),
+    )
+    parser.add_argument(
+        "--annotate",
+        action="store_true",
+        help=(
+            "With --edit: also create the 200-250 word annotation .txt "
+            "(Russian original -> Russian annotation; other originals -> "
+            "English + Russian annotations); see create_final_docs.py"
         ),
     )
     parser.add_argument(
@@ -1004,7 +1200,8 @@ def local_session(
 
 
 def run_final_editing(args: argparse.Namespace, count: int) -> int:
-    """Chain create_final_docs.py for the just-transcribed videos (--edit)."""
+    """Chain create_final_docs.py for the just-transcribed videos (--edit,
+    local mode: same playlist folder, next N pending videos)."""
     import create_final_docs
 
     argv = [
@@ -1015,11 +1212,41 @@ def run_final_editing(args: argparse.Namespace, count: int) -> int:
     ]
     if args.orig_only:
         argv.append("--orig-only")
+    if args.annotate:
+        argv.append("--annotate")
     if args.yes:
         argv.append("--yes")
     print("", flush=True)
     print("=== Final editing (create_final_docs) ===", flush=True)
     return create_final_docs.main(argv)
+
+
+def run_final_editing_jobs(
+    args: argparse.Namespace, edit_jobs: list[tuple[str, str]]
+) -> int:
+    """Chain create_final_docs.py per (playlist folder, stem) pair (--edit,
+    remote mode: each video is targeted explicitly via --video)."""
+    import create_final_docs
+
+    for folder, stem in edit_jobs:
+        argv = [
+            args.channel_folder,
+            folder,
+            "--no-slides",
+            "--video", stem,
+        ]
+        if args.orig_only:
+            argv.append("--orig-only")
+        if args.annotate:
+            argv.append("--annotate")
+        if args.yes:
+            argv.append("--yes")
+        print("", flush=True)
+        print(f"=== Final editing (create_final_docs): {stem} ===", flush=True)
+        code = create_final_docs.main(argv)
+        if code:
+            return code
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1033,32 +1260,55 @@ def main(argv: list[str] | None = None) -> int:
         if not shutil.which(tool):
             raise SystemExit(f"{name} not found: {tool}")
 
-    playlist_dir = (
-        channels_dir(args.workspace) / args.channel_folder / "_playlists" / args.playlist_folder
-    )
-    if not playlist_dir.is_dir():
-        raise SystemExit(f"Playlist folder not found: {playlist_dir}")
+    remote = bool(args.from_youtube or args.url)
+    channel_dir = channels_dir(args.workspace) / args.channel_folder
+    if not channel_dir.is_dir():
+        raise SystemExit(f"Channel folder not found: {channel_dir}")
 
-    orig_dir = playlist_dir / lang.upper()
-    en_dir = playlist_dir / "EN"
+    playlist_dir: Path | None = None
+    if args.playlist_folder is not None:
+        playlist_dir = channel_dir / "_playlists" / args.playlist_folder
+        if not playlist_dir.is_dir():
+            raise SystemExit(f"Playlist folder not found: {playlist_dir}")
+    elif not remote:
+        raise SystemExit(
+            "playlist_folder may be omitted only in remote mode "
+            "(--from-youtube / --url)"
+        )
+
     api_key = read_api_key(args.workspace)
     usd_per_minute = get_transcription_rate(args.workspace)
 
-    print(f"Playlist folder: {playlist_dir}", flush=True)
-    session_kwargs = dict(
+    if playlist_dir is not None:
+        print(f"Playlist folder: {playlist_dir}", flush=True)
+    else:
+        print(f"Channel folder: {channel_dir} (flat video list)", flush=True)
+
+    if remote:
+        processed, edit_jobs = remote_session(
+            args,
+            lang=lang,
+            needs_en=needs_en,
+            channel_dir=channel_dir,
+            playlist_dir=playlist_dir,
+            api_key=api_key,
+            usd_per_minute=usd_per_minute,
+        )
+        if args.edit and edit_jobs:
+            return run_final_editing_jobs(args, edit_jobs)
+        return 0
+
+    assert playlist_dir is not None
+    processed = local_session(
+        args,
         lang=lang,
         needs_en=needs_en,
         playlist_dir=playlist_dir,
-        orig_dir=orig_dir,
-        en_dir=en_dir,
+        orig_dir=playlist_dir / lang.upper(),
+        en_dir=playlist_dir / "EN",
         api_key=api_key,
         usd_per_minute=usd_per_minute,
     )
-    if args.from_youtube or args.url:
-        processed = remote_session(args, **session_kwargs)
-    else:
-        processed = local_session(args, **session_kwargs)
-
     if args.edit and processed:
         return run_final_editing(args, processed)
     return 0

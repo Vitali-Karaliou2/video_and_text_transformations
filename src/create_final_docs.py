@@ -182,6 +182,33 @@ translate: edit only the original language and leave "intro_en" and every
 "paragraphs_en" as empty lists."""
 
 
+ANNOTATION_CACHE_KEY = "__annotation__"
+
+ANNOTATION_SYSTEM_PROMPT = """\
+You write a concise annotation (abstract) of an edited video transcript.
+
+Requirements:
+- STRICT length: 200-250 words per language. Never fewer than 200 words.
+  Count the words before replying; expand with concrete details from the
+  transcript if the draft is short;
+- cover the topic, the key points and the conclusions of the video;
+- neutral informative tone, plain prose in 1-3 paragraphs, no bullet lists;
+- write each annotation natively in its own language (translate the
+  content, do not transliterate).
+
+Reply with JSON only:
+{"annotations": {"XX": "text", ...}}
+with exactly the two-letter upper-case language codes requested in
+"languages"."""
+
+
+def annotation_languages(orig_code: str) -> list[str]:
+    """Annotation languages by the rules:
+    Russian original -> Russian annotation only; any other original ->
+    English annotation plus a Russian translation."""
+    return ["RU"] if orig_code == "RU" else ["EN", "RU"]
+
+
 @dataclass
 class Section:
     heading: str
@@ -465,6 +492,152 @@ def subsection_heading_for(sub: dict, lang: str) -> str:
     if lang != "EN" and sub.get("heading_orig"):
         return sub["heading_orig"]
     return sub.get("heading_en") or ""
+
+
+# --------------------------------------------------------------------------
+# Annotation (200-250 words) generation and output
+
+
+# Keep the annotation prompt well under the org TPM limit (30k for gpt-4o).
+ANNOTATION_MAX_PROMPT_TOKENS = 18000
+
+
+def edited_full_text(sections: list[Section], code: str) -> str:
+    """All edited paragraphs of the given language, in document order."""
+    parts: list[str] = []
+    for section in sections:
+        parts.extend(section.intro.get(code) or [])
+        for sub in section.subsections:
+            parts.extend(sub.get(code) or [])
+    return "\n\n".join(parts)
+
+
+def annotation_source_text(sections: list[Section], code: str) -> str:
+    """Edited text condensed for the annotation prompt: when the full text
+    would blow the request token limit, keep the section headings and a
+    proportional beginning of every section, so the whole video is still
+    covered."""
+    ratio = CHARS_PER_TOKEN_EN if code == "EN" else CHARS_PER_TOKEN_OTHER
+    budget = int(ANNOTATION_MAX_PROMPT_TOKENS * ratio)
+
+    blocks: list[tuple[str, list[str]]] = []
+    for section in sections:
+        paragraphs: list[str] = list(section.intro.get(code) or [])
+        for sub in section.subsections:
+            paragraphs.extend(sub.get(code) or [])
+        blocks.append((section.heading_en or section.heading, paragraphs))
+
+    total = sum(len(p) for _, paras in blocks for p in paras)
+    if total <= budget:
+        return "\n\n".join(
+            "\n\n".join([f"## {heading}", *paras])
+            for heading, paras in blocks
+            if paras or heading
+        )
+
+    scale = budget / total
+    parts: list[str] = []
+    for heading, paras in blocks:
+        parts.append(f"## {heading}")
+        section_budget = int(sum(len(p) for p in paras) * scale)
+        used = 0
+        for paragraph in paras:
+            if used and used + len(paragraph) > section_budget:
+                break
+            parts.append(paragraph)
+            used += len(paragraph)
+    return "\n\n".join(parts)
+
+
+def generate_annotation(
+    api_key: str,
+    *,
+    doc_title: str,
+    orig_code: str,
+    sections: list[Section],
+    usage: dict[str, int],
+) -> dict[str, str]:
+    languages = annotation_languages(orig_code)
+    source_code = orig_code if orig_code != "EN" else "EN"
+    text = annotation_source_text(sections, source_code)
+    payload = {
+        "document_title": doc_title,
+        "original_language": LANGUAGE_NAMES.get(orig_code, orig_code),
+        "languages": languages,
+        "edited_transcript": text,
+    }
+    result = chat_json(
+        api_key,
+        [
+            {"role": "system", "content": ANNOTATION_SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": json.dumps(payload, ensure_ascii=False, indent=2),
+            },
+        ],
+        usage,
+    )
+    annotations = {
+        code: str((result.get("annotations") or {}).get(code) or "").strip()
+        for code in languages
+    }
+    # The model tends to undershoot the word count; one targeted retry per
+    # too-short annotation.
+    for code in languages:
+        current = annotations.get(code)
+        if not current or len(current.split()) >= 200:
+            continue
+        retry = chat_json(
+            api_key,
+            [
+                {
+                    "role": "system",
+                    "content": (
+                        "Expand the given annotation to 200-250 words "
+                        "(STRICT: never fewer than 200 words - count them), "
+                        "in the same language, adding concrete details "
+                        "from the transcript. Keep the neutral informative "
+                        "tone and plain prose. Reply with JSON only: "
+                        '{"annotation": "text"}'
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": json.dumps(
+                        {
+                            "annotation": current,
+                            "edited_transcript": text,
+                        },
+                        ensure_ascii=False,
+                    ),
+                },
+            ],
+            usage,
+        )
+        expanded = str(retry.get("annotation") or "").strip()
+        if len(expanded.split()) > len(current.split()):
+            annotations[code] = expanded
+    return {code: text_ for code, text_ in annotations.items() if text_}
+
+
+def annotation_path(playlist_dir: Path, code: str, stem: str) -> Path:
+    return playlist_dir / code / OUTPUT_DIRNAME / f"{stem}.txt"
+
+
+def write_annotation(path: Path, doc_title: str, text: str) -> None:
+    """Annotation .txt: the document title, then the text formatted like the
+    .md body (justified 80-character lines, no hyphenation, blank lines
+    between paragraphs)."""
+    lines: list[str] = textwrap.wrap(
+        doc_title, width=MD_WIDTH, break_long_words=False,
+        break_on_hyphens=False,
+    )
+    for paragraph in re.split(r"\n\s*\n", text):
+        paragraph = " ".join(paragraph.split())
+        if paragraph:
+            lines += ["", justify_paragraph(paragraph)]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 # --------------------------------------------------------------------------
@@ -1225,13 +1398,29 @@ def transcripts_ready(lang_dir: Path, stem: str) -> bool:
     return (lang_dir / f"{stem}.srt").is_file()
 
 
-def is_processed(playlist_dir: Path, stem: str, lang_codes: list[str]) -> bool:
-    """md + docx in every language OUTPUT folder (pdf is best-effort)."""
-    return all(
+def is_processed(
+    playlist_dir: Path,
+    stem: str,
+    lang_codes: list[str],
+    *,
+    annotate: bool = False,
+    orig_code: str = "EN",
+) -> bool:
+    """md + docx in every language OUTPUT folder (pdf is best-effort);
+    with --annotate also the annotation .txt files."""
+    docs_done = all(
         output_files(playlist_dir / code, stem)[kind].is_file()
         for code in lang_codes
         for kind in ("md", "docx")
     )
+    if not docs_done:
+        return False
+    if annotate:
+        return all(
+            annotation_path(playlist_dir, code, stem).is_file()
+            for code in annotation_languages(orig_code)
+        )
+    return True
 
 
 # --------------------------------------------------------------------------
@@ -1318,6 +1507,7 @@ def process_video(
     doc_template: Path | None,
     pdf_template: Path | None,
     auto_yes: bool = False,
+    annotate: bool = False,
 ) -> bool:
     """Process one video; False when the user declined the cost estimate.
 
@@ -1385,10 +1575,40 @@ def process_video(
     ]
 
     prompt_est, completion_est, cost_est = estimate_cost(pending, orig_code)
+    annotation_cached = bool(
+        (cache.get(ANNOTATION_CACHE_KEY) or {}).get("texts")
+    )
+    if annotate and not annotation_cached:
+        # One extra call: the whole edited original text in the prompt,
+        # 200-250 words per requested language in the completion.
+        source = orig_code if orig_code != "EN" else "EN"
+        full_len = sum(len(t[0] if source != "EN" else t[1])
+                       for t in texts.values())
+        ann_prompt = min(
+            int(
+                full_len / (CHARS_PER_TOKEN_EN if source == "EN"
+                            else CHARS_PER_TOKEN_OTHER)
+            ),
+            ANNOTATION_MAX_PROMPT_TOKENS,
+        ) + 400
+        ann_completion = 400 * len(annotation_languages(orig_code))
+        prompt_est += ann_prompt
+        completion_est += ann_completion
+        cost_est += (
+            ann_prompt * USD_PER_MTOKEN_PROMPT
+            + ann_completion * USD_PER_MTOKEN_COMPLETION
+        ) / 1_000_000
     print(
         f"  Sections: {len(sections)} total, "
         f"{len(sections) - len(pending)} already edited (cached), "
-        f"{len(pending)} to edit via the API.",
+        f"{len(pending)} to edit via the API"
+        + (
+            f"; annotation ({'/'.join(annotation_languages(orig_code))}): "
+            + ("cached" if annotation_cached else "to generate")
+            if annotate
+            else ""
+        )
+        + ".",
         flush=True,
     )
     print(
@@ -1439,6 +1659,29 @@ def process_video(
         cache[key] = section_to_cache(section)
         save_edit_cache(cache_path, video.stem, cache)
 
+    annotations: dict[str, str] = {}
+    if annotate:
+        annotations = (cache.get(ANNOTATION_CACHE_KEY) or {}).get("texts") or {}
+        needed = annotation_languages(orig_code)
+        if not all(code in annotations for code in needed):
+            print(
+                f"  Annotation ({'/'.join(needed)}): generating...",
+                flush=True,
+            )
+            annotations = generate_annotation(
+                api_key,
+                doc_title=doc_title,
+                orig_code=orig_code,
+                sections=sections,
+                usage=usage,
+            )
+            cache[ANNOTATION_CACHE_KEY] = {"texts": annotations}
+            save_edit_cache(cache_path, video.stem, cache)
+        else:
+            print(
+                f"  Annotation ({'/'.join(needed)}): cached.", flush=True
+            )
+
     for code in lang_codes:
         files = output_files(playlist_dir / code, video.stem)
         markdown = build_markdown(doc_title, meta_lines, sections, code)
@@ -1462,6 +1705,20 @@ def process_video(
                     f"  Saved: {files[kind].relative_to(playlist_dir)}",
                     flush=True,
                 )
+    if annotate:
+        for code in annotation_languages(orig_code):
+            text = annotations.get(code)
+            if not text:
+                print(
+                    f"  WARNING: no {code} annotation was generated.",
+                    flush=True,
+                )
+                continue
+            path = annotation_path(playlist_dir, code, video.stem)
+            write_annotation(path, doc_title, text)
+            print(
+                f"  Saved: {path.relative_to(playlist_dir)}", flush=True
+            )
     actual_cost = (
         usage.get("prompt_tokens", 0) * USD_PER_MTOKEN_PROMPT
         + usage.get("completion_tokens", 0) * USD_PER_MTOKEN_COMPLETION
@@ -1531,6 +1788,25 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "built in the summary format and the ToC comes from the video "
             "timecodes (INFO/<stem>.json saved by transcribe_videos.py); "
             "videos that do have slides.json still use the slides"
+        ),
+    )
+    parser.add_argument(
+        "--annotate",
+        action="store_true",
+        help=(
+            "Also create a 200-250 word annotation .txt per video: Russian "
+            "original -> Russian annotation in RU/OUTPUT; any other "
+            "original -> English annotation in EN/OUTPUT plus a Russian "
+            "translation in RU/OUTPUT"
+        ),
+    )
+    parser.add_argument(
+        "--video",
+        default=None,
+        metavar="STEM",
+        help=(
+            "Process only the video with this file stem (exact name without "
+            "extension); overrides --next"
         ),
     )
     parser.add_argument(
@@ -1608,13 +1884,26 @@ def main(argv: list[str] | None = None) -> int:
         has_slides = folder is not None and (folder / RESULT_FILENAME).is_file()
         return has_slides or args.no_slides
 
+    if args.video is not None:
+        videos = [video for video in videos if video.stem == args.video]
+        if not videos:
+            raise SystemExit(
+                f"--video: no video named {args.video!r} in {playlist_dir}"
+            )
+
     eligible = [video for video in videos if inputs_ready(video)]
     pending = [
         video
         for video in eligible
-        if not is_processed(playlist_dir, video.stem, lang_codes)
+        if not is_processed(
+            playlist_dir,
+            video.stem,
+            lang_codes,
+            annotate=args.annotate,
+            orig_code=orig_code,
+        )
     ]
-    session = pending[: args.next_count]
+    session = pending[: args.next_count] if args.video is None else pending
 
     print(f"Playlist folder: {playlist_dir}", flush=True)
     print(
@@ -1667,6 +1956,7 @@ def main(argv: list[str] | None = None) -> int:
             doc_template=args.doc,
             pdf_template=args.pdf,
             auto_yes=args.yes,
+            annotate=args.annotate,
         ):
             print("Session stopped: not confirmed.", flush=True)
             break
