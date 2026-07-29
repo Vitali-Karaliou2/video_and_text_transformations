@@ -35,3 +35,11 @@ Desktop.ini
 *.xlsx
 *.xls
 *.csv
+
+# Run logs of the root automation bats
+/_run_scripts/_logs/
+
+# Scratch dumps and one-off helper scripts kept in the project root
+# (_comments2.txt, _dump_doc.py, _sim3_tail.txt, ...)
+/_*.txt
+/_*.py

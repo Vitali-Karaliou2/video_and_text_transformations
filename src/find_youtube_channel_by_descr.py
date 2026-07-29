@@ -520,19 +520,20 @@ def generate_channel_bats(
         head_comment="",
         head_set=(
             "rem ====================================================================\n"
-            "rem EDIT THIS LINE: only the videos whose YouTube title contains this\n"
-            "rem text are processed (case-insensitive, the whole channel, playlists\n"
-            "rem ignored). There may be several matches; each one asks for its own\n"
-            "rem confirmation, and 'n' moves on to the next match.\n"
+            "rem EDIT THIS LINE:\n"
+            "rem\n"
+            f"{TITLE_SUBSTR_MARKER}{substr}\n"
+            "rem\n"
+            "rem Only the videos whose YouTube title contains that text are\n"
+            "rem processed (case-insensitive, the whole channel, playlists\n"
+            "rem ignored). There may be several matches; each one asks for its\n"
+            "rem own confirmation, and 'n' moves on to the next match.\n"
             "rem\n"
             "rem It is a rem line on purpose: cmd.exe reads a bat in the console\n"
             "rem code page and would turn Cyrillic into garbage on its way into a\n"
-            "rem variable, so PowerShell reads this line straight from the bat as\n"
-            "rem UTF-8. Keep the file UTF-8 without BOM, and edit only the text\n"
+            "rem variable, so PowerShell reads that line straight from the bat as\n"
+            "rem UTF-8. Keep this file UTF-8 without BOM, and edit only the text\n"
             "rem after the '=' sign.\n"
-            "\n"
-            f"{TITLE_SUBSTR_MARKER}{substr}\n"
-            "\n"
         ),
         playlist_arg="",
         head_echo="",

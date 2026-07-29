@@ -2,19 +2,21 @@
 setlocal EnableDelayedExpansion
 
 rem ====================================================================
-rem EDIT THIS LINE: the free-text description of the YouTube channel to
-rem search for. The first bat parameter, if given, overrides it.
+rem EDIT THIS LINE:
+rem
+rem DESCR=makingitright9305
+rem
+rem The free-text description of the YouTube channel to search for. The
+rem first bat parameter, if given, overrides it.
+rem
+rem Earlier searches, to copy into that line:
+rem   Политолог Аббас Галлямов YouTube
+rem   YouTube Using Modern AI for Game Design
 rem
 rem It is a rem line on purpose: cmd.exe reads a bat in the console code
 rem page and would turn Cyrillic into garbage on its way into a variable,
-rem so PowerShell reads this line straight from the bat as UTF-8. Keep
+rem so PowerShell reads that line straight from the bat as UTF-8. Keep
 rem this file UTF-8 without BOM, and edit only the text after the '='.
-
-rem DESCR=makingitright9305
-
-rem Earlier searches, to copy into the line above:
-rem   ????????? ????? ???????? YouTube
-rem   YouTube Using Modern AI for Game Design
 
 rem set "CHANNEL_PATH=AI_for_Game_Design\"  
 
