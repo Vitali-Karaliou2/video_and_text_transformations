@@ -62,6 +62,36 @@ def find_continuations(obj, tokens: list[str]) -> None:
             find_continuations(item, tokens)
 
 
+# Besides the "load more videos" token, a browse response also carries
+# continuations for the sort chips (Latest/Popular/Oldest) and for the
+# engagement panels. Those re-request the very same grid, so following them
+# never terminates on channels that fit into a single page.
+NON_GRID_KEYS = frozenset(
+    {
+        "engagementPanel",
+        "engagementPanels",
+        "chipBarViewModel",
+        "chipCloudRenderer",
+        "chipCloudChipRenderer",
+        "chipViewModel",
+    }
+)
+
+
+def find_grid_continuations(obj, tokens: list[str]) -> None:
+    if isinstance(obj, dict):
+        renderer = obj.get("continuationItemRenderer")
+        if isinstance(renderer, dict):
+            find_continuations(renderer, tokens)
+        for key, value in obj.items():
+            if key in NON_GRID_KEYS or key == "continuationItemRenderer":
+                continue
+            find_grid_continuations(value, tokens)
+    elif isinstance(obj, list):
+        for item in obj:
+            find_grid_continuations(item, tokens)
+
+
 def extract_channel_name(body: dict, fallback: str = "YouTube Channel") -> str:
     metadata = body.get("metadata", {}).get("channelMetadataRenderer", {})
     title = metadata.get("title")
@@ -204,7 +234,7 @@ def fetch_browse_page(channel_id: str, continuation: str | None = None) -> dict:
 
 def first_continuation(body: dict) -> str | None:
     tokens: list[str] = []
-    find_continuations(body, tokens)
+    find_grid_continuations(body, tokens)
     return tokens[0] if tokens else None
 
 
@@ -219,8 +249,10 @@ def fetch_all_browse_videos(channel_id: str) -> tuple[list[dict], str, str | Non
 
     token = first_continuation(body)
     page = 1
+    used_tokens: set[str] = set()
 
-    while token:
+    while token and token not in used_tokens:
+        used_tokens.add(token)
         page += 1
         response = fetch_browse_page(channel_id, token)
         added, items = ingest_lockups_from_response(response, videos, seen_ids)
@@ -228,7 +260,10 @@ def fetch_all_browse_videos(channel_id: str) -> tuple[list[dict], str, str | Non
         if items == 0:
             log_page_ingest(page, len(videos), added, items, is_last=True)
             break
-        log_page_ingest(page, len(videos), added, items, is_last=not token)
+        is_last = not token or token in used_tokens
+        log_page_ingest(page, len(videos), added, items, is_last=is_last)
+        if is_last:
+            break
         time.sleep(0.4)
 
     print(
@@ -333,12 +368,17 @@ def fetch_browse_up_to_count(
                 flush=True,
             )
 
+    used_tokens: set[str] = set()
+
     while token and (min_count is None or len(videos) < min_count):
+        used_tokens.add(token)
         page += 1
         response = fetch_browse_page(channel_id, token)
         added, items = ingest_lockups_from_response(response, videos, seen_ids)
         pages_fetched = page
         token = first_continuation(response)
+        if token in used_tokens:
+            token = None
         if items == 0:
             log_page_ingest(page, len(videos), added, items, is_last=True)
             print("Empty browse page; channel list complete.", flush=True)
