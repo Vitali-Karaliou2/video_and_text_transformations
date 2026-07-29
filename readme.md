@@ -276,12 +276,16 @@ _run_scripts\update_playlists.bat
 ### Запуск
 
 ```bat
-_run_scripts\find_youtube_channel_by_descr.bat
+_run_scripts\add_youtube_channel_by_descr.bat
 python src\find_youtube_channel_by_descr.py "Политолог Аббас Галлямов YouTube"
 ```
 
 В bat-файле описание канала задаётся в явно выделенной строке
-(`set "DESCR=..."`); первый параметр bat-файла, если задан, её переопределяет.
+`rem DESCR=...`; первый параметр bat-файла, если задан, её переопределяет.
+Строка именно `rem`, а не `set "DESCR=..."`, по той же причине, что и
+`rem TITLE_SUBSTR=...` в `transcribe_and_edit_next_by_substr.bat` (см. ниже):
+cmd.exe читает bat в кодовой странице консоли и портит кириллицу по пути в
+переменную, поэтому строку вычитывает из bat уже PowerShell как UTF-8.
 Папка `_run_scripts/` в корне проекта и этот bat-файл входят в git.
 
 ### Как работает

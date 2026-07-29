@@ -52,6 +52,7 @@ import subprocess
 import sys
 import time
 import urllib.parse
+from collections.abc import Collection
 from pathlib import Path
 
 _SRC_DIR = Path(__file__).resolve().parent
@@ -488,7 +489,10 @@ def generate_channel_bats(
     lang: str,
     *,
     overwrite_bypl: bool = False,
+    only: Collection[str] | None = None,
 ) -> None:
+    """Write the channel automation bats; `only` limits it to some of them
+    (used to backfill a newly added bat into existing channels)."""
     run_scripts = channel_root / "_run_scripts"
     run_scripts.mkdir(parents=True, exist_ok=True)
     channel = channel_relative_ref(channel_root, channels_dir(WORKSPACE_ROOT))
@@ -513,14 +517,23 @@ def generate_channel_bats(
         channel=channel,
         lang=lang,
         workspace=workspace,
-        head_comment=(
-            "rem Only the videos whose YouTube title contains the text on the\n"
-            "rem TITLE_SUBSTR line below are processed (case-insensitive, the\n"
-            "rem whole channel, playlists ignored). Every match asks for its\n"
-            "rem own confirmation; 'n' moves on to the next match.\n"
-            "rem Edit the text after '=' only, and keep this file UTF-8.\n"
+        head_comment="",
+        head_set=(
+            "rem ====================================================================\n"
+            "rem EDIT THIS LINE: only the videos whose YouTube title contains this\n"
+            "rem text are processed (case-insensitive, the whole channel, playlists\n"
+            "rem ignored). There may be several matches; each one asks for its own\n"
+            "rem confirmation, and 'n' moves on to the next match.\n"
+            "rem\n"
+            "rem It is a rem line on purpose: cmd.exe reads a bat in the console\n"
+            "rem code page and would turn Cyrillic into garbage on its way into a\n"
+            "rem variable, so PowerShell reads this line straight from the bat as\n"
+            "rem UTF-8. Keep the file UTF-8 without BOM, and edit only the text\n"
+            "rem after the '=' sign.\n"
+            "\n"
+            f"{TITLE_SUBSTR_MARKER}{substr}\n"
+            "\n"
         ),
-        head_set=f"{TITLE_SUBSTR_MARKER}{substr}\n",
         playlist_arg="",
         head_echo="",
         ps_prelude=TITLE_SUBSTR_PRELUDE,
@@ -528,7 +541,7 @@ def generate_channel_bats(
         log_prefix="transcribe_and_edit_next_by_substr",
         scope_note="every channel video whose title contains TITLE_SUBSTR",
     )
-    if playlist_folder:
+    if playlist_folder and (only is None or BYPL_BAT_NAME in only):
         bypl = BAT_TEMPLATE.format(
             channel=channel,
             lang=lang,
@@ -546,20 +559,22 @@ def generate_channel_bats(
             log_prefix="transcribe_and_edit_next_bypl",
             scope_note="next video from the playlist named in PLAYLIST",
         )
-    else:
+    elif only is None or BYPL_BAT_NAME in only:
         bypl = None
         print(
             "  WARNING: no playlist folders in _cache/playlists.json; "
             f"{BYPL_BAT_NAME} was not generated.",
             flush=True,
         )
+    else:
+        bypl = None
 
     for name, content, force in (
         (NEXT_BAT_NAME, flat, False),
         (BY_SUBSTR_BAT_NAME, by_substr, False),
         (BYPL_BAT_NAME, bypl, overwrite_bypl),
     ):
-        if content is None:
+        if content is None or (only is not None and name not in only):
             continue
         path = run_scripts / name
         if path.exists() and not force:

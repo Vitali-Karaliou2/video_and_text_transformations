@@ -2,14 +2,26 @@
 setlocal EnableDelayedExpansion
 
 rem ====================================================================
-rem EDIT THIS LINE: the free-text description of the YouTube channel
-rem to search for (the first bat parameter, if given, overrides it).
-set "DESCR=Политолог Аббас Галлямов YouTube"
+rem EDIT THIS LINE: the free-text description of the YouTube channel to
+rem search for. The first bat parameter, if given, overrides it.
+rem
+rem It is a rem line on purpose: cmd.exe reads a bat in the console code
+rem page and would turn Cyrillic into garbage on its way into a variable,
+rem so PowerShell reads this line straight from the bat as UTF-8. Keep
+rem this file UTF-8 without BOM, and edit only the text after the '='.
+
+rem DESCR=makingitright9305
+
+rem Earlier searches, to copy into the line above:
+rem   ????????? ????? ???????? YouTube
+rem   YouTube Using Modern AI for Game Design
+
+rem set "CHANNEL_PATH=AI_for_Game_Design\"  
+
 rem ====================================================================
-if not "%~1"=="" set "DESCR=%~1"
 
 rem Do not use chcp 65001 here: it switches cmd to a raster font and breaks
-rem Cyrillic in the classic console. Keep the system OEM code page (cp866).
+rem Cyrillic in the classic console. Keep the system OEM code page.
 
 cd /d D:\Vitali\Streams_from_Youtube_Channels\yt-dlp
 
@@ -21,7 +33,6 @@ set "LOGFILE=%LOGDIR%\find_youtube_channel_by_descr_%LOGSTAMP%.log"
 
 call :logecho === find a YouTube channel by description ===
 call :logecho Log file: %LOGFILE%
-call :logecho Description: %DESCR%
 call :logblank
 call :logecho Up to 3 matching channels are shown with their video and
 call :logecho playlist counts; each asks for a y/n/q confirmation before
@@ -31,9 +42,9 @@ call :logecho _channels and the transcribe_and_edit_next bat files are
 call :logecho generated in the channel _run_scripts folder.
 call :logblank
 
-set "RUNCMD=python -u src\find_youtube_channel_by_descr.py '%DESCR%'"
+set "RUNCMD=python -u src\find_youtube_channel_by_descr.py $DESCR"
 call :logecho RUN: %RUNCMD%
-powershell -NoProfile -Command "[Console]::OutputEncoding = [Text.UTF8Encoding]::new(); & %RUNCMD% 2>&1 | ForEach-Object { [Console]::WriteLine($_); Add-Content -LiteralPath '%LOGFILE%' -Value $_ -Encoding utf8 }; exit $LASTEXITCODE"
+powershell -NoProfile -Command "[Console]::OutputEncoding = [Text.UTF8Encoding]::new(); $lines = @((Get-Content -LiteralPath '%~f0' -Encoding utf8) -match '^rem DESCR='); if (-not $lines) { [Console]::WriteLine('ERROR: the DESCR line is missing'); exit 1 }; $DESCR = ($lines[0] -replace '^rem DESCR=', '').TrimEnd(); if ('%~1' -ne '') { $DESCR = '%~1' }; [Console]::WriteLine('Description: ' + $DESCR); Add-Content -LiteralPath '%LOGFILE%' -Value ('Description: ' + $DESCR) -Encoding utf8; & %RUNCMD% 2>&1 | ForEach-Object { [Console]::WriteLine($_); Add-Content -LiteralPath '%LOGFILE%' -Value $_ -Encoding utf8 }; exit $LASTEXITCODE"
 set "RUNEXIT=!ERRORLEVEL!"
 if not "!RUNEXIT!"=="0" (
   echo ERROR: exit code !RUNEXIT!
