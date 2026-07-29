@@ -22,6 +22,10 @@ video list is used instead (_cache/videos.json built by the summary script,
 newest first); each video's results go to its own playlist folder (or to
 misc/ for videos outside any playlist).
 
+--title-substr narrows the remote list to the videos whose title contains
+the given substring; every match is offered in turn ('n' skips to the next
+one), which pairs with --next all to walk a whole lecture series.
+
 Pipeline flags: --orig-only skips the English pass; --edit chains
 create_final_docs.py per video right after transcription (slide stages are
 skipped, the document ToC then comes from the video timecodes). With --edit
@@ -37,6 +41,9 @@ Examples:
       --lang ru --orig-only --from-youtube --edit
   python src/transcribe_videos.py _AbbasGallyamov \
       --lang ru --orig-only --from-youtube --edit --annotate
+  python src/transcribe_videos.py AI_for_Game_Design\\_makingitright9305 \
+      --lang ru --orig-only --from-youtube --edit --annotate \
+      --title-substr "Lecture 1.1." --next all
 """
 
 from __future__ import annotations
@@ -123,6 +130,24 @@ def normalize_lang(value: str) -> str:
     if len(lang) != 2 or not lang.isalpha():
         raise SystemExit(f"--lang must be a two-letter language code, got: {value!r}")
     return lang
+
+
+def normalize_next_count(value: str) -> int | None:
+    """Session size; None means "every pending video"."""
+    text = str(value).strip().lower()
+    if text == "all":
+        return None
+    try:
+        count = int(text)
+    except ValueError:
+        count = 0
+    if count < 1:
+        raise SystemExit(f"--next must be a positive number or 'all', got: {value!r}")
+    return count
+
+
+def next_label(count: int | None) -> str:
+    return "all" if count is None else str(count)
 
 
 def list_videos(playlist_dir: Path) -> list[Path]:
@@ -850,6 +875,20 @@ def remote_session(
         ]
         scope_note = "in the playlist"
 
+    if args.title_substr:
+        needle = args.title_substr.casefold()
+        matching = [job for job in jobs if needle in job["title"].casefold()]
+        print(
+            f'Title filter "{args.title_substr}": {len(matching)} of '
+            f"{len(jobs)} video title(s) match.",
+            flush=True,
+        )
+        jobs = matching
+        scope_note += " matching the title filter"
+        if not jobs:
+            print("Nothing to do: no video title contains the substring.", flush=True)
+            return 0, []
+
     if args.url:
         wanted = video_id_from_url(args.url)
         matched = [job for job in jobs if job["id"] == wanted]
@@ -899,7 +938,7 @@ def remote_session(
     print(
         f"Videos: {len(jobs)} {scope_note}, "
         f"{transcribed_count} already transcribed{edited_note}, "
-        f"{len(session)} in this session (--next {args.next_count}).",
+        f"{len(session)} in this session (--next {next_label(args.next_count)}).",
         flush=True,
     )
     if not session:
@@ -983,6 +1022,9 @@ def remote_session(
             except EOFError:
                 answer = ""
             if answer not in ("y", "yes"):
+                if args.title_substr:
+                    print("  Skipped; moving on to the next match.", flush=True)
+                    continue
                 print("Session stopped: transcription not confirmed.",
                       flush=True)
                 break
@@ -1063,10 +1105,24 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--next",
         dest="next_count",
-        type=int,
-        default=1,
+        default="1",
         metavar="N",
-        help="How many videos to transcribe this session (default: 1)",
+        help=(
+            "How many videos to transcribe this session (default: 1); "
+            "'all' takes every pending video"
+        ),
+    )
+    parser.add_argument(
+        "--title-substr",
+        dest="title_substr",
+        default=None,
+        metavar="TEXT",
+        help=(
+            "Remote mode only: keep just the videos whose title contains "
+            "this substring (case-insensitive). Every match is offered in "
+            "turn, and answering 'n' skips to the next match instead of "
+            "ending the session"
+        ),
     )
     parser.add_argument(
         "--orig-only",
@@ -1156,7 +1212,7 @@ def local_session(
     )
     print(
         f"Videos: {len(videos)} total, {done_count} already transcribed, "
-        f"{len(session)} in this session (--next {args.next_count}).",
+        f"{len(session)} in this session (--next {next_label(args.next_count)}).",
         flush=True,
     )
     if not session:
@@ -1254,14 +1310,17 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     lang = normalize_lang(args.lang)
     needs_en = lang != "en" and not args.orig_only
+    args.next_count = normalize_next_count(args.next_count)
 
-    if args.next_count < 1:
-        raise SystemExit("--next must be a positive number")
     for tool, name in ((args.ffmpeg, "ffmpeg"), (args.ffprobe, "ffprobe")):
         if not shutil.which(tool):
             raise SystemExit(f"{name} not found: {tool}")
 
     remote = bool(args.from_youtube or args.url)
+    if args.title_substr and not remote:
+        raise SystemExit(
+            "--title-substr works only in remote mode (--from-youtube / --url)"
+        )
     try:
         channel_dir = require_channel_ref(
             channels_dir(args.workspace), args.channel_folder
