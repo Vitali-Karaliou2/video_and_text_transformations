@@ -13,6 +13,7 @@ from project_paths import (
     browse_cache_path,
     channel_cache_dir,
     channel_playlists_dir,
+    iter_channel_roots,
     legacy_cache_path,
     playlists_cache_path,
     video_playlists_cache_path,
@@ -367,13 +368,3 @@ def save_video_playlist_map(
     if details is not None:
         payload["details"] = details
     write_json(video_playlists_cache_path(channel_root), payload)
-
-
-def iter_channel_roots(channels_root: Path) -> list[Path]:
-    if not channels_root.is_dir():
-        return []
-    return sorted(
-        path
-        for path in channels_root.iterdir()
-        if path.is_dir() and path.name.startswith("_") and path.name != "_"
-    )

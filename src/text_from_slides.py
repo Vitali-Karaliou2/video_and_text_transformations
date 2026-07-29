@@ -51,7 +51,7 @@ if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
 from extract_slides import SLIDES_DIRNAME, short_slide_keys, slides_out_dir
-from project_paths import WORKSPACE_ROOT, channels_dir
+from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
 from transcribe_videos import list_videos, read_api_key
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -477,7 +477,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "channel_folder",
-        help="Channel folder name under _channels (e.g. _Autotesting)",
+        help="Channel ref under _channels/ (e.g. _Autotesting or "
+        "AI_for_Game_Design\\_BuildingAeon)",
     )
     parser.add_argument(
         "playlist_folder",
@@ -505,12 +506,14 @@ def main(argv: list[str] | None = None) -> int:
     if args.next_count < 1:
         raise SystemExit("--next must be a positive number")
 
-    playlist_dir = (
-        channels_dir(args.workspace)
-        / args.channel_folder
-        / "_playlists"
-        / args.playlist_folder
-    )
+    try:
+        channel_dir = require_channel_ref(
+            channels_dir(args.workspace), args.channel_folder
+        )
+    except FileNotFoundError as exc:
+        raise SystemExit(str(exc)) from exc
+
+    playlist_dir = channel_dir / "_playlists" / args.playlist_folder
     if not playlist_dir.is_dir():
         raise SystemExit(f"Playlist folder not found: {playlist_dir}")
 
@@ -521,7 +524,7 @@ def main(argv: list[str] | None = None) -> int:
     api_key = read_api_key(args.workspace)
 
     keys = short_slide_keys([video.stem for video in videos])
-    course = args.channel_folder.lstrip("_")
+    course = channel_dir.name.lstrip("_")
     original_language = detect_original_language(playlist_dir)
 
     eligible = [

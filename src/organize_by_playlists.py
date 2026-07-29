@@ -62,7 +62,7 @@ from project_paths import (
     WORKSPACE_ROOT,
     channel_playlists_dir,
     channels_dir,
-    normalize_channel_folder_arg,
+    require_channel_ref,
 )
 
 
@@ -72,8 +72,7 @@ def collection_root(args: argparse.Namespace) -> Path:
         if args.output_dir is not None
         else channels_dir(args.workspace)
     )
-    folder = normalize_channel_folder_arg(args.folder)
-    return (channels_base / folder).resolve()
+    return require_channel_ref(channels_base, args.folder)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -82,8 +81,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     p.add_argument(
         "folder",
-        help="Name of the channel subfolder under _channels/ "
-        "(e.g. _VladilenMinin or VladilenMinin)",
+        help="Channel ref under _channels/ (e.g. _VladilenMinin or "
+        "AI_for_Game_Design\\_BuildingAeon)",
     )
     p.add_argument(
         "--output-dir",

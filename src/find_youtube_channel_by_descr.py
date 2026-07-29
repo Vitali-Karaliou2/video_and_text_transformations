@@ -61,7 +61,13 @@ from channel_browse import (
     find_continuations,
     post_innertube,
 )
-from project_paths import WORKSPACE_ROOT, channel_folder_name, channels_dir
+from project_paths import (
+    WORKSPACE_ROOT,
+    channel_folder_name,
+    channel_relative_ref,
+    channels_dir,
+    find_channel_folder,
+)
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -328,25 +334,7 @@ def translate_playlists(
 def locate_channel_root(channel_id: str, handle: str | None) -> Path | None:
     """Existing folder under _channels/ for this channel, if any."""
     root = channels_dir(WORKSPACE_ROOT)
-    if not root.is_dir():
-        return None
-    for child in sorted(root.iterdir()):
-        if not child.is_dir():
-            continue
-        for cache_name in ("playlists.json", "videos.json"):
-            try:
-                data = json.loads(
-                    (child / "_cache" / cache_name).read_text(encoding="utf-8")
-                )
-            except (OSError, ValueError):
-                continue
-            if data.get("channel_id") == channel_id:
-                return child
-    if handle:
-        guess = root / channel_folder_name(handle)
-        if guess.is_dir():
-            return guess
-    return None
+    return find_channel_folder(root, handle, channel_id=channel_id)
 
 
 def summaries_present(channel_root: Path) -> bool:
@@ -481,7 +469,7 @@ def generate_channel_bats(
 ) -> None:
     run_scripts = channel_root / "_run_scripts"
     run_scripts.mkdir(parents=True, exist_ok=True)
-    channel = channel_root.name
+    channel = channel_relative_ref(channel_root, channels_dir(WORKSPACE_ROOT))
     workspace = str(WORKSPACE_ROOT)
     playlist_folder = default_playlist_folder(channel_root)
 
@@ -588,7 +576,8 @@ def print_candidate(index: int, cand: dict) -> None:
             else "no summaries yet"
         )
         print(
-            f"  Local folder: _channels\\{existing.name} already exists "
+            f"  Local folder: _channels\\{channel_relative_ref(existing, channels_dir(WORKSPACE_ROOT))} "
+            f"already exists "
             f"({note}).",
             flush=True,
         )

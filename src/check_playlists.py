@@ -24,7 +24,14 @@ from channel_playlists import (  # noqa: E402
     sync_channel_playlists,
     validate_playlist_folders,
 )
-from project_paths import WORKSPACE_ROOT, channel_playlists_dir, channels_dir  # noqa: E402
+from project_paths import (  # noqa: E402
+    WORKSPACE_ROOT,
+    channel_playlists_dir,
+    channel_relative_ref,
+    channels_dir,
+    describe_channels_layout,
+    resolve_channel_ref,
+)
 
 CHANNEL_ID_RE = re.compile(r"^UC[\w-]{22}$")
 
@@ -44,7 +51,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "channel",
         nargs="?",
-        help="Optional channel folder name under _channels/ (e.g. _VladilenMinin)",
+        help="Optional channel ref under _channels/ "
+        "(e.g. _VladilenMinin or AI_for_Game_Design\\_BuildingAeon)",
     )
     parser.add_argument(
         "--update",
@@ -67,6 +75,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="yt-dlp",
         help="yt-dlp executable (default: yt-dlp)",
     )
+    parser.add_argument(
+        "--layout",
+        action="store_true",
+        help="Print the _channels/ tree (containers vs channel folders) and exit",
+    )
     return parser.parse_args(argv)
 
 
@@ -83,12 +96,8 @@ def run_yt_dlp(args: argparse.Namespace, *extra: str) -> subprocess.CompletedPro
 def channel_roots(args: argparse.Namespace) -> list[Path]:
     root = channels_dir(args.workspace)
     if args.channel:
-        folder = (
-            args.channel
-            if args.channel.startswith("_")
-            else f"_{args.channel.lstrip('_')}"
-        )
-        return [root / folder]
+        resolved = resolve_channel_ref(root, args.channel)
+        return [resolved] if resolved else [root / args.channel]
     return iter_channel_roots(root)
 
 
@@ -108,7 +117,7 @@ def check_channel(channel_root: Path, args: argparse.Namespace) -> int:
     cache_path = playlists_cache_path(channel_root)
     rel_cache = cache_path.relative_to(args.workspace)
 
-    print(f"\n[{channel_root.name}]")
+    print(f"\n[{channel_relative_ref(channel_root, channels_dir(args.workspace))}]")
     print(f"  Cache file: {rel_cache}")
 
     cached = load_playlists_cache(cache_path) if cache_path.is_file() else None
@@ -185,8 +194,13 @@ def check_channel(channel_root: Path, args: argparse.Namespace) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    roots = channel_roots(args)
     channels_root = channels_dir(args.workspace)
+    if args.layout:
+        for line in describe_channels_layout(channels_root):
+            print(line)
+        return 0
+
+    roots = channel_roots(args)
 
     print("Playlist cache check")
     print(f"Workspace:  {args.workspace.resolve()}")
@@ -209,7 +223,7 @@ def main(argv: list[str] | None = None) -> int:
     ok = 0
     for channel_root in roots:
         if not channel_root.is_dir():
-            print(f"\n[{channel_root.name}]")
+            print(f"\n[{channel_relative_ref(channel_root, channels_dir(args.workspace))}]")
             print("  Result:   folder not found")
             total_issues += 1
             continue

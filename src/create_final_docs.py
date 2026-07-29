@@ -83,7 +83,7 @@ if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
 from extract_slides import SLIDES_DIRNAME, short_slide_keys, slides_out_dir
-from project_paths import WORKSPACE_ROOT, channels_dir
+from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
 from text_from_slides import LANGUAGE_NAMES, MODEL, RESULT_FILENAME, chat_json
 from transcribe_videos import (
     INFO_DIRNAME,
@@ -136,7 +136,9 @@ Editing rules:
    lightly polish the spoken wording (drop filler words, false starts,
    broken repetitions) while fully preserving the content, details, examples
    and the speaker's tone. Never summarize, never drop content, never add
-   content of your own.
+   content of your own. When the original language is Russian, use the
+   letter «ё» wherever standard Russian orthography calls for it (e.g.
+   «ещё», «всё», «идёт», «счёт», «отчёт»); do not replace «ё» with «е».
 2. English text: edit the same way; its punctuation usually needs little
    work, but polish awkward constructions - the speaker is not a native
    English speaker.
@@ -201,7 +203,9 @@ Requirements:
 - cover the topic, the key points and the conclusions of the video;
 - neutral informative tone, plain prose in 1-3 paragraphs, no bullet lists;
 - write each annotation natively in its own language (translate the
-  content, do not transliterate).
+  content, do not transliterate);
+- for Russian text, use the letter «ё» wherever standard Russian
+  orthography calls for it; do not replace «ё» with «e».
 
 Reply with JSON only:
 {"annotations": {"XX": "text", ...}}
@@ -1867,7 +1871,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "channel_folder",
-        help="Channel folder name under _channels (e.g. _Autotesting)",
+        help="Channel ref under _channels/ (e.g. _Autotesting or "
+        "AI_for_Game_Design\\_BuildingAeon)",
     )
     parser.add_argument(
         "playlist_folder",
@@ -1960,17 +1965,19 @@ def main(argv: list[str] | None = None) -> int:
         if path is not None and not path.is_file():
             raise SystemExit(f"{flag} template not found: {path}")
 
-    playlist_dir = (
-        channels_dir(args.workspace)
-        / args.channel_folder
-        / "_playlists"
-        / args.playlist_folder
-    )
+    try:
+        channel_dir = require_channel_ref(
+            channels_dir(args.workspace), args.channel_folder
+        )
+    except FileNotFoundError as exc:
+        raise SystemExit(str(exc)) from exc
+
+    playlist_dir = channel_dir / "_playlists" / args.playlist_folder
     if not playlist_dir.is_dir():
         raise SystemExit(f"Playlist folder not found: {playlist_dir}")
 
     slides_dir = playlist_dir / SLIDES_DIRNAME
-    course = args.channel_folder.lstrip("_")
+    course = channel_dir.name.lstrip("_")
     orig_code = detect_original_code(playlist_dir)
     lang_codes = (
         [orig_code]

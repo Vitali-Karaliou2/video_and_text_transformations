@@ -62,7 +62,7 @@ _SRC_DIR = Path(__file__).resolve().parent
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from project_paths import WORKSPACE_ROOT, channels_dir
+from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
 from transcription_pricing import get_transcription_rate
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -1038,7 +1038,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "channel_folder",
-        help="Channel folder name under _channels (e.g. _Autotesting)",
+        help="Channel ref under _channels/ (e.g. _Autotesting or "
+        "AI_for_Game_Design\\_BuildingAeon)",
     )
     parser.add_argument(
         "playlist_folder",
@@ -1261,9 +1262,12 @@ def main(argv: list[str] | None = None) -> int:
             raise SystemExit(f"{name} not found: {tool}")
 
     remote = bool(args.from_youtube or args.url)
-    channel_dir = channels_dir(args.workspace) / args.channel_folder
-    if not channel_dir.is_dir():
-        raise SystemExit(f"Channel folder not found: {channel_dir}")
+    try:
+        channel_dir = require_channel_ref(
+            channels_dir(args.workspace), args.channel_folder
+        )
+    except FileNotFoundError as exc:
+        raise SystemExit(str(exc)) from exc
 
     playlist_dir: Path | None = None
     if args.playlist_folder is not None:

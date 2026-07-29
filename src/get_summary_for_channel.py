@@ -52,9 +52,10 @@ from channel_playlists import (
 )
 from project_paths import (
     WORKSPACE_ROOT,
+    channel_folder_name,
+    channel_relative_ref,
     channel_summaries_dir,
     channels_dir,
-    channel_folder_name,
     find_channel_folder,
     normalize_channel_folder_arg,
 )
@@ -212,9 +213,10 @@ def resolve_output_folder(
         channels_root,
         resolved_handle,
         explicit=explicit,
+        channel_id=channel_id,
     )
     if existing:
-        return existing.name
+        return channel_relative_ref(existing, channels_root)
 
     if explicit:
         return normalize_channel_folder_arg(explicit)
