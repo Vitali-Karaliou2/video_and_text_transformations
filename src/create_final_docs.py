@@ -22,6 +22,11 @@ How a document is built:
   info slide opens the Foreword, foreword slides open unnumbered sections,
   the agenda slide opens the Agenda section, agenda-matched slides open the
   numbered sections, closing slides are merged into one Conclusion section.
+- The boundary between two sections is then moved off the middle of a
+  sentence: a slide is switched by hand, mid-speech, so the moment it
+  changes is not where the text can be cut. The nearest sentence end is
+  taken instead, looked for further back than forward, since a speaker
+  announces the next topic before reaching for the slide.
 - The .srt transcripts are sliced by those time ranges, so every section
   gets its original-language and English text fragments.
 - Each section is edited by the OpenAI API using both fragments at once:
@@ -85,7 +90,7 @@ import re
 import sys
 import textwrap
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 _SRC_DIR = Path(__file__).resolve().parent
@@ -313,6 +318,7 @@ class Section:
     heading_en: str = ""
     intro: dict[str, list[str]] = field(default_factory=dict)
     subsections: list[dict] = field(default_factory=list)
+    moved: bool = False  # a boundary of this section was refined this run
 
 
 # --------------------------------------------------------------------------
@@ -415,6 +421,136 @@ def close_section_ranges(sections: list[Section], video_end: float) -> None:
     for current, following in zip(sections, sections[1:]):
         current.end = following.start
     sections[-1].end = max(video_end, sections[-1].start + 1.0)
+
+
+# --------------------------------------------------------------------------
+# Section boundaries: from the slide change to the end of the sentence
+
+
+# A slide is switched by hand, in the middle of speech, so the moment it
+# changes is not where a section can be cut: on this course it lands inside a
+# sentence at nearly every second boundary, and the half-sentence left hanging
+# is what makes the editor of the next section retell the end of the previous
+# one. The cut is moved to the nearest sentence end instead. The window is
+# asymmetric because the habit is one-sided: the speaker announces the next
+# topic first and reaches for the slide afterwards.
+BOUNDARY_LOOKBACK_SECONDS = 20.0
+BOUNDARY_LOOKAHEAD_SECONDS = 12.0
+# ... so a candidate after the slide has to be that much closer to win.
+BOUNDARY_FORWARD_PENALTY = 1.5
+# Neither of the two neighbours may be shortened below this.
+BOUNDARY_MIN_SECTION_SECONDS = 15.0
+# A sentence end followed by the start of the next one. Only half of the .srt
+# segments end at a sentence, so most of the usable cuts are inside the text
+# of a segment; the capital letter keeps abbreviations ("и т.д. и т.п.") from
+# looking like one.
+SENTENCE_END_RE = re.compile(
+    r"[.!?\u2026]+[\"\u00bb)\]]*\s+(?=[\"\u00ab(\[\u2013\u2014A-Z\u0410-\u042f\u0401])"
+)
+
+
+def ends_sentence(text: str) -> bool:
+    return text.rstrip().rstrip("\"\u00bb)]").endswith((".", "!", "?", "\u2026"))
+
+
+def char_time(segment: Segment, offset: int) -> float:
+    """When the character at that offset of the segment text was spoken.
+
+    Interpolated over the segment: the .srt has no timing inside it.
+    """
+    if not segment.text:
+        return segment.start
+    share = min(max(offset / len(segment.text), 0.0), 1.0)
+    return segment.start + (segment.end - segment.start) * share
+
+
+def sentence_spots(
+    segments: list[Segment], low: float, high: float
+) -> list[float]:
+    """Times between `low` and `high` at which a sentence ends."""
+    spots: list[float] = []
+    for index, segment in enumerate(segments):
+        if segment.end < low or segment.start > high:
+            continue
+        for match in SENTENCE_END_RE.finditer(segment.text):
+            spot = char_time(segment, match.end())
+            if low <= spot <= high:
+                spots.append(spot)
+        following = segments[index + 1] if index + 1 < len(segments) else None
+        if following is not None and ends_sentence(segment.text):
+            if low <= following.start <= high:
+                spots.append(following.start)
+    return spots
+
+
+def split_segment_at(segments: list[Segment], moment: float) -> bool:
+    """Split the segment `moment` falls into at the sentence end nearest to it.
+
+    The section boundary is then a segment boundary again, and slicing the
+    transcript by time keeps working as it did.
+    """
+    for index, segment in enumerate(segments):
+        if not segment.start < moment < segment.end:
+            continue
+        offsets = [match.end() for match in SENTENCE_END_RE.finditer(segment.text)]
+        if not offsets:
+            return False
+        offset = min(offsets, key=lambda o: abs(char_time(segment, o) - moment))
+        head = segment.text[:offset].strip()
+        tail = segment.text[offset:].strip()
+        if not head or not tail:
+            return False
+        cut = char_time(segment, offset)
+        segments[index] = replace(segment, end=cut, text=head)
+        segments.insert(index + 1, replace(segment, start=cut, text=tail))
+        return True
+    return False
+
+
+def refine_section_boundaries(
+    sections: list[Section], segments: dict[str, list[Segment]], orig_code: str
+) -> list[tuple[str, float]]:
+    """Move the boundaries that fall inside a sentence to the sentence end.
+
+    Returns (heading, shift in seconds) for every section that was moved.
+    """
+    source = segments.get(orig_code) or segments.get("EN") or []
+    if len(sections) < 2 or not source:
+        return []
+    moved: list[tuple[str, float]] = []
+    for previous, section in zip(sections, sections[1:]):
+        slide_change = section.start
+        before = [seg for seg in source if seg.start < slide_change]
+        if not before or ends_sentence(before[-1].text):
+            continue
+        low = max(
+            previous.start + BOUNDARY_MIN_SECTION_SECONDS,
+            slide_change - BOUNDARY_LOOKBACK_SECONDS,
+        )
+        high = min(
+            section.end - BOUNDARY_MIN_SECTION_SECONDS,
+            slide_change + BOUNDARY_LOOKAHEAD_SECONDS,
+        )
+        if low >= high:
+            continue
+        spots = sentence_spots(source, low, high)
+        if not spots:
+            continue
+        target = min(
+            spots,
+            key=lambda spot: (
+                slide_change - spot
+                if spot < slide_change
+                else (spot - slide_change) * BOUNDARY_FORWARD_PENALTY
+            ),
+        )
+        for language_segments in segments.values():
+            split_segment_at(language_segments, target)
+        previous.end = target
+        section.start = target
+        previous.moved = section.moved = True
+        moved.append((section.heading, target - slide_change))
+    return moved
 
 
 # --------------------------------------------------------------------------
@@ -2086,10 +2222,31 @@ def section_to_cache(section: Section, issues: Coverage) -> dict:
         "heading_en": section.heading_en,
         "intro": section.intro,
         "subsections": section.subsections,
+        # The cache key carries the start of the section but not its end, and
+        # the boundary refinement moves both; without the range a section that
+        # merely lost its last sentences would keep an edit that still has
+        # them - and so would the section they moved to.
+        "range": section_range(section),
         # Recorded so that a section whose gaps survived the retry is not
         # re-edited (and re-paid for) on every later run.
         "coverage": issues.as_cache(),
     }
+
+
+def section_range(section: Section) -> list[float]:
+    return [round(section.start, 1), round(section.end, 1)]
+
+
+def stale_range(section: Section, entry: dict) -> bool:
+    """Whether the cached edit was made for a different stretch of the video.
+
+    Entries written before the range was recorded are trusted unless this run
+    moved a boundary of the section.
+    """
+    cached = entry.get("range")
+    if cached is None:
+        return section.moved
+    return list(cached) != section_range(section)
 
 
 def section_from_cache(section: Section, entry: dict) -> None:
@@ -2213,6 +2370,15 @@ def process_video(
         info_dir.mkdir(parents=True, exist_ok=True)
         cache_path = info_dir / f"{video.stem}.{EDIT_CACHE_FILENAME}"
 
+    moved = refine_section_boundaries(sections, segments, orig_code)
+    if moved:
+        shifts = sorted(shift for _, shift in moved)
+        print(
+            f"  Boundaries: {len(moved)} of {len(sections) - 1} moved off a "
+            f"sentence ({shifts[0]:+.1f}..{shifts[-1]:+.1f} s).",
+            flush=True,
+        )
+
     texts: dict[str, tuple[str, str]] = {}
     for section in sections:
         orig_text = (
@@ -2238,6 +2404,14 @@ def process_video(
         key = section_cache_key(section)
         entry = cache.get(key)
         if entry is None:
+            continue
+        if stale_range(section, entry):
+            print(
+                f"  Re-editing '{section.heading}': its boundaries moved.",
+                flush=True,
+            )
+            del cache[key]
+            stale += 1
             continue
         source = texts[key][0] if orig_code != "EN" else texts[key][1]
         issues = cached_coverage(section, entry, source, check_code)
@@ -2290,8 +2464,7 @@ def process_video(
         f"  Sections: {len(sections)} total, "
         f"{len(sections) - len(pending)} already edited (cached), "
         f"{len(pending)} to edit via the API"
-        + (f" ({stale} of them re-edited after the coverage check)"
-           if stale else "")
+        + (f" ({stale} of them dropped from the cache)" if stale else "")
         + (
             f"; annotation ({'/'.join(annotation_languages(orig_code))}): "
             + ("cached" if annotation_cached else "to generate")
