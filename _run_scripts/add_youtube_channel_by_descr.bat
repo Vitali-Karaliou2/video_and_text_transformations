@@ -25,7 +25,7 @@ rem ====================================================================
 rem Do not use chcp 65001 here: it switches cmd to a raster font and breaks
 rem Cyrillic in the classic console. Keep the system OEM code page.
 
-cd /d D:\Vitali\Streams_from_Youtube_Channels\yt-dlp
+cd /d D:\Vitali\Streams_from_Youtube_Channels
 
 for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd_HH_mm"') do set "LOGSTAMP=%%I"
 

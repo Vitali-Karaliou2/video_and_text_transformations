@@ -1474,6 +1474,11 @@ def make_pdf(docx_path: Path, pdf_path: Path, attempts: int = 3) -> bool:
                 ],
                 capture_output=True,
                 text=True,
+                # The child writes UTF-8 (see the reconfigure at the top);
+                # without this the parent would decode it in the ANSI code
+                # page and lose the error message to a UnicodeDecodeError.
+                encoding="utf-8",
+                errors="replace",
                 timeout=300,
             )
             failed = child.returncode != 0

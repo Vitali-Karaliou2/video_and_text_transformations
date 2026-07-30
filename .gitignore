@@ -43,3 +43,6 @@ Desktop.ini
 # (_comments2.txt, _dump_doc.py, _sim3_tail.txt, ...)
 /_*.txt
 /_*.py
+
+# The same scratch files once they are tidied away
+/temp/
