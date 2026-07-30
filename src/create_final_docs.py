@@ -93,6 +93,7 @@ if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
 from extract_slides import SLIDES_DIRNAME, short_slide_keys, slides_out_dir
+from glossary import GLOSSARY_FILENAME, find_glossary, load_terms
 from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
 from text_from_slides import LANGUAGE_NAMES, MODEL, RESULT_FILENAME, chat_json
 from transcribe_videos import (
@@ -158,6 +159,17 @@ Editing rules:
    the speaker made ("...of our country - of our planet"). Restore that
    content in the original language as well: neither version may end up
    saying less than the other, or contradicting it.
+2b. Terminology and loanwords. "glossary" lists the names this course uses:
+   spell them exactly as listed wherever they occur, in both languages, and
+   use them to repair what the recognizer made of them ("PlevRite",
+   "Pleuride", "плеврайт" -> "Playwright"; "OCD" -> "CI/CD"). A term that
+   also stands on the slide is spelled as on the slide. The loanwords the
+   speaker inflects in the original language are their voice, not errors:
+   keep them, but write an established loanword the way that language
+   already writes it («деплой», «фреймворк»), keep a Latin stem Latin and
+   attach the ending after a hyphen («environment-ах», «benefit-ы»), and
+   leave a phrase that keeps its English grammar in English in full
+   ("course description"). Spell the same term the same way throughout.
 3. Keep the two languages parallel: the same paragraph breaks, the same
    subsection boundaries, the same order.
 4. Section layout - decide between exactly two layouts:
@@ -231,8 +243,9 @@ somewhere inside it - find it yourself), and the edited paragraphs the
 fragment goes between.
 
 Edit the fragment exactly like the text around it: fix obvious speech
-recognition errors, enrich the punctuation, lightly polish the spoken
-wording - keeping every detail, example and the speaker's tone. Never
+recognition errors (spelling the names of "glossary" exactly as listed),
+enrich the punctuation, lightly polish the spoken wording - keeping every
+detail, example and the speaker's tone. Never
 summarize, never drop anything, never add anything of your own, and do not
 repeat the surrounding paragraphs: reply with this fragment alone, one
 paragraph per language. When the original language is Russian, use the
@@ -272,6 +285,7 @@ Requirements:
 - neutral informative tone, plain prose in 1-3 paragraphs, no bullet lists;
 - write each annotation natively in its own language (translate the
   content, do not transliterate);
+- spell the names of "glossary" exactly as listed there;
 - for Russian text, use the letter «ё» wherever standard Russian
   orthography calls for it; do not replace «ё» with «e».
 
@@ -483,6 +497,7 @@ def request_edit(
     orig_code: str,
     orig_text: str,
     en_text: str,
+    terms: list[str],
     usage: dict[str, int],
     part: tuple[int, int] | None,
     issues: Coverage,
@@ -493,6 +508,7 @@ def request_edit(
         "course": course,
         "document_title": doc_title,
         "original_language": orig_name,
+        "glossary": terms,
         "section_heading": section.heading,
         "slide_title": slide.get("title"),
         "slide_bullets": slide.get("body") or [],
@@ -566,6 +582,7 @@ def edit_section(
     orig_code: str,
     orig_text: str,
     en_text: str,
+    terms: list[str],
     usage: dict[str, int],
     part: tuple[int, int] | None = None,
 ) -> Coverage:
@@ -587,6 +604,7 @@ def edit_section(
             orig_code=orig_code,
             orig_text=orig_text,
             en_text=en_text,
+            terms=terms,
             usage=usage,
             part=part,
             issues=issues,
@@ -609,7 +627,7 @@ def edit_section(
         snapshot = section_snapshot(section)
         repair_section(
             api_key, section, issues, orig_code=orig_code, en_text=en_text,
-            usage=usage,
+            terms=terms, usage=usage,
         )
         repaired = section_coverage(section, source, code)
         if repaired.weight() < issues.weight():
@@ -816,6 +834,7 @@ def restore_fragment(
     *,
     orig_code: str,
     en_text: str,
+    terms: list[str],
     usage: dict[str, int],
 ) -> None:
     """Edit one dropped fragment on its own and put it back in place.
@@ -843,6 +862,7 @@ def restore_fragment(
                         "original_language": LANGUAGE_NAMES.get(
                             orig_code, orig_code
                         ),
+                        "glossary": terms,
                         "dropped_fragment": gap.text,
                         "section_english_transcript": en_text,
                         "edited_neighbours": neighbours,
@@ -916,13 +936,14 @@ def repair_section(
     *,
     orig_code: str,
     en_text: str,
+    terms: list[str],
     usage: dict[str, int],
 ) -> None:
     """Fix what is still wrong after the re-edit, one problem per call."""
     for gap in sorted(issues.dropped, key=lambda item: -item.offset):
         restore_fragment(
             api_key, section, gap, orig_code=orig_code, en_text=en_text,
-            usage=usage,
+            terms=terms, usage=usage,
         )
     if issues.repeated:
         drop_repeats(
@@ -1021,6 +1042,7 @@ def edit_section_in_chunks(
     orig_code: str,
     segments: dict[str, list[Segment]],
     parts: int,
+    terms: list[str],
     usage: dict[str, int],
 ) -> Coverage:
     """Edit one long section chunk by chunk; the result is always flat."""
@@ -1059,6 +1081,7 @@ def edit_section_in_chunks(
             orig_code=orig_code,
             orig_text=orig_text,
             en_text=en_text,
+            terms=terms,
             usage=usage,
             part=(index, len(ranges)),
         )
@@ -1162,6 +1185,7 @@ def generate_annotation(
     doc_title: str,
     orig_code: str,
     sections: list[Section],
+    terms: list[str],
     usage: dict[str, int],
 ) -> dict[str, str]:
     languages = annotation_languages(orig_code)
@@ -1171,6 +1195,7 @@ def generate_annotation(
         "document_title": doc_title,
         "original_language": LANGUAGE_NAMES.get(orig_code, orig_code),
         "languages": languages,
+        "glossary": terms,
         "edited_transcript": text,
     }
     result = chat_json(
@@ -2105,21 +2130,22 @@ def estimate_tokens(text: str, code: str) -> int:
 
 
 def estimate_cost(
-    pending: list[tuple[Section, str, str]], orig_code: str
+    pending: list[tuple[Section, str, str]], orig_code: str, terms: list[str]
 ) -> tuple[int, int, float]:
     """(prompt tokens, completion tokens, USD) for the sections still to edit.
 
-    The prompt carries both transcripts plus a fixed per-section overhead;
-    the completion re-emits the edited text in both languages, so it is
-    close to the size of the transcripts themselves.
+    The prompt carries both transcripts, the glossary and a fixed
+    per-section overhead; the completion re-emits the edited text in both
+    languages, so it is close to the size of the transcripts themselves.
     """
     prompt = completion = 0
+    glossary_tokens = estimate_tokens(", ".join(terms), "EN")
     for _, orig_text, en_text in pending:
         text_tokens = (
             estimate_tokens(orig_text, orig_code)
             + estimate_tokens(en_text, "EN")
         )
-        prompt += SECTION_OVERHEAD_TOKENS + text_tokens
+        prompt += SECTION_OVERHEAD_TOKENS + glossary_tokens + text_tokens
         completion += text_tokens
     cost = (
         prompt * USD_PER_MTOKEN_PROMPT
@@ -2137,6 +2163,7 @@ def process_video(
     course: str,
     orig_code: str,
     lang_codes: list[str],
+    terms: list[str],
     doc_template: Path | None,
     pdf_template: Path | None,
     auto_yes: bool = False,
@@ -2233,7 +2260,9 @@ def process_video(
         if section_cache_key(section) not in cache
     ]
 
-    prompt_est, completion_est, cost_est = estimate_cost(pending, orig_code)
+    prompt_est, completion_est, cost_est = estimate_cost(
+        pending, orig_code, terms
+    )
     annotation_cached = bool(
         (cache.get(ANNOTATION_CACHE_KEY) or {}).get("texts")
     )
@@ -2316,6 +2345,7 @@ def process_video(
                 orig_code=orig_code,
                 segments=segments,
                 parts=parts,
+                terms=terms,
                 usage=usage,
             )
         else:
@@ -2327,6 +2357,7 @@ def process_video(
                 orig_code=orig_code,
                 orig_text=orig_text,
                 en_text=en_text,
+                terms=terms,
                 usage=usage,
             )
         if not issues.clean:
@@ -2350,6 +2381,7 @@ def process_video(
                 doc_title=doc_title,
                 orig_code=orig_code,
                 sections=sections,
+                terms=terms,
                 usage=usage,
             )
             cache[ANNOTATION_CACHE_KEY] = {"texts": annotations}
@@ -2506,6 +2538,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--terms",
+        type=Path,
+        default=None,
+        metavar="FILE",
+        help=(
+            "Course glossary the editor spells terms by, one term per line "
+            f"(default: {GLOSSARY_FILENAME} of the playlist folder, then of "
+            "the channel folder)"
+        ),
+    )
+    parser.add_argument(
         "--yes",
         action="store_true",
         help="Skip the per-video cost confirmation prompt",
@@ -2537,6 +2580,11 @@ def main(argv: list[str] | None = None) -> int:
     playlist_dir = channel_dir / "_playlists" / args.playlist_folder
     if not playlist_dir.is_dir():
         raise SystemExit(f"Playlist folder not found: {playlist_dir}")
+
+    glossary_path = find_glossary(playlist_dir, channel_dir, args.terms)
+    terms = load_terms(glossary_path)
+    if glossary_path is not None:
+        print(f"Glossary: {glossary_path} ({len(terms)} term(s)).", flush=True)
 
     slides_dir = playlist_dir / SLIDES_DIRNAME
     course = channel_dir.name.lstrip("_")
@@ -2652,6 +2700,7 @@ def main(argv: list[str] | None = None) -> int:
             course=course,
             orig_code=orig_code,
             lang_codes=lang_codes,
+            terms=terms,
             doc_template=args.doc,
             pdf_template=args.pdf,
             auto_yes=args.yes,

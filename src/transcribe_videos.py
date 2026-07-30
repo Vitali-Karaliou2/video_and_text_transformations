@@ -1479,6 +1479,8 @@ def run_final_editing(args: argparse.Namespace, count: int) -> int:
         argv.append("--orig-only")
     if args.annotate:
         argv.append("--annotate")
+    if args.terms:
+        argv += ["--terms", str(args.terms)]
     if args.yes:
         argv.append("--yes")
     print("", flush=True)
@@ -1504,6 +1506,8 @@ def run_final_editing_jobs(
             argv.append("--orig-only")
         if args.annotate:
             argv.append("--annotate")
+        if args.terms:
+            argv += ["--terms", str(args.terms)]
         if args.yes:
             argv.append("--yes")
         print("", flush=True)
