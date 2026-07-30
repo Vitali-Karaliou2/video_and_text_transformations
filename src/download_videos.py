@@ -97,8 +97,13 @@ def cookie_args(args: argparse.Namespace) -> list[str]:
 
 def download_video(
     job: dict, playlist_dir: Path, stem: str, args: argparse.Namespace
-) -> bool:
-    """Run yt-dlp for one video, streaming its output; True when it worked."""
+) -> tuple[bool, bool]:
+    """Run yt-dlp for one video, streaming its output.
+
+    Returns (yt-dlp exited cleanly, YouTube demanded a sign-in). The second
+    flag ends the session: that block is per IP or per account, so the next
+    videos would only collect the same refusal.
+    """
     # yt-dlp reads % as the start of a field in the output template.
     template = str(playlist_dir / f"{stem.replace('%', '%%')}.%(ext)s")
     cmd = [
@@ -123,11 +128,15 @@ def download_video(
         bufsize=1,
     )
     assert process.stdout is not None
+    blocked = False
     for line in process.stdout:
         line = line.rstrip()
-        if line:
-            print(f"    {line}", flush=True)
-    return process.wait() == 0
+        if not line:
+            continue
+        if "confirm you" in line and "not a bot" in line:
+            blocked = True
+        print(f"    {line}", flush=True)
+    return process.wait() == 0, blocked
 
 
 def collect_jobs(
@@ -316,10 +325,23 @@ def main(argv: list[str] | None = None) -> int:
             job["id"],
             max_len=stem_budget(playlist_dir),
         )
-        if download_video(job, playlist_dir, stem, args):
-            saved = local_media_by_id(playlist_dir).get(job["id"])
-        else:
-            saved = None
+        ok, blocked = download_video(job, playlist_dir, stem, args)
+        saved = local_media_by_id(playlist_dir).get(job["id"]) if ok else None
+        if blocked:
+            print(
+                "  YouTube is asking to confirm you are not a bot, so the "
+                "session stops here: the block is per IP or per account, "
+                "and the remaining videos would only repeat it.",
+                flush=True,
+            )
+            print(
+                "  Pass cookies of a signed-in browser "
+                "(--cookies-from-browser firefox, or the COOKIES line in the "
+                "bat), or try again later.",
+                flush=True,
+            )
+            failed.append(job["title"])
+            break
         if saved is None:
             print("  WARNING: the video was not downloaded.", flush=True)
             failed.append(job["title"])
