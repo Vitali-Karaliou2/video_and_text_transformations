@@ -4,7 +4,12 @@
 Videos live in _channels/<channel>/_playlists/<playlist>/ and are processed
 in file-name order. Results go to <playlist>/<LANG>/ (original language) and,
 for non-English originals, to <playlist>/EN/ as well: <video stem>.txt and
-<video stem>.srt per language.
+<video stem>.srt per language, plus <video stem>.asr.json with the per-segment
+recognition quality the API reports (used by check_transcripts.py).
+
+If the playlist or the channel folder has a terms.txt glossary (or --terms
+points at one), its terms are passed to the recognizer as its `prompt`, which
+keeps the product and technology names of the course spelled correctly.
 
 The session start point is found by scanning the result folders: the first
 video without a complete result set is transcribed first. Press 'p' during a
@@ -70,6 +75,13 @@ _SRC_DIR = Path(__file__).resolve().parent
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
+from glossary import (
+    GLOSSARY_FILENAME,
+    WHISPER_PROMPT_TOKENS,
+    find_glossary,
+    load_terms,
+    whisper_prompt,
+)
 from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
 from transcription_pricing import get_transcription_rate
 
@@ -97,6 +109,8 @@ PARAGRAPH_MAX_CHARS = 1000
 # Video metadata (title, date, duration, chapters) saved in remote mode for
 # the final-editing stage (document title and timecode-based ToC).
 INFO_DIRNAME = "INFO"
+# Sidecar with the per-segment recognition quality (see write_asr_meta).
+ASR_META_SUFFIX = ".asr.json"
 WINDOWS_MAX_PATH = 260
 # With long paths switched on the OS allows 32767, but the .docx is still
 # handed to WPS Writer / Word for the PDF pass and those are not reliably
@@ -109,6 +123,11 @@ class Segment:
     start: float
     end: float
     text: str
+    # Recognition quality of the segment, as reported by the API in
+    # verbose_json; None for segments read back from an .srt file.
+    avg_logprob: float | None = None
+    no_speech_prob: float | None = None
+    compression_ratio: float | None = None
 
 
 def read_api_key(workspace: Path) -> str:
@@ -372,6 +391,36 @@ def call_audio_api_with_progress(
     return data
 
 
+@lru_cache(maxsize=None)
+def glossary_prompt(
+    playlist_dir: Path, channel_dir: Path, explicit: Path | None
+) -> str:
+    """The course terms handed to the recognizer as its `prompt`.
+
+    Priming whisper with the names it is about to hear is what keeps
+    "Playwright" from becoming "PlevRite", and it costs nothing. Cached (and
+    reported) once per folder, since a session transcribes many videos.
+    """
+    path = find_glossary(playlist_dir, channel_dir, explicit)
+    terms = load_terms(path)
+    prompt = whisper_prompt(terms)
+    if path is not None:
+        kept = prompt.count(",") + 1 if prompt else 0
+        dropped = (
+            f", {len(terms) - kept} did not fit the {WHISPER_PROMPT_TOKENS}-token "
+            "prompt limit" if kept < len(terms) else ""
+        )
+        print(f"Glossary: {path} ({kept} term(s){dropped}).", flush=True)
+    return prompt
+
+
+def optional_float(value: object) -> float | None:
+    try:
+        return float(value)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return None
+
+
 def transcribe_chunks(
     chunks: list[tuple[Path, float]],
     api_key: str,
@@ -401,6 +450,9 @@ def transcribe_chunks(
                     start=offset + float(seg["start"]),
                     end=offset + float(seg["end"]),
                     text=str(seg["text"]).strip(),
+                    avg_logprob=optional_float(seg.get("avg_logprob")),
+                    no_speech_prob=optional_float(seg.get("no_speech_prob")),
+                    compression_ratio=optional_float(seg.get("compression_ratio")),
                 )
             )
         offset += chunk_seconds
@@ -466,15 +518,80 @@ def format_txt(text: str, segments: list[Segment], width: int = TXT_WRAP_WIDTH) 
     return "\n\n".join(blocks)
 
 
+def asr_meta_path(out_dir: Path, stem: str) -> Path:
+    return out_dir / f"{stem}{ASR_META_SUFFIX}"
+
+
+def write_asr_meta(
+    out_dir: Path, stem: str, segments: list[Segment], *, language: str
+) -> Path | None:
+    """Per-segment recognition quality, kept for the offline checks.
+
+    The API reports how confident it was (avg_logprob) and how likely the
+    segment is not speech at all; check_transcripts.py uses that to tell a
+    rare word from a misheard one. Written as a sidecar, not as one of the
+    result_files(), so transcripts made before this existed stay complete.
+    """
+    if not any(seg.avg_logprob is not None for seg in segments):
+        return None
+    path = asr_meta_path(out_dir, stem)
+    payload = {
+        "model": MODEL,
+        "language": language,
+        "created": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        "segments": [
+            {
+                "start": round(seg.start, 3),
+                "end": round(seg.end, 3),
+                "text": seg.text,
+                "avg_logprob": seg.avg_logprob,
+                "no_speech_prob": seg.no_speech_prob,
+                "compression_ratio": seg.compression_ratio,
+            }
+            for seg in segments
+        ],
+    }
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
+    )
+    return path
+
+
+def read_asr_meta(out_dir: Path, stem: str) -> list[Segment]:
+    """Segments with their recognition quality; empty when there is no sidecar."""
+    path = asr_meta_path(out_dir, stem)
+    if not path.is_file():
+        return []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    return [
+        Segment(
+            start=float(entry.get("start", 0.0)),
+            end=float(entry.get("end", 0.0)),
+            text=str(entry.get("text", "")),
+            avg_logprob=optional_float(entry.get("avg_logprob")),
+            no_speech_prob=optional_float(entry.get("no_speech_prob")),
+            compression_ratio=optional_float(entry.get("compression_ratio")),
+        )
+        for entry in data.get("segments", [])
+    ]
+
+
 def write_results(
-    out_dir: Path, stem: str, text: str, segments: list[Segment]
+    out_dir: Path, stem: str, text: str, segments: list[Segment], *, language: str
 ) -> list[Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     txt_path = out_dir / f"{stem}.txt"
     srt_path = out_dir / f"{stem}.srt"
     txt_path.write_text(format_txt(text, segments) + "\n", encoding="utf-8")
     srt_path.write_text(segments_to_srt(segments), encoding="utf-8")
-    return [txt_path, srt_path]
+    written = [txt_path, srt_path]
+    meta_path = write_asr_meta(out_dir, stem, segments, language=language)
+    if meta_path is not None:
+        written.append(meta_path)
+    return written
 
 
 class PauseWatcher:
@@ -532,11 +649,13 @@ def transcribe_video(
     ffprobe: str,
     calibration: ProgressCalibration,
     stem: str | None = None,
+    prompt: str = "",
 ) -> float:
     """Transcribe one video (original language + EN pass); return audio minutes.
 
     `stem` overrides the result file stem (remote mode: the media is a
-    temporary audio download whose own name is meaningless).
+    temporary audio download whose own name is meaningless). `prompt` is the
+    course glossary handed to the recognizer (see glossary.py).
     """
     stem = stem or video.stem
     tmp_dir = Path(tempfile.mkdtemp(prefix="transcribe_"))
@@ -548,31 +667,39 @@ def transcribe_video(
 
         playlist_dir = orig_dir.parent
 
+        fields = {
+            "model": MODEL,
+            "language": lang,
+            "response_format": "verbose_json",
+        }
+        if prompt:
+            fields["prompt"] = prompt
         text, segments = transcribe_chunks(
             chunks,
             api_key,
             url=TRANSCRIPTIONS_URL,
-            fields={
-                "model": MODEL,
-                "language": lang,
-                "response_format": "verbose_json",
-            },
+            fields=fields,
             label=lang.upper(),
             calibration=calibration,
         )
-        for path in write_results(orig_dir, stem, text, segments):
+        for path in write_results(orig_dir, stem, text, segments, language=lang):
             print(f"  Saved: {path.relative_to(playlist_dir)}", flush=True)
 
         if needs_en:
+            fields_en = {"model": MODEL, "response_format": "verbose_json"}
+            if prompt:
+                fields_en["prompt"] = prompt
             text_en, segments_en = transcribe_chunks(
                 chunks,
                 api_key,
                 url=TRANSLATIONS_URL,
-                fields={"model": MODEL, "response_format": "verbose_json"},
+                fields=fields_en,
                 label="EN",
                 calibration=calibration,
             )
-            for path in write_results(en_dir, stem, text_en, segments_en):
+            for path in write_results(
+                en_dir, stem, text_en, segments_en, language="en"
+            ):
                 print(f"  Saved: {path.relative_to(playlist_dir)}", flush=True)
 
         return minutes
@@ -1121,6 +1248,7 @@ def remote_session(
                 ffprobe=args.ffprobe,
                 calibration=calibration,
                 stem=stem,
+                prompt=glossary_prompt(pdir, channel_dir, args.terms),
             )
         finally:
             if tmp_dir is not None:
@@ -1238,6 +1366,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--terms",
+        type=Path,
+        default=None,
+        metavar="FILE",
+        help=(
+            "Course glossary handed to the recognizer, one term per line "
+            f"(default: {GLOSSARY_FILENAME} of the playlist folder, then of "
+            "the channel folder)"
+        ),
+    )
+    parser.add_argument(
         "--yes",
         action="store_true",
         help="Skip the per-video cost confirmation prompt",
@@ -1262,6 +1401,7 @@ def local_session(
     *,
     lang: str,
     needs_en: bool,
+    channel_dir: Path,
     playlist_dir: Path,
     orig_dir: Path,
     en_dir: Path,
@@ -1309,6 +1449,7 @@ def local_session(
             ffmpeg=args.ffmpeg,
             ffprobe=args.ffprobe,
             calibration=calibration,
+            prompt=glossary_prompt(playlist_dir, channel_dir, args.terms),
         )
         processed += 1
         if watcher.pause_requested() and processed < len(session):
@@ -1433,6 +1574,7 @@ def main(argv: list[str] | None = None) -> int:
         args,
         lang=lang,
         needs_en=needs_en,
+        channel_dir=channel_dir,
         playlist_dir=playlist_dir,
         orig_dir=playlist_dir / lang.upper(),
         en_dir=playlist_dir / "EN",
