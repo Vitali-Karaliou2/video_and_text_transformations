@@ -34,6 +34,15 @@ How a document is built:
   subsection per bullet is created; when bullets are only mentioned in
   passing and the text does not decompose (e.g. "What Is Test
   Automation?"), the section stays flat. The model decides per section.
+- Coverage check: every edited section is diffed (in the original
+  language) against the transcript fragment it was made from. Runs of
+  words the edit lost - typically a sentence at a section boundary - and
+  fragments it emitted twice (in the intro and again in a subsection) make
+  the section be edited once more, with those fragments quoted back to the
+  model; what is still wrong after the retry is reported in the log and
+  recorded in the cache. Sections cached by an earlier run are re-checked
+  offline and re-edited when they fail, so an already-generated document
+  can be repaired without paying for the whole video again.
 
 Formats:
 - .md - a Table of Contents with full multi-level numbering (1., 2., 2.1.);
@@ -70,6 +79,7 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import difflib
 import json
 import re
 import sys
@@ -142,6 +152,12 @@ Editing rules:
 2. English text: edit the same way; its punctuation usually needs little
    work, but polish awkward constructions - the speaker is not a native
    English speaker.
+2a. The two transcripts are two recognitions of the same speech, so where
+   they disagree the English one often carries what the original lost: a
+   whole clause the original recognizer swallowed, or a self-correction
+   the speaker made ("...of our country - of our planet"). Restore that
+   content in the original language as well: neither version may end up
+   saying less than the other, or contradicting it.
 3. Keep the two languages parallel: the same paragraph breaks, the same
    subsection boundaries, the same order.
 4. Section layout - decide between exactly two layouts:
@@ -163,6 +179,10 @@ Editing rules:
    some bullets get no dedicated discussion, or the boundaries are unclear,
    or there are no bullets, choose (a). A partial split (subsections for
    only some bullets) is not allowed. When in doubt, choose (a).
+   The intro and the subsections partition the text: every fragment goes
+   to exactly one of them. Text moved into a subsection must not stay in
+   the intro as well, and two subsections must not retell each other - the
+   same sentences twice is an error, not a summary.
 5. Propose the final section heading in English: keep the given heading if
    it is fine, otherwise fix grammar or awkward wording; keep it short. Use
    normal title casing, not ALL CAPS.
@@ -188,7 +208,55 @@ long section split only for processing: edit the COMPLETE given fragment
 from its first sentence to its last (it may start or end mid-topic - that
 is expected; do not add openings or conclusions of your own), keep the
 layout flat ("subsections": []) and remember: re-emit ALL the content,
-paragraph by paragraph - never compress the fragment."""
+paragraph by paragraph - never compress the fragment.
+
+The section boundaries follow the slides, so the last sentences often
+already open the topic of the next slide ("now let us look at the tools on
+this slide..."): they belong to this section - edit them, never drop them.
+
+"dropped_fragments" and "repeated_fragments" appear only in a retry: your
+previous reply for this very section lost those transcript fragments and
+emitted those other ones twice. Edit the section again from scratch,
+keeping every dropped fragment in its place in the flow and every repeated
+one exactly once (in the subsection it belongs to)."""
+
+
+FRAGMENT_SYSTEM_PROMPT = """\
+You restore one fragment that a previous edit of a lecture transcript
+dropped.
+
+You get the fragment as the raw transcript in the original language, the
+English transcript of the whole section (the counterpart of the fragment is
+somewhere inside it - find it yourself), and the edited paragraphs the
+fragment goes between.
+
+Edit the fragment exactly like the text around it: fix obvious speech
+recognition errors, enrich the punctuation, lightly polish the spoken
+wording - keeping every detail, example and the speaker's tone. Never
+summarize, never drop anything, never add anything of your own, and do not
+repeat the surrounding paragraphs: reply with this fragment alone, one
+paragraph per language. When the original language is Russian, use the
+letter «ё» wherever standard orthography calls for it.
+
+Reply with JSON only:
+{"paragraph_orig": string, "paragraph_en": string}
+When the original language is English, fill "paragraph_en" only."""
+
+
+DEDUP_SYSTEM_PROMPT = """\
+You remove text that a previous edit of a lecture section placed twice.
+
+You get the intro paragraphs of the section, the paragraphs of its
+subsections and the fragments that both of them carry. The subsections keep
+their copy; the intro has to lose it.
+
+Return the intro paragraphs with the repeated text removed and everything
+else kept word for word - do not rewrite, do not summarize, do not merge
+what is left with anything, keep the two languages parallel. A paragraph
+that loses all of its text disappears from the list.
+
+Reply with JSON only:
+{"intro_orig": [strings], "intro_en": [strings]}"""
 
 
 ANNOTATION_CACHE_KEY = "__annotation__"
@@ -406,7 +474,7 @@ def build_sections_from_info(
 # Editing via the OpenAI API
 
 
-def edit_section(
+def request_edit(
     api_key: str,
     section: Section,
     *,
@@ -416,8 +484,9 @@ def edit_section(
     orig_text: str,
     en_text: str,
     usage: dict[str, int],
-    part: tuple[int, int] | None = None,
-) -> None:
+    part: tuple[int, int] | None,
+    issues: Coverage,
+) -> dict:
     slide = section.slide or {}
     orig_name = LANGUAGE_NAMES.get(orig_code, orig_code)
     payload = {
@@ -434,7 +503,11 @@ def edit_section(
     }
     if part is not None:
         payload["section_part"] = f"{part[0]}/{part[1]}"
-    result = chat_json(
+    if issues.dropped:
+        payload["dropped_fragments"] = [gap.text for gap in issues.dropped]
+    if issues.repeated:
+        payload["repeated_fragments"] = issues.repeated
+    return chat_json(
         api_key,
         [
             {"role": "system", "content": EDIT_SYSTEM_PROMPT},
@@ -445,6 +518,9 @@ def edit_section(
         ],
         usage,
     )
+
+
+def apply_edit_result(section: Section, result: dict, orig_code: str) -> None:
     section.heading_en = str(result.get("heading") or section.heading)
     section.intro = {
         orig_code: [str(p) for p in result.get("intro_orig") or []],
@@ -481,26 +557,436 @@ def flatten_section(section: Section) -> None:
     section.subsections = []
 
 
+def edit_section(
+    api_key: str,
+    section: Section,
+    *,
+    course: str,
+    doc_title: str,
+    orig_code: str,
+    orig_text: str,
+    en_text: str,
+    usage: dict[str, int],
+    part: tuple[int, int] | None = None,
+) -> Coverage:
+    """Edit the section in place and check the result against its transcript
+    fragment. A section that lost or duplicated content is edited once more,
+    with the offending fragments quoted back to the model; the better of the
+    attempts is kept (a retry can come back worse than what it repairs), and
+    whatever is still wrong in it is returned for the caller to report."""
+    code = coverage_code(orig_code)
+    source = orig_text if orig_code != "EN" else en_text
+    best: dict | None = None
+    issues = Coverage([], [])
+    for attempt in range(1 + COVERAGE_RETRIES):
+        result = request_edit(
+            api_key,
+            section,
+            course=course,
+            doc_title=doc_title,
+            orig_code=orig_code,
+            orig_text=orig_text,
+            en_text=en_text,
+            usage=usage,
+            part=part,
+            issues=issues,
+        )
+        apply_edit_result(section, result, orig_code)
+        attempt_issues = section_coverage(section, source, code)
+        if best is None or attempt_issues.weight() < issues.weight():
+            best, issues = result, attempt_issues
+        if issues.clean:
+            break
+        if attempt < COVERAGE_RETRIES:
+            print(f"    {attempt_issues.summary()}; editing the section "
+                  f"again...", flush=True)
+    apply_edit_result(section, best, orig_code)
+    if not issues.clean:
+        # The whole-section re-edit did not help: fix the problems one by
+        # one instead, and keep the outcome only if it is really better.
+        print(f"    {issues.summary()}; repairing fragment by fragment...",
+              flush=True)
+        snapshot = section_snapshot(section)
+        repair_section(
+            api_key, section, issues, orig_code=orig_code, en_text=en_text,
+            usage=usage,
+        )
+        repaired = section_coverage(section, source, code)
+        if repaired.weight() < issues.weight():
+            issues = repaired
+        else:
+            restore_snapshot(section, snapshot)
+    if not issues.clean:
+        print(f"    WARNING: {issues.summary()} left:", flush=True)
+        for gap in issues.dropped:
+            print(f"      lost: {shorten_fragment(gap.text)}", flush=True)
+        for fragment in issues.repeated:
+            print(f"      twice: {shorten_fragment(fragment)}", flush=True)
+    return issues
+
+
+# --------------------------------------------------------------------------
+# Coverage check: does the edited section still carry the whole fragment?
+#
+# The editor is asked to keep every detail, but a model sometimes silently
+# drops a sentence (most often the transitional one at a section boundary)
+# or emits the same fragment twice - once in the intro and again inside the
+# subsection it belongs to. Both are caught by diffing the edited text
+# against the transcript slice it was made from: only the original language
+# is checked, because there the edit stays close to the source wording (the
+# English side is a machine translation the editor rewrites much more
+# freely, which would make the diff meaningless).
+
+WORD_RE = re.compile(r"\w+", re.UNICODE)
+# Shorter dropped runs are normal polishing (filler words, false starts).
+COVERAGE_MIN_RUN_WORDS = 5
+# Shorter repeated runs are common speech, not a duplicated fragment.
+COVERAGE_MIN_REPEAT_WORDS = 12
+COVERAGE_RETRIES = 1
+FRAGMENT_PREVIEW_CHARS = 120
+
+
+@dataclass
+class Gap:
+    """A fragment of the transcript missing from the edited text, with the
+    word offset in that text where it should have been."""
+    text: str
+    offset: int
+
+
+@dataclass
+class Coverage:
+    dropped: list[Gap]
+    repeated: list[str]
+
+    @property
+    def clean(self) -> bool:
+        return not self.dropped and not self.repeated
+
+    def weight(self) -> int:
+        """How bad the result is, in words: attempts are compared by this."""
+        return sum(len(gap.text.split()) for gap in self.dropped) + sum(
+            len(fragment.split()) for fragment in self.repeated
+        )
+
+    def summary(self) -> str:
+        parts = []
+        if self.dropped:
+            parts.append(
+                f"{len(self.dropped)} fragment(s) dropped, "
+                f"{sum(len(gap.text.split()) for gap in self.dropped)} words"
+            )
+        if self.repeated:
+            parts.append(f"{len(self.repeated)} fragment(s) duplicated")
+        return " and ".join(parts) or "complete"
+
+    def as_cache(self) -> dict[str, list[str]]:
+        return {
+            "dropped": [gap.text for gap in self.dropped],
+            "repeated": self.repeated,
+        }
+
+
+def coverage_code(orig_code: str) -> str:
+    """Language the coverage check runs on: the original one."""
+    return orig_code if orig_code != "EN" else "EN"
+
+
+def coverage_words(text: str) -> list[str]:
+    """Comparable words: case and «ё» are edited on purpose, so both are
+    normalized away."""
+    return [word.lower().replace("ё", "е") for word in WORD_RE.findall(text)]
+
+
+def shorten_fragment(fragment: str) -> str:
+    if len(fragment) <= FRAGMENT_PREVIEW_CHARS:
+        return fragment
+    return fragment[:FRAGMENT_PREVIEW_CHARS].rstrip() + "..."
+
+
+def section_language_text(section: Section, code: str) -> str:
+    paragraphs = list(section.intro.get(code) or [])
+    for sub in section.subsections:
+        paragraphs.extend(sub.get(code) or [])
+    return "\n\n".join(paragraphs)
+
+
+def dropped_fragments(source: str, edited: str) -> list[Gap]:
+    """Runs of source words that the edited text does not carry at all."""
+    raw = WORD_RE.findall(source)
+    matcher = difflib.SequenceMatcher(
+        None, coverage_words(source), coverage_words(edited), autojunk=False
+    )
+    return [
+        Gap(" ".join(raw[start:stop]), offset)
+        for tag, start, stop, offset, _ in matcher.get_opcodes()
+        if tag in ("delete", "replace")
+        and stop - start >= COVERAGE_MIN_RUN_WORDS
+    ]
+
+
+def count_runs(words: list[str], run: list[str]) -> int:
+    """How many times the word run occurs (without overlaps)."""
+    total = index = 0
+    while index + len(run) <= len(words):
+        if words[index:index + len(run)] == run:
+            total += 1
+            index += len(run)
+        else:
+            index += 1
+    return total
+
+
+def repeated_fragments(section: Section, source: str, code: str) -> list[str]:
+    """Long word runs the section carries twice: an intro paragraph and the
+    subsection it was also put into, two subsections retelling each other,
+    two copies of one paragraph. A run the speaker really said twice is not
+    a duplicate, so a fragment counts only when the edited text has more
+    copies of it than the transcript does."""
+    texts = [paragraph for paragraph in section.intro.get(code) or []]
+    texts.extend(
+        "\n\n".join(sub.get(code) or []) for sub in section.subsections
+    )
+    candidates: list[list[str]] = []
+    for first, text in enumerate(texts):
+        words_first = coverage_words(text)
+        for second in range(first + 1, len(texts)):
+            matcher = difflib.SequenceMatcher(
+                None, words_first, coverage_words(texts[second]),
+                autojunk=False,
+            )
+            candidates.extend(
+                words_first[block.a:block.a + block.size]
+                for block in matcher.get_matching_blocks()
+                if block.size >= COVERAGE_MIN_REPEAT_WORDS
+            )
+    edited = coverage_words("\n\n".join(texts))
+    source_words = coverage_words(source)
+    found: list[str] = []
+    for run in candidates:
+        fragment = " ".join(run)
+        if fragment in found:
+            continue
+        if count_runs(edited, run) > count_runs(source_words, run):
+            found.append(fragment)
+    return found
+
+
+def language_containers(section: Section, code: str) -> list[list[str]]:
+    """Paragraph lists of one language, in document order."""
+    containers = [section.intro.setdefault(code, [])]
+    containers.extend(sub.setdefault(code, []) for sub in section.subsections)
+    return containers
+
+
+def paragraph_index_for_offset(
+    section: Section, code: str, offset: int
+) -> int:
+    """Where a fragment starting at that word offset of the edited text
+    belongs, counted in whole paragraphs of the section."""
+    used = index = 0
+    for container in language_containers(section, code):
+        for paragraph in container:
+            if used >= offset:
+                return index
+            used += len(WORD_RE.findall(paragraph))
+            index += 1
+    return index
+
+
+def insert_paragraph(
+    section: Section, code: str, index: int, paragraph: str
+) -> None:
+    if not paragraph.strip():
+        return
+    position = index
+    containers = language_containers(section, code)
+    for container in containers:
+        if position <= len(container):
+            container.insert(position, paragraph)
+            return
+        position -= len(container)
+    containers[-1].append(paragraph)
+
+
+def restore_fragment(
+    api_key: str,
+    section: Section,
+    gap: Gap,
+    *,
+    orig_code: str,
+    en_text: str,
+    usage: dict[str, int],
+) -> None:
+    """Edit one dropped fragment on its own and put it back in place.
+
+    Re-editing the whole section rarely brings back a fragment the model
+    decided to skip (typically the transitional sentences at the very end
+    of a section, which already announce the next slide); asked for that
+    fragment alone, it does the job.
+    """
+    code = coverage_code(orig_code)
+    index = paragraph_index_for_offset(section, code, gap.offset)
+    neighbours = [
+        paragraph
+        for container in language_containers(section, code)
+        for paragraph in container
+    ][max(0, index - 1):index + 1]
+    result = chat_json(
+        api_key,
+        [
+            {"role": "system", "content": FRAGMENT_SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": json.dumps(
+                    {
+                        "original_language": LANGUAGE_NAMES.get(
+                            orig_code, orig_code
+                        ),
+                        "dropped_fragment": gap.text,
+                        "section_english_transcript": en_text,
+                        "edited_neighbours": neighbours,
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                ),
+            },
+        ],
+        usage,
+    )
+    insert_paragraph(
+        section, code, index, str(result.get("paragraph_orig") or "")
+        if orig_code != "EN" else str(result.get("paragraph_en") or "")
+    )
+    if orig_code != "EN" and "EN" in section.intro:
+        insert_paragraph(
+            section, "EN", index, str(result.get("paragraph_en") or "")
+        )
+
+
+def drop_repeats(
+    api_key: str,
+    section: Section,
+    fragments: list[str],
+    *,
+    orig_code: str,
+    usage: dict[str, int],
+) -> None:
+    """Remove from the intro the text its subsections carry as well."""
+    result = chat_json(
+        api_key,
+        [
+            {"role": "system", "content": DEDUP_SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": json.dumps(
+                    {
+                        "original_language": LANGUAGE_NAMES.get(
+                            orig_code, orig_code
+                        ),
+                        "repeated_fragments": fragments,
+                        "intro_orig": section.intro.get(orig_code) or [],
+                        "intro_en": section.intro.get("EN") or [],
+                        "subsections": [
+                            {
+                                "heading": sub.get("heading_en"),
+                                "paragraphs_orig": sub.get(orig_code) or [],
+                            }
+                            for sub in section.subsections
+                        ],
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                ),
+            },
+        ],
+        usage,
+    )
+    section.intro[orig_code] = [
+        str(p) for p in result.get("intro_orig") or []
+    ]
+    if "EN" in section.intro:
+        section.intro["EN"] = [str(p) for p in result.get("intro_en") or []]
+
+
+def repair_section(
+    api_key: str,
+    section: Section,
+    issues: Coverage,
+    *,
+    orig_code: str,
+    en_text: str,
+    usage: dict[str, int],
+) -> None:
+    """Fix what is still wrong after the re-edit, one problem per call."""
+    for gap in sorted(issues.dropped, key=lambda item: -item.offset):
+        restore_fragment(
+            api_key, section, gap, orig_code=orig_code, en_text=en_text,
+            usage=usage,
+        )
+    if issues.repeated:
+        drop_repeats(
+            api_key, section, issues.repeated, orig_code=orig_code,
+            usage=usage,
+        )
+
+
+def section_snapshot(section: Section) -> dict:
+    return json.loads(json.dumps(section_state(section)))
+
+
+def section_state(section: Section) -> dict:
+    return {
+        "heading_en": section.heading_en,
+        "intro": section.intro,
+        "subsections": section.subsections,
+    }
+
+
+def restore_snapshot(section: Section, snapshot: dict) -> None:
+    section.heading_en = snapshot["heading_en"]
+    section.intro = snapshot["intro"]
+    section.subsections = snapshot["subsections"]
+
+
+def section_coverage(section: Section, source: str, code: str) -> Coverage:
+    if not source.strip():
+        return Coverage([], [])
+    return Coverage(
+        dropped_fragments(source, section_language_text(section, code)),
+        repeated_fragments(section, source, code),
+    )
+
+
 # gpt-4o silently compresses long re-emissions: asked to edit a whole
-# 20-minute transcript in one call it returns a couple of paragraphs. Long
-# sections (typical for timecode-less videos, where the whole video is one
-# section) are therefore edited in ~4-minute chunks and concatenated.
-EDIT_CHUNK_SECONDS = 240.0
-EDIT_CHUNK_TRIGGER_SECONDS = 360.0
+# 40-minute transcript in one call it returns a couple of paragraphs. Only
+# sections whose edited text would be longer than this are therefore split
+# into parts and concatenated - in practice the single section of a
+# timecode-less video. Slide sections stay whole even when they run 15
+# minutes: splitting them costs the subsection structure (parts are always
+# flat) and, as the coverage check showed, loses text at the seams.
+EDIT_CHUNK_TOKENS = 7000
+
+
+def chunk_count(orig_text: str, en_text: str, orig_code: str) -> int:
+    """Into how many parts a section has to be split for editing."""
+    tokens = estimate_tokens(orig_text, orig_code) + estimate_tokens(
+        en_text, "EN"
+    )
+    return max(1, -(-tokens // EDIT_CHUNK_TOKENS))
 
 
 def split_section_ranges(
     section: Section,
     segments: list[Segment],
-    chunk_seconds: float = EDIT_CHUNK_SECONDS,
+    parts: int,
 ) -> list[tuple[float, float]]:
-    """Split [start, end) into roughly equal windows of ~chunk_seconds,
-    snapping each boundary to the nearest transcript segment boundary so
-    that no sentence is cut in half (both languages are sliced by the same
-    time boundaries, staying parallel)."""
+    """Split [start, end) into roughly equal windows, snapping each boundary
+    to the nearest transcript segment boundary so that no sentence is cut in
+    half (both languages are sliced by the same time boundaries, staying
+    parallel)."""
     duration = section.end - section.start
-    parts = max(1, round(duration / chunk_seconds))
-    if parts == 1:
+    if parts <= 1:
         return [(section.start, section.end)]
     candidates = [
         seg.start
@@ -534,11 +1020,13 @@ def edit_section_in_chunks(
     doc_title: str,
     orig_code: str,
     segments: dict[str, list[Segment]],
+    parts: int,
     usage: dict[str, int],
-) -> None:
+) -> Coverage:
     """Edit one long section chunk by chunk; the result is always flat."""
-    ranges = split_section_ranges(section, segments.get(orig_code) or [])
+    ranges = split_section_ranges(section, segments.get(orig_code) or [], parts)
     intro: dict[str, list[str]] = {orig_code: [], "EN": []}
+    issues = Coverage([], [])
     heading_en = ""
     for index, (start, end) in enumerate(ranges, start=1):
         print(
@@ -563,7 +1051,7 @@ def edit_section_in_chunks(
             if "EN" in segments
             else ""
         )
-        edit_section(
+        part_issues = edit_section(
             api_key,
             part,
             course=course,
@@ -574,6 +1062,8 @@ def edit_section_in_chunks(
             usage=usage,
             part=(index, len(ranges)),
         )
+        issues.dropped.extend(part_issues.dropped)
+        issues.repeated.extend(part_issues.repeated)
         flatten_section(part)
         heading_en = heading_en or part.heading_en
         for code, paragraphs in part.intro.items():
@@ -581,6 +1071,7 @@ def edit_section_in_chunks(
     section.heading_en = heading_en or section.heading
     section.intro = intro
     section.subsections = []
+    return issues
 
 
 EXPLANATORY_LABELS = {
@@ -1565,11 +2056,14 @@ def load_edit_cache(cache_path: Path, stem: str) -> dict[str, dict]:
     return data.get("sections") or {} if data.get("video") == stem else {}
 
 
-def section_to_cache(section: Section) -> dict:
+def section_to_cache(section: Section, issues: Coverage) -> dict:
     return {
         "heading_en": section.heading_en,
         "intro": section.intro,
         "subsections": section.subsections,
+        # Recorded so that a section whose gaps survived the retry is not
+        # re-edited (and re-paid for) on every later run.
+        "coverage": issues.as_cache(),
     }
 
 
@@ -1577,6 +2071,19 @@ def section_from_cache(section: Section, entry: dict) -> None:
     section.heading_en = entry.get("heading_en") or section.heading
     section.intro = entry.get("intro") or {}
     section.subsections = entry.get("subsections") or []
+
+
+def cached_coverage(
+    section: Section, entry: dict, source: str, code: str
+) -> Coverage | None:
+    """Coverage of a cached section, or None when it was already checked
+    when it was written."""
+    if "coverage" in entry:
+        return None
+    probe = Section(section.heading, section.number, section.slide,
+                    section.start, section.end)
+    section_from_cache(probe, entry)
+    return section_coverage(probe, source, code)
 
 
 def save_edit_cache(
@@ -1694,6 +2201,32 @@ def process_video(
         texts[section_cache_key(section)] = (orig_text, en_text)
 
     cache = load_edit_cache(cache_path, video.stem)
+    # Sections edited before the coverage check existed (or by an older
+    # model) are re-checked offline; the ones that lost or duplicated text
+    # are dropped from the cache, so they are edited again below and show up
+    # in the cost estimate.
+    stale = 0
+    check_code = coverage_code(orig_code)
+    for section in sections:
+        key = section_cache_key(section)
+        entry = cache.get(key)
+        if entry is None:
+            continue
+        source = texts[key][0] if orig_code != "EN" else texts[key][1]
+        issues = cached_coverage(section, entry, source, check_code)
+        if issues is None:
+            continue
+        if issues.clean:
+            entry["coverage"] = issues.as_cache()
+        else:
+            print(
+                f"  Re-editing '{section.heading}': the cached version has "
+                f"{issues.summary()}.",
+                flush=True,
+            )
+            del cache[key]
+            stale += 1
+
     pending = [
         (section, *texts[section_cache_key(section)])
         for section in sections
@@ -1728,6 +2261,8 @@ def process_video(
         f"  Sections: {len(sections)} total, "
         f"{len(sections) - len(pending)} already edited (cached), "
         f"{len(pending)} to edit via the API"
+        + (f" ({stale} of them re-edited after the coverage check)"
+           if stale else "")
         + (
             f"; annotation ({'/'.join(annotation_languages(orig_code))}): "
             + ("cached" if annotation_cached else "to generate")
@@ -1753,6 +2288,7 @@ def process_video(
             return False
 
     usage: dict[str, int] = {}
+    incomplete: list[str] = []
     for index, section in enumerate(sections, start=1):
         key = section_cache_key(section)
         minutes = (section.end - section.start) / 60.0
@@ -1769,19 +2305,21 @@ def process_video(
             f"({minutes:.1f} min)...",
             flush=True,
         )
-        if section.end - section.start > EDIT_CHUNK_TRIGGER_SECONDS:
-            edit_section_in_chunks(
+        orig_text, en_text = texts[key]
+        parts = chunk_count(orig_text, en_text, orig_code)
+        if parts > 1:
+            issues = edit_section_in_chunks(
                 api_key,
                 section,
                 course=course,
                 doc_title=doc_title,
                 orig_code=orig_code,
                 segments=segments,
+                parts=parts,
                 usage=usage,
             )
         else:
-            orig_text, en_text = texts[key]
-            edit_section(
+            issues = edit_section(
                 api_key,
                 section,
                 course=course,
@@ -1791,9 +2329,11 @@ def process_video(
                 en_text=en_text,
                 usage=usage,
             )
+        if not issues.clean:
+            incomplete.append(f"{section.heading}: {issues.summary()}")
         # Persist after every section: a crash later in the run (e.g. during
         # the PDF stage) must not lose paid editing results.
-        cache[key] = section_to_cache(section)
+        cache[key] = section_to_cache(section, issues)
         save_edit_cache(cache_path, video.stem, cache)
 
     annotations: dict[str, str] = {}
@@ -1857,6 +2397,14 @@ def process_video(
                     f"  Saved: {files[kind].relative_to(playlist_dir)}",
                     flush=True,
                 )
+    if incomplete:
+        print(
+            f"  WARNING: {len(incomplete)} section(s) did not pass the "
+            f"coverage check even after a re-edit:",
+            flush=True,
+        )
+        for line in incomplete:
+            print(f"    {line}", flush=True)
     actual_cost = (
         usage.get("prompt_tokens", 0) * USD_PER_MTOKEN_PROMPT
         + usage.get("completion_tokens", 0) * USD_PER_MTOKEN_COMPLETION
@@ -1949,6 +2497,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--force",
+        action="store_true",
+        help=(
+            "Re-create the documents of videos that already have OUTPUT "
+            "files (the cached editing is reused, except for sections that "
+            "fail the coverage check)"
+        ),
+    )
+    parser.add_argument(
         "--yes",
         action="store_true",
         help="Skip the per-video cost confirmation prompt",
@@ -2036,7 +2593,8 @@ def main(argv: list[str] | None = None) -> int:
     pending = [
         video
         for video in eligible
-        if not is_processed(
+        if args.force
+        or not is_processed(
             playlist_dir,
             video.stem,
             lang_codes,
