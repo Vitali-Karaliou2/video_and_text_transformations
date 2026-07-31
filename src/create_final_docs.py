@@ -41,8 +41,9 @@ How a document is built:
   are kept (or joined and split by rule 1a) and the wording lightly
   polished; awkward English slide wording used for headings is fixed.
   What follows needs no model and is not asked of it: paragraphs over 200
-  words are halved at a sentence end, and the Russian text gets the letter
-  «ё» where only «ё» can stand (see polish_section).
+  words are halved at a sentence end, the Russian text gets the letter «ё»
+  where only «ё» can stand, and the phrases that are misspelled whatever
+  the sentence («имею ввиду») are put right (see polish_section).
 - Subsections: when the section text discusses the slide bullets one by
   one in recognizable fragments (e.g. "Benefits of Test Automation"), one
   subsection per bullet is created; when bullets are only mentioned in
@@ -1479,6 +1480,8 @@ YO_WORDS = """
     надёжно надёжный надёжная надёжные надёжность
     объём объёма объёме объёмы приём приёма приёме приёмы
     лёгкий лёгкая лёгкое лёгкие лёгких
+    шёл прошёл пришёл нашёл ушёл пошёл зашёл вошёл подошёл перешёл
+    произошёл обошёлся тяжёлый тяжёлая тяжёлые жёсткий жёсткая жёсткие
 """.split()
 YO_BY_PLAIN = {word.replace("ё", "е"): word for word in YO_WORDS}
 YO_RE = re.compile(
@@ -1499,6 +1502,42 @@ def spell_yo(text: str) -> str:
         return spelled
 
     return YO_RE.sub(fix, text)
+
+
+# --------------------------------------------------------------------------
+# Together or apart
+#
+# «имею ввиду», «в последствии»: the reviewer marked these five times, and
+# they need no reading of the sentence either. «Ввиду» after a form of
+# «иметь» is always two words - the preposition «ввиду» means "because of"
+# and cannot be had; «в последствии» is always one word, the case that would
+# make two of them is «в последствиях». Everything else about them is the
+# same story as «ё»: rule 1c asks, the editor writes what it heard.
+
+PHRASE_FIXES = [
+    (
+        re.compile(
+            r"\b(име(?:ю|ешь|ет|ем|ете|ют|л|ла|ли|лось|ется))\s+ввиду\b",
+            re.IGNORECASE,
+        ),
+        r"\1 в виду",
+    ),
+    (re.compile(r"\bимейте\s+ввиду\b", re.IGNORECASE), "имейте в виду"),
+    (re.compile(r"\bв\s+последствии\b", re.IGNORECASE), "впоследствии"),
+]
+
+
+def respell(text: str) -> str:
+    """«имею ввиду» -> «имею в виду», «в последствии» -> «впоследствии»."""
+    def fix(match: re.Match, replacement: str) -> str:
+        fixed = match.expand(replacement)
+        if match.group(0)[:1].isupper():
+            fixed = fixed[:1].upper() + fixed[1:]
+        return fixed
+
+    for pattern, replacement in PHRASE_FIXES:
+        text = pattern.sub(lambda m, r=replacement: fix(m, r), text)
+    return text
 
 
 def split_paragraph(text: str, limit: int) -> list[str]:
@@ -1523,7 +1562,8 @@ def split_paragraph(text: str, limit: int) -> list[str]:
 
 def polish_section(section: Section, code: str) -> None:
     """Put the finished section through what needs no model: paragraphs of
-    a readable length, and the letter «ё» where only «ё» can stand.
+    a readable length, the letter «ё» where only «ё» can stand, and the few
+    phrases that are misspelled whatever the sentence.
 
     Rule 1a is asked for, reported on - and still broken: the editor merges
     paragraphs into blocks of 450 words, and the coverage repair inserts a
@@ -1541,12 +1581,14 @@ def polish_section(section: Section, code: str) -> None:
                     split_paragraph(str(paragraph), PARAGRAPH_REPORT_WORDS)
                 )
             container[key] = (
-                [spell_yo(text) for text in texts] if key == "RU" else texts
+                [respell(spell_yo(text)) for text in texts]
+                if key == "RU"
+                else texts
             )
     if code == "RU":
         for sub in section.subsections:
             if sub.get("heading_orig"):
-                sub["heading_orig"] = spell_yo(sub["heading_orig"])
+                sub["heading_orig"] = respell(spell_yo(sub["heading_orig"]))
 
 
 def coverage_words(text: str) -> list[str]:
