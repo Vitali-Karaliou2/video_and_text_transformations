@@ -11,6 +11,11 @@ If the playlist or the channel folder has a terms.txt glossary (or --terms
 points at one), its terms are passed to the recognizer as its `prompt`, which
 keeps the product and technology names of the course spelled correctly.
 
+The paragraphs of the .txt follow the pauses of the recording, taken from
+the audio with ffmpeg and cached beside the video (see silences.py); an .srt
+carries no pauses of its own, and without the media file (remote mode) the
+paragraphs fall back to being cut by length.
+
 The session start point is found by scanning the result folders: the first
 video without a complete result set is transcribed first. Press 'p' during a
 session to stop after the current video; the next run resumes automatically.
@@ -83,6 +88,7 @@ from glossary import (
     whisper_prompt,
 )
 from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
+from silences import SILENCE_MIN_SECONDS, SilenceIndex, load_silences
 from transcription_pricing import get_transcription_rate
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -104,8 +110,29 @@ REQUEST_TIMEOUT = 600
 PROGRESS_INTERVAL = 5.0
 TXT_WRAP_WIDTH = 80
 # A silence this long between segments starts a new paragraph in the .txt.
+# Only whisper writes almost no silence into an .srt (it butts the segments
+# against each other), so this fires at about 1% of the joins and the real
+# work is done by the pauses of silences.py wherever they are available.
 PARAGRAPH_GAP_SECONDS = 1.5
 PARAGRAPH_MAX_CHARS = 1000
+# Paragraphs built on the real pauses: shorter than this a paragraph is a
+# stub, longer than this it is a wall of text, and in between the length is
+# decided by how long the speaker stopped.
+PARAGRAPH_MIN_WORDS = 45
+PARAGRAPH_MAX_WORDS = 130
+# Whisper sometimes runs for five minutes on commas alone, without a single
+# full stop; past this many words a pause ends the paragraph even in the
+# middle of such a "sentence" (the editor repunctuates the text anyway).
+PARAGRAPH_HARD_WORDS = 200
+# ...and past this many the demand for a pause is dropped as well: the join
+# between two segments is taken as it comes. A stretch with neither a full
+# stop nor a silence of its own is rare (one or two per lecture), but it is
+# what was still handing the editor blocks of 300 words.
+PARAGRAPH_LAST_RESORT_WORDS = 260
+# The pause a sentence end must be followed by to break a paragraph: this
+# long right after the minimum, falling to SILENCE_MIN_SECONDS as the
+# paragraph approaches the maximum.
+PARAGRAPH_STRONG_PAUSE = 0.8
 # Video metadata (title, date, duration, chapters) saved in remote mode for
 # the final-editing stage (document title and timecode-based ToC).
 INFO_DIRNAME = "INFO"
@@ -475,13 +502,93 @@ def segments_to_srt(segments: list[Segment]) -> str:
     return "\n".join(blocks)
 
 
+def ends_sentence(text: str) -> bool:
+    return text.rstrip().rstrip("\"\u00bb)]").endswith((".", "!", "?", "\u2026"))
+
+
+def pause_wanted(
+    words: int,
+    min_words: int = PARAGRAPH_MIN_WORDS,
+    max_words: int = PARAGRAPH_MAX_WORDS,
+) -> float:
+    """How long a pause has to be to end a paragraph of that many words.
+
+    Right after the minimum only a clear stop will do; the closer the
+    paragraph comes to the maximum, the shorter a pause is enough.
+    """
+    if words < min_words:
+        return float("inf")
+    if words >= max_words:
+        return 0.0
+    share = (words - min_words) / (max_words - min_words)
+    return PARAGRAPH_STRONG_PAUSE - share * (
+        PARAGRAPH_STRONG_PAUSE - SILENCE_MIN_SECONDS
+    )
+
+
+def group_paragraphs_by_pauses(
+    segments: list[Segment],
+    pauses: SilenceIndex,
+    min_words: int = PARAGRAPH_MIN_WORDS,
+    max_words: int = PARAGRAPH_MAX_WORDS,
+) -> list[str]:
+    """Group segments into paragraphs where the speaker really stopped.
+
+    A paragraph may only end where a sentence does, and of the sentence ends
+    it takes the ones the speaker paused at - insisting on a long pause at
+    first and settling for any as the paragraph grows. Past the maximum the
+    next sentence end ends it whether or not there was a pause: some
+    stretches (a demo, a read-out list) are spoken without a single one.
+    Past PARAGRAPH_HARD_WORDS even a sentence end is no longer waited for -
+    a pause alone will do, because the recognizer can go for minutes on
+    commas and would otherwise hand over one paragraph of 600 words; and
+    past PARAGRAPH_LAST_RESORT_WORDS the pause is not waited for either.
+    """
+    paragraphs: list[str] = []
+    current: list[str] = []
+    words = 0
+    for segment, following in zip(segments, segments[1:] + [None]):
+        text = segment.text.strip()
+        if text:
+            current.append(text)
+            words += len(text.split())
+        if following is None or not current:
+            continue
+        pause = pauses.duration_at(following.start)
+        if ends_sentence(segment.text):
+            wanted = pause_wanted(words, min_words, max_words)
+        elif words >= PARAGRAPH_HARD_WORDS:
+            # The demand for a pause fades out the same way: a short one
+            # right past the cap, none at all by the last resort.
+            over = (words - PARAGRAPH_HARD_WORDS) / (
+                PARAGRAPH_LAST_RESORT_WORDS - PARAGRAPH_HARD_WORDS
+            )
+            wanted = SILENCE_MIN_SECONDS * max(0.0, 1.0 - over)
+        else:
+            continue
+        if pause >= wanted:
+            paragraphs.append(" ".join(current))
+            current = []
+            words = 0
+    if current:
+        paragraphs.append(" ".join(current))
+    return paragraphs
+
+
 def group_paragraphs(
     segments: list[Segment],
     gap_seconds: float = PARAGRAPH_GAP_SECONDS,
     max_chars: int = PARAGRAPH_MAX_CHARS,
+    pauses: SilenceIndex | None = None,
 ) -> list[str]:
     """Group segments into paragraphs at silence gaps (or after ~max_chars
-    at a sentence end, so continuous speech does not become one huge block)."""
+    at a sentence end, so continuous speech does not become one huge block).
+
+    With the real pauses of the recording at hand the far better rule of
+    group_paragraphs_by_pauses is used instead.
+    """
+    if pauses:
+        return group_paragraphs_by_pauses(segments, pauses)
     paragraphs: list[str] = []
     current: list[str] = []
     length = 0
@@ -504,8 +611,13 @@ def group_paragraphs(
     return paragraphs
 
 
-def format_txt(text: str, segments: list[Segment], width: int = TXT_WRAP_WIDTH) -> str:
-    paragraphs = group_paragraphs(segments) if segments else [text]
+def format_txt(
+    text: str,
+    segments: list[Segment],
+    width: int = TXT_WRAP_WIDTH,
+    pauses: SilenceIndex | None = None,
+) -> str:
+    paragraphs = group_paragraphs(segments, pauses=pauses) if segments else [text]
     blocks = [
         "\n".join(
             textwrap.wrap(
@@ -580,12 +692,20 @@ def read_asr_meta(out_dir: Path, stem: str) -> list[Segment]:
 
 
 def write_results(
-    out_dir: Path, stem: str, text: str, segments: list[Segment], *, language: str
+    out_dir: Path,
+    stem: str,
+    text: str,
+    segments: list[Segment],
+    *,
+    language: str,
+    pauses: SilenceIndex | None = None,
 ) -> list[Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     txt_path = out_dir / f"{stem}.txt"
     srt_path = out_dir / f"{stem}.srt"
-    txt_path.write_text(format_txt(text, segments) + "\n", encoding="utf-8")
+    txt_path.write_text(
+        format_txt(text, segments, pauses=pauses) + "\n", encoding="utf-8"
+    )
     srt_path.write_text(segments_to_srt(segments), encoding="utf-8")
     written = [txt_path, srt_path]
     meta_path = write_asr_meta(out_dir, stem, segments, language=language)
@@ -666,6 +786,14 @@ def transcribe_video(
         print(f"  Audio: {minutes:.1f} min, {len(chunks)} chunk(s).", flush=True)
 
         playlist_dir = orig_dir.parent
+        # The paragraphs of the .txt follow the pauses of the recording;
+        # in remote mode the media is a throwaway download, so there is
+        # nothing worth listening to (and nowhere to keep the sidecar).
+        pauses = (
+            SilenceIndex(load_silences(video, ffmpeg=ffmpeg))
+            if stem == video.stem
+            else None
+        )
 
         fields = {
             "model": MODEL,
@@ -682,7 +810,9 @@ def transcribe_video(
             label=lang.upper(),
             calibration=calibration,
         )
-        for path in write_results(orig_dir, stem, text, segments, language=lang):
+        for path in write_results(
+            orig_dir, stem, text, segments, language=lang, pauses=pauses
+        ):
             print(f"  Saved: {path.relative_to(playlist_dir)}", flush=True)
 
         if needs_en:
@@ -698,7 +828,7 @@ def transcribe_video(
                 calibration=calibration,
             )
             for path in write_results(
-                en_dir, stem, text_en, segments_en, language="en"
+                en_dir, stem, text_en, segments_en, language="en", pauses=pauses
             ):
                 print(f"  Saved: {path.relative_to(playlist_dir)}", flush=True)
 

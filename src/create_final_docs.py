@@ -28,12 +28,18 @@ How a document is built:
   taken instead, looked for further back than forward, since a speaker
   announces the next topic before reaching for the slide.
 - The .srt transcripts are sliced by those time ranges, so every section
-  gets its original-language and English text fragments.
+  gets its original-language and English text fragments, already split
+  into paragraphs at the pauses of the recording (see silences.py: the
+  .srt has no pauses of its own, whisper butts its segments together).
 - Each section is edited by the OpenAI API using both fragments at once:
   recognition errors in the original are fixed against the English
-  translation, punctuation is enriched (colons, dashes - not only commas),
-  the text is split into paragraphs and lightly polished; awkward
-  English slide wording used for headings is fixed.
+  translation, the text is repunctuated and its grammar repaired (rules
+  1b/1c: the recognizer knows two marks and loses endings), the paragraphs
+  are kept (or joined and split by rule 1a) and the wording lightly
+  polished; awkward English slide wording used for headings is fixed.
+  What follows needs no model and is not asked of it: paragraphs over 200
+  words are halved at a sentence end, and the Russian text gets the letter
+  «ё» where only «ё» can stand (see polish_section).
 - Subsections: when the section text discusses the slide bullets one by
   one in recognizable fragments (e.g. "Benefits of Test Automation"), one
   subsection per bullet is created; when bullets are only mentioned in
@@ -47,7 +53,12 @@ How a document is built:
   model; what is still wrong after the retry is reported in the log and
   recorded in the cache. Sections cached by an earlier run are re-checked
   offline and re-edited when they fail, so an already-generated document
-  can be repaired without paying for the whole video again.
+  can be repaired without paying for the whole video again. A section
+  edited under older rules (EDIT_RULES_VERSION) is re-edited as well: a
+  document half in one style and half in another is worse than one paid
+  for again. Paragraphs that are still over 200 words after the split
+  (no sentence end to cut at), and questions written with a full stop, are
+  reported after the run - both checks are free.
 
 Formats:
 - .md - a Table of Contents with full multi-level numbering (1., 2., 2.1.);
@@ -100,10 +111,12 @@ if str(_SRC_DIR) not in sys.path:
 from extract_slides import SLIDES_DIRNAME, short_slide_keys, slides_out_dir
 from glossary import GLOSSARY_FILENAME, find_glossary, load_terms
 from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
+from silences import SilenceIndex, load_silences
 from text_from_slides import LANGUAGE_NAMES, MODEL, RESULT_FILENAME, chat_json
 from transcribe_videos import (
     INFO_DIRNAME,
     Segment,
+    ends_sentence,
     group_paragraphs,
     list_videos,
     read_api_key,
@@ -124,6 +137,15 @@ TRANSCRIPT_HEADINGS = {"EN": "Transcript", "RU": "Транскрипт"}
 # Editing results are cached next to slides.json, so a re-run after a
 # failure (or after a formatting-only change) does not pay the API again.
 EDIT_CACHE_FILENAME = "edited_sections.json"
+# Bumped when the editing rules change enough that a section edited by the
+# old ones would not match a freshly edited neighbour - a document half in
+# one style and half in another is worse than paying for the whole of it
+# again. The cost is shown and confirmed as usual before anything is sent.
+#   2: paragraphs follow the pauses of the recording (see silences.py) and
+#      rule 1a of the prompt.
+#   3: punctuation and grammar spelled out as rules 1b and 1c.
+#   4: rule 1a states the 150/200-word limits as limits, not as aims.
+EDIT_RULES_VERSION = 4
 
 # gpt-4o API prices as of 2026-07, USD per 1M tokens (see
 # https://platform.openai.com/docs/pricing).
@@ -146,15 +168,64 @@ the section (title + bullet lines + scene timing).
 Editing rules:
 1. Original text: fix obvious speech recognition errors (the English
    translation often shows what was meant), especially garbled English
-   product, company and technology names; enrich the punctuation according
-   to the rules of that language (colons, dashes, semicolons - the raw
-   transcript uses almost nothing but commas); split into paragraphs;
-   lightly polish the spoken wording (drop filler words, false starts,
+   product, company and technology names; punctuate it properly (see 1b)
+   and make every sentence grammatical (see 1c); keep the paragraphs (see
+   1a); lightly polish the spoken wording (drop filler words, false starts,
    broken repetitions) while fully preserving the content, details, examples
    and the speaker's tone. Never summarize, never drop content, never add
-   content of your own. When the original language is Russian, use the
-   letter «ё» wherever standard Russian orthography calls for it (e.g.
-   «ещё», «всё», «идёт», «счёт», «отчёт»); do not replace «ё» with «е».
+   content of your own.
+1b. Punctuation. The recognizer typed the whole lecture with two marks, the
+   full stop and the comma, and put them where it heard a break rather than
+   where the sentence needs one. Repunctuate the text: the words stay as
+   they are, only the marks change.
+   - A dash where speech leaves out the verb or the copula, in parallel
+     constructions and before a conclusion: «Хотите – посещайте, хотите –
+     нет», «Автоматизация – это не панацея».
+   - A colon before a list, or before the explanation of what was just
+     said.
+   - A question mark on a question - including the rhetorical ones the
+     speaker asks and then answers herself: «Что это значит на практике?»,
+     «Почему пестицидный парадокс?».
+   - A comma, a colon or a dash in place of a full stop that cuts one
+     sentence in two - between a cause and its effect, between a clause and
+     the one it depends on.
+   - A full stop where one sentence ends and the next begins without one.
+   - Away with a comma that distorts the sense; in with the one that was
+     dropped.
+   A sentence that already reads well needs no new marks: do not reword a
+   sentence to make room for one.
+1c. Grammar. Endings are what the recognizer loses first, so the transcript
+   is full of sentences nobody said: «тестировщиков обучают автоматизация»,
+   «плюсы, которые дают нам автоматизацию», «какие-то самолётостроения»,
+   «сталкивалось» for «сталкивалась». Every sentence must parse in its own
+   language: restore the case, gender, number and verb form the sense calls
+   for (the English translation shows which reading is meant), the endings
+   of inflected loanwords included («adjustment-а», «сценариев»). This
+   repairs the recognition, it does not rewrite the speaker.
+   When the original language is Russian, write «ё» in every word spelled
+   with it: «ещё», «её», «идёт», «даёт», «счёт», «чётко», «серьёзно», and
+   «всё» when it is the pronoun; «все» and «чем» keep «е» only where they
+   really are those words.
+1a. Paragraphs. The blank lines of the given transcript are not arbitrary:
+   the text is already split where the speaker stopped talking, so keep
+   those breaks as they are. Depart from them only for a reason, and there
+   are three:
+   - the break falls in the middle of a thought (the sentence after it
+     finishes the sentence before it, or answers a question just asked) -
+     join the two paragraphs;
+   - a paragraph runs past roughly 150 words or turns to a new thought
+     halfway - split it, at the place the speaker moves on ("Тогда
+     предлагаю перейти...", "Следующий пункт...", "Now let us look at...")
+     or right after a list closes ("...и так далее.");
+   - a paragraph is one short sentence that plainly belongs with its
+     neighbour - join it. A single sentence standing alone is fine only
+     when it announces what follows or sums up what came before.
+   Aim for paragraphs of 50-120 words: several sentences on one thought,
+   not a wall of text and not a stack of one-liners. Two limits are not
+   aims but rules: never join two paragraphs into one longer than 150
+   words, and never leave a paragraph of more than 200 words standing -
+   split it at the best sentence end you can find, and if the recognizer
+   left none, at the place your own punctuation ends a sentence.
 2. English text: edit the same way; its punctuation usually needs little
    work, but polish awkward constructions - the speaker is not a native
    English speaker.
@@ -249,8 +320,11 @@ fragment goes between.
 
 Edit the fragment exactly like the text around it: fix obvious speech
 recognition errors (spelling the names of "glossary" exactly as listed),
-enrich the punctuation, lightly polish the spoken wording - keeping every
-detail, example and the speaker's tone. Never
+punctuate it (the recognizer knows the full stop and the comma and puts
+both where it hears a break: end the sentences where they end, and use the
+dash, the colon and the question mark where the language calls for them),
+repair the endings the recognizer mangled, lightly polish the spoken
+wording - keeping every detail, example and the speaker's tone. Never
 summarize, never drop anything, never add anything of your own, and do not
 repeat the surrounding paragraphs: reply with this fragment alone, one
 paragraph per language. When the original language is Russian, use the
@@ -350,9 +424,14 @@ def parse_srt(path: Path) -> list[Segment]:
     return segments
 
 
-def section_text(segments: list[Segment], start: float, end: float) -> str:
+def section_text(
+    segments: list[Segment],
+    start: float,
+    end: float,
+    pauses: SilenceIndex | None = None,
+) -> str:
     part = [seg for seg in segments if start <= seg.start < end]
-    return "\n\n".join(group_paragraphs(part))
+    return "\n\n".join(group_paragraphs(part, pauses=pauses))
 
 
 def detect_original_code(playlist_dir: Path) -> str:
@@ -447,10 +526,6 @@ BOUNDARY_MIN_SECTION_SECONDS = 15.0
 SENTENCE_END_RE = re.compile(
     r"[.!?\u2026]+[\"\u00bb)\]]*\s+(?=[\"\u00ab(\[\u2013\u2014A-Z\u0410-\u042f\u0401])"
 )
-
-
-def ends_sentence(text: str) -> bool:
-    return text.rstrip().rstrip("\"\u00bb)]").endswith((".", "!", "?", "\u2026"))
 
 
 def char_time(segment: Segment, offset: int) -> float:
@@ -798,6 +873,10 @@ COVERAGE_MIN_RUN_WORDS = 5
 COVERAGE_MIN_REPEAT_WORDS = 12
 COVERAGE_RETRIES = 1
 FRAGMENT_PREVIEW_CHARS = 120
+# A paragraph longer than this is reported after the run: rule 1a of the
+# prompt asks for 50-120 words, and this much past it is no longer a
+# borderline case but the wall of text the rule is there to prevent.
+PARAGRAPH_REPORT_WORDS = 200
 
 
 @dataclass
@@ -846,6 +925,186 @@ def coverage_code(orig_code: str) -> str:
     return orig_code if orig_code != "EN" else "EN"
 
 
+def section_paragraphs(section: Section, code: str) -> list[str]:
+    paragraphs = list(section.intro.get(code) or [])
+    for sub in section.subsections:
+        paragraphs.extend(sub.get(code) or [])
+    return [text for text in paragraphs if text.strip()]
+
+
+def long_paragraphs(
+    sections: list[Section], code: str, limit: int = PARAGRAPH_REPORT_WORDS
+) -> list[tuple[str, int]]:
+    """(heading, words) of every paragraph still too long after polishing.
+
+    Rule 1a asks for 50-120 words and polish_section halves anything past
+    this limit, so what is reported here is the one case it cannot fix: a
+    paragraph without a single sentence end in it.
+    """
+    found: list[tuple[str, int]] = []
+    for section in sections:
+        for paragraph in section_paragraphs(section, code):
+            words = len(paragraph.split())
+            if words > limit:
+                found.append((section.heading, words))
+    return found
+
+
+SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?…])\s+")
+QUESTION_OPENER_RE = re.compile(
+    r"^[«\"(\s-]*(почему|зачем|каки[ем]|кака[яю]|како[йе]|каким|сколько|"
+    r"что такое|что это|в чём|в чем)\b(?!-(?:то|нибудь|либо))",
+    re.IGNORECASE,
+)
+# Past this a sentence opening with a question word is usually a statement
+# ("Какие скиллы должны быть, какие навыки, на каком уровне и так далее.").
+QUESTION_MAX_WORDS = 12
+
+
+def punctuation_density(sections: list[Section], code: str) -> str:
+    """The marks per 1000 words of the edited text, as one line of log.
+
+    Rule 1b is the one rule whose result swings from run to run - the same
+    lecture came back with 14 dashes once and with 3 the next time - so the
+    number is printed rather than left to a probe.
+    """
+    text = "\n".join(
+        paragraph
+        for section in sections
+        for paragraph in section_paragraphs(section, code)
+    )
+    words = len(text.split())
+    if not words:
+        return ""
+    marks = {
+        "dashes": len(re.findall(r"[\u2013\u2014]", text)),
+        "colons": text.count(":"),
+        "question marks": text.count("?"),
+    }
+    return ", ".join(
+        f"{count * 1000 / words:.1f} {name}" for name, count in marks.items()
+    ) + " per 1000 words"
+
+
+def questions_with_a_full_stop(
+    sections: list[Section], code: str
+) -> list[str]:
+    """The sentences that ask something and end with a full stop anyway.
+
+    Only the plainest cases: a short sentence opening with a question word.
+    The lecturer asks and answers herself all the time, and rule 1b keeps
+    losing those question marks; this counts what is left, and, like the
+    long paragraphs above, it costs nothing and repairs nothing.
+    """
+    if code != "RU":
+        return []
+    found: list[str] = []
+    for section in sections:
+        for paragraph in section_paragraphs(section, code):
+            for sentence in SENTENCE_SPLIT_RE.split(paragraph):
+                sentence = sentence.strip()
+                if (
+                    sentence.endswith(".")
+                    and len(sentence.split()) <= QUESTION_MAX_WORDS
+                    and QUESTION_OPENER_RE.match(sentence)
+                ):
+                    found.append(sentence)
+    return found
+
+
+# --------------------------------------------------------------------------
+# The letter «ё»
+#
+# Rule 1c asks for it and the editor still writes «еще» more often than
+# «ещё», so the words that can only be spelled with «ё» are put right here,
+# for free and for certain. The ambiguous pairs stay with the editor: «все»
+# and «всё», «чем» and «чём» are different words, and only the sentence
+# says which one was meant.
+
+YO_WORDS = """
+    ещё её неё моё твоё своё
+    идёт идём идёшь придёт придём пойдёт пойдём найдёт найдём
+    перейдём зайдём подойдёт произойдёт обойдётся обойдёмся
+    даёт даём отдаёт создаёт создаём передаёт остаётся остаёмся
+    берёт берём возьмёт возьмём начнёт начнём поймёт поймём
+    живёт живём ведёт ведём приведёт приведём несёт несём растёт
+    зовёт зовём назовём разберём разберёмся вернёмся займёмся
+    счёт счёта счёте отчёт отчёта отчёты учёт учёта расчёт расчёта зачёт
+    чёткий чёткая чёткое чёткие чётких чёткую чётко чётче
+    серьёзно серьёзный серьёзная серьёзные серьёзных
+    надёжно надёжный надёжная надёжные надёжность
+    объём объёма объёме объёмы приём приёма приёме приёмы
+    лёгкий лёгкая лёгкое лёгкие лёгких
+""".split()
+YO_BY_PLAIN = {word.replace("ё", "е"): word for word in YO_WORDS}
+YO_RE = re.compile(
+    r"\b(" + "|".join(sorted(YO_BY_PLAIN, key=len, reverse=True)) + r")\b",
+    re.IGNORECASE,
+)
+
+
+def spell_yo(text: str) -> str:
+    """«еще» -> «ещё», and the like: only where «е» is never right."""
+    def fix(match: re.Match) -> str:
+        word = match.group(0)
+        spelled = YO_BY_PLAIN[word.lower()]
+        if word.isupper():
+            return spelled.upper()
+        if word[0].isupper():
+            return spelled[0].upper() + spelled[1:]
+        return spelled
+
+    return YO_RE.sub(fix, text)
+
+
+def split_paragraph(text: str, limit: int) -> list[str]:
+    """Halve an over-long paragraph at a sentence end, and again if needed."""
+    words = len(text.split())
+    if words <= limit:
+        return [text]
+    sentences = SENTENCE_SPLIT_RE.split(text)
+    if len(sentences) < 2:
+        return [text]
+    cut = running = 0
+    nearest = words
+    for index, sentence in enumerate(sentences[:-1], start=1):
+        running += len(sentence.split())
+        if abs(running - words / 2) < nearest:
+            nearest = abs(running - words / 2)
+            cut = index
+    return split_paragraph(" ".join(sentences[:cut]), limit) + split_paragraph(
+        " ".join(sentences[cut:]), limit
+    )
+
+
+def polish_section(section: Section, code: str) -> None:
+    """Put the finished section through what needs no model: paragraphs of
+    a readable length, and the letter «ё» where only «ё» can stand.
+
+    Rule 1a is asked for, reported on - and still broken: the editor merges
+    paragraphs into blocks of 450 words, and the coverage repair inserts a
+    lost fragment of the transcript as one paragraph of whatever length it
+    happens to be. Splitting them is arithmetic, not judgement, so it is
+    done here rather than paid for.
+    """
+    for container in [section.intro, *section.subsections]:
+        for key, value in list(container.items()):
+            if not isinstance(value, list):
+                continue
+            texts: list[str] = []
+            for paragraph in value:
+                texts.extend(
+                    split_paragraph(str(paragraph), PARAGRAPH_REPORT_WORDS)
+                )
+            container[key] = (
+                [spell_yo(text) for text in texts] if key == "RU" else texts
+            )
+    if code == "RU":
+        for sub in section.subsections:
+            if sub.get("heading_orig"):
+                sub["heading_orig"] = spell_yo(sub["heading_orig"])
+
+
 def coverage_words(text: str) -> list[str]:
     """Comparable words: case and «ё» are edited on purpose, so both are
     normalized away."""
@@ -866,13 +1125,26 @@ def section_language_text(section: Section, code: str) -> str:
 
 
 def dropped_fragments(source: str, edited: str) -> list[Gap]:
-    """Runs of source words that the edited text does not carry at all."""
-    raw = WORD_RE.findall(source)
+    """Runs of source words that the edited text does not carry at all.
+
+    The gap is cut out of the transcript with its punctuation: it is handed
+    back to the model to be edited and put in place, and a fragment served
+    as a bare list of words comes back as a bare list of words.
+    """
+    words = list(WORD_RE.finditer(source))
+
+    def cut(start: int, stop: int) -> str:
+        """The run of source words with the marks between and after them."""
+        end = words[stop].start() if stop < len(words) else len(source)
+        text = source[words[start].start():end]
+        # The mark that opens the next sentence came along with the rest.
+        return " ".join(text.split()).rstrip("«\"([-–— ")
+
     matcher = difflib.SequenceMatcher(
         None, coverage_words(source), coverage_words(edited), autojunk=False
     )
     return [
-        Gap(" ".join(raw[start:stop]), offset)
+        Gap(cut(start, stop), offset)
         for tag, start, stop, offset, _ in matcher.get_opcodes()
         if tag in ("delete", "replace")
         and stop - start >= COVERAGE_MIN_RUN_WORDS
@@ -1180,6 +1452,7 @@ def edit_section_in_chunks(
     parts: int,
     terms: list[str],
     usage: dict[str, int],
+    pauses: SilenceIndex | None = None,
 ) -> Coverage:
     """Edit one long section chunk by chunk; the result is always flat."""
     ranges = split_section_ranges(section, segments.get(orig_code) or [], parts)
@@ -1200,12 +1473,12 @@ def edit_section_in_chunks(
             end=end,
         )
         orig_text = (
-            section_text(segments[orig_code], start, end)
+            section_text(segments[orig_code], start, end, pauses)
             if orig_code != "EN"
             else ""
         )
         en_text = (
-            section_text(segments["EN"], start, end)
+            section_text(segments["EN"], start, end, pauses)
             if "EN" in segments
             else ""
         )
@@ -2227,6 +2500,7 @@ def section_to_cache(section: Section, issues: Coverage) -> dict:
         # merely lost its last sentences would keep an edit that still has
         # them - and so would the section they moved to.
         "range": section_range(section),
+        "rules": EDIT_RULES_VERSION,
         # Recorded so that a section whose gaps survived the retry is not
         # re-edited (and re-paid for) on every later run.
         "coverage": issues.as_cache(),
@@ -2379,15 +2653,28 @@ def process_video(
             flush=True,
         )
 
+    # The paragraphs handed to the editor follow the pauses of the recording
+    # (see silences.py); without the media file they fall back to the length
+    # of the text, which is what the .srt alone can tell.
+    pauses = SilenceIndex(load_silences(video))
+    if not pauses:
+        print(
+            "  Pauses: no silence data for this video - paragraphs are cut "
+            "by length.",
+            flush=True,
+        )
+
     texts: dict[str, tuple[str, str]] = {}
     for section in sections:
         orig_text = (
-            section_text(segments[orig_code], section.start, section.end)
+            section_text(
+                segments[orig_code], section.start, section.end, pauses
+            )
             if orig_code != "EN"
             else ""
         )
         en_text = (
-            section_text(segments["EN"], section.start, section.end)
+            section_text(segments["EN"], section.start, section.end, pauses)
             if "EN" in segments
             else ""
         )
@@ -2408,6 +2695,15 @@ def process_video(
         if stale_range(section, entry):
             print(
                 f"  Re-editing '{section.heading}': its boundaries moved.",
+                flush=True,
+            )
+            del cache[key]
+            stale += 1
+            continue
+        if entry.get("rules", 1) != EDIT_RULES_VERSION:
+            print(
+                f"  Re-editing '{section.heading}': the editing rules "
+                "changed since it was written.",
                 flush=True,
             )
             del cache[key]
@@ -2501,6 +2797,7 @@ def process_video(
                 flush=True,
             )
             section_from_cache(section, cache[key])
+            polish_section(section, check_code)
             continue
         print(
             f"  [{index}/{len(sections)}] {section.heading} "
@@ -2520,6 +2817,7 @@ def process_video(
                 parts=parts,
                 terms=terms,
                 usage=usage,
+                pauses=pauses,
             )
         else:
             issues = edit_section(
@@ -2535,6 +2833,7 @@ def process_video(
             )
         if not issues.clean:
             incomplete.append(f"{section.heading}: {issues.summary()}")
+        polish_section(section, check_code)
         # Persist after every section: a crash later in the run (e.g. during
         # the PDF stage) must not lose paid editing results.
         cache[key] = section_to_cache(section, issues)
@@ -2610,6 +2909,27 @@ def process_video(
         )
         for line in incomplete:
             print(f"    {line}", flush=True)
+    overlong = long_paragraphs(sections, coverage_code(orig_code))
+    if overlong:
+        worst = sorted(overlong, key=lambda item: -item[1])[:5]
+        print(
+            f"  NOTE: {len(overlong)} paragraph(s) over "
+            f"{PARAGRAPH_REPORT_WORDS} words:",
+            flush=True,
+        )
+        for heading, words in worst:
+            print(f"    {words} words in '{heading}'", flush=True)
+    density = punctuation_density(sections, coverage_code(orig_code))
+    if density:
+        print(f"  Punctuation: {density}.", flush=True)
+    unmarked = questions_with_a_full_stop(sections, coverage_code(orig_code))
+    if unmarked:
+        print(
+            f"  NOTE: {len(unmarked)} question(s) written with a full stop:",
+            flush=True,
+        )
+        for sentence in unmarked[:5]:
+            print(f"    {shorten_fragment(sentence)}", flush=True)
     actual_cost = (
         usage.get("prompt_tokens", 0) * USD_PER_MTOKEN_PROMPT
         + usage.get("completion_tokens", 0) * USD_PER_MTOKEN_COMPLETION
