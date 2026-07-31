@@ -37,16 +37,22 @@ the given substring; every match is offered in turn ('n' skips to the next
 one), which pairs with --next all to walk a whole lecture series.
 
 Pipeline flags: --orig-only skips the English pass; --edit chains
-create_final_docs.py per video right after transcription (slide stages are
-skipped, the document ToC then comes from the video timecodes). With --edit
-the "next" video is the next one that is not fully *edited* yet: an already
-transcribed but unedited video skips the transcription stage and goes
-straight to editing. --annotate adds the 200-250 word annotation .txt
-(see create_final_docs.py).
+create_final_docs.py per video right after transcription; --slides runs
+extract_slides.py and text_from_slides.py in between. The two are
+independent: --slides alone stops with slides.json ready for a later
+editing pass, --edit alone builds the document ToC from the video
+timecodes, and together they walk the pipeline to the end. The slide
+stages read the frames of the video file, so --slides is refused in remote
+mode when no video is on disk - only the audio track is downloaded there.
+With --edit the "next" video is the next one that is not fully *edited*
+yet: an already transcribed but unedited video skips the transcription
+stage and goes straight to editing. --annotate adds the 200-250 word
+annotation .txt (see create_final_docs.py).
 
 Examples:
   python src/transcribe_videos.py _Autotesting lectures --lang ru
   python src/transcribe_videos.py _Autotesting lectures --lang ru --next 3
+  python src/transcribe_videos.py _Autotesting lectures --slides --edit
   python src/transcribe_videos.py _VladilenMinin start_it_karery_s_nulya_v_2025 \
       --lang ru --orig-only --from-youtube --edit
   python src/transcribe_videos.py _AbbasGallyamov \
@@ -1152,8 +1158,9 @@ def remote_session(
     """Transcribe the next video(s) straight from YouTube.
 
     playlist_dir=None means the flat channel-wide mode. Returns the number
-    of videos transcribed and, for --edit, the list of
-    (playlist folder, stem) pairs to chain into final editing.
+    of videos transcribed and the list of (playlist folder, stem) pairs to
+    chain into the slide stages (--slides) and the final editing (--edit);
+    with --edit the list also holds the videos taken straight to editing.
     """
     if playlist_dir is None:
         jobs, channel_name = load_channel_flat_jobs(channel_dir)
@@ -1476,12 +1483,23 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--slides",
+        action="store_true",
+        help=(
+            "After transcription run extract_slides.py and "
+            "text_from_slides.py per video, so that a following --edit "
+            "builds the document from the slides; needs the video file "
+            "itself, which remote mode does not download"
+        ),
+    )
+    parser.add_argument(
         "--edit",
         action="store_true",
         help=(
             "After transcription run create_final_docs.py per video, "
-            "skipping the slide stages (the ToC then comes from the video "
-            "timecodes); the editing stage asks its own cost confirmation. "
+            "skipping the slide stages unless --slides is given too (the ToC "
+            "then comes from the video timecodes); the editing stage asks "
+            "its own cost confirmation. "
             "In remote mode the next video is the next *unedited* one: "
             "already transcribed videos go straight to editing"
         ),
@@ -1537,8 +1555,8 @@ def local_session(
     en_dir: Path,
     api_key: str,
     usd_per_minute: float,
-) -> int:
-    """Transcribe the next downloaded video(s); return the number done."""
+) -> list[Path]:
+    """Transcribe the next downloaded video(s); return the ones done."""
     videos = list_videos(playlist_dir)
     if not videos:
         raise SystemExit(f"No video/audio files found in {playlist_dir}")
@@ -1554,16 +1572,16 @@ def local_session(
     )
     if not session:
         print("Nothing to do: all videos are transcribed.", flush=True)
-        return 0
+        return []
     print("Press 'p' to stop after the current video.", flush=True)
 
     watcher = PauseWatcher()
     calibration = ProgressCalibration()
     passes = 2 if needs_en else 1
     total_minutes = 0.0
-    processed = 0
+    done: list[Path] = []
     for video in session:
-        print(f"[{processed + 1}/{len(session)}] {video.name}", flush=True)
+        print(f"[{len(done) + 1}/{len(session)}] {video.name}", flush=True)
         if not confirm_video(
             video, args.ffprobe, usd_per_minute, passes, auto_yes=args.yes
         ):
@@ -1581,17 +1599,61 @@ def local_session(
             calibration=calibration,
             prompt=glossary_prompt(playlist_dir, channel_dir, args.terms),
         )
-        processed += 1
-        if watcher.pause_requested() and processed < len(session):
+        done.append(video)
+        if watcher.pause_requested() and len(done) < len(session):
             print("Pause requested: stopping after the current video.", flush=True)
             break
 
     print(
-        f"Session done: {processed} video(s), {total_minutes:.1f} audio minutes, "
-        f"estimated cost ${total_minutes * usd_per_minute * passes:.2f}.",
+        f"Session done: {len(done)} video(s), {total_minutes:.1f} audio "
+        f"minutes, estimated cost "
+        f"${total_minutes * usd_per_minute * passes:.2f}.",
         flush=True,
     )
-    return processed
+    return done
+
+
+def local_video_named(channel_dir: Path, folder: str, stem: str) -> bool:
+    """Is the video file itself on disk? The slide stages read the frames,
+    and remote transcription downloads only the audio track."""
+    playlist_dir = channel_dir / "_playlists" / folder
+    return any(video.stem == stem for video in list_videos(playlist_dir))
+
+
+def run_slide_stages(
+    args: argparse.Namespace,
+    jobs: list[tuple[str, str]],
+    channel_dir: Path,
+) -> int:
+    """Chain extract_slides.py and text_from_slides.py per (playlist folder,
+    stem) pair (--slides). With --edit after them the document takes its
+    structure from the slides instead of the video timecodes; without --edit
+    the run stops here, with slides.json ready for a later editing pass."""
+    import extract_slides
+    import text_from_slides
+
+    for folder, stem in jobs:
+        if not local_video_named(channel_dir, folder, stem):
+            print("", flush=True)
+            print(
+                f"  WARNING: {stem} is not on disk, so its slides cannot be "
+                "extracted; download the video (download_videos.py) and run "
+                "the slide stages again.",
+                flush=True,
+            )
+            continue
+        argv = [args.channel_folder, folder, "--video", stem]
+        print("", flush=True)
+        print(f"=== Slides (extract_slides): {stem} ===", flush=True)
+        code = extract_slides.main(argv)
+        if code:
+            return code
+        print("", flush=True)
+        print(f"=== Slide text (text_from_slides): {stem} ===", flush=True)
+        code = text_from_slides.main(argv + (["--yes"] if args.yes else []))
+        if code:
+            return code
+    return 0
 
 
 def run_final_editing(args: argparse.Namespace, count: int) -> int:
@@ -1681,6 +1743,18 @@ def main(argv: list[str] | None = None) -> int:
             "(--from-youtube / --url)"
         )
 
+    # Refused here rather than after the transcription is paid for: the
+    # slide stages read the frames of the video, and remote mode brings home
+    # only the audio track.
+    if args.slides and remote and not (
+        playlist_dir is not None and list_videos(playlist_dir)
+    ):
+        raise SystemExit(
+            "--slides needs the video files themselves, and remote mode "
+            "downloads only the audio track. Download the videos first "
+            "(download_videos.py) or drop --slides."
+        )
+
     api_key = read_api_key(args.workspace)
     usd_per_minute = get_transcription_rate(args.workspace)
 
@@ -1690,7 +1764,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Channel folder: {channel_dir} (flat video list)", flush=True)
 
     if remote:
-        processed, edit_jobs = remote_session(
+        processed, jobs = remote_session(
             args,
             lang=lang,
             needs_en=needs_en,
@@ -1699,12 +1773,16 @@ def main(argv: list[str] | None = None) -> int:
             api_key=api_key,
             usd_per_minute=usd_per_minute,
         )
-        if args.edit and edit_jobs:
-            return run_final_editing_jobs(args, edit_jobs)
+        if args.slides and jobs:
+            code = run_slide_stages(args, jobs, channel_dir)
+            if code:
+                return code
+        if args.edit and jobs:
+            return run_final_editing_jobs(args, jobs)
         return 0
 
     assert playlist_dir is not None
-    processed = local_session(
+    done = local_session(
         args,
         lang=lang,
         needs_en=needs_en,
@@ -1715,8 +1793,16 @@ def main(argv: list[str] | None = None) -> int:
         api_key=api_key,
         usd_per_minute=usd_per_minute,
     )
-    if args.edit and processed:
-        return run_final_editing(args, processed)
+    if args.slides and done:
+        code = run_slide_stages(
+            args,
+            [(args.playlist_folder, video.stem) for video in done],
+            channel_dir,
+        )
+        if code:
+            return code
+    if args.edit and done:
+        return run_final_editing(args, len(done))
     return 0
 
 

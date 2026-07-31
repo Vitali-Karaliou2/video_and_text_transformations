@@ -121,7 +121,14 @@ from extract_slides import SLIDES_DIRNAME, short_slide_keys, slides_out_dir
 from glossary import GLOSSARY_FILENAME, find_glossary, load_terms
 from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
 from silences import SilenceIndex, load_silences
-from text_from_slides import LANGUAGE_NAMES, MODEL, RESULT_FILENAME, chat_json
+from text_from_slides import (
+    LANGUAGE_NAMES,
+    MODEL,
+    RESULT_FILENAME,
+    USD_PER_MTOKEN_COMPLETION,
+    USD_PER_MTOKEN_PROMPT,
+    chat_json,
+)
 from transcribe_videos import (
     INFO_DIRNAME,
     Segment,
@@ -161,10 +168,6 @@ EDIT_CACHE_FILENAME = "edited_sections.json"
 #   8: that heading is translated into the original language, not copied.
 EDIT_RULES_VERSION = 8
 
-# gpt-4o API prices as of 2026-07, USD per 1M tokens (see
-# https://platform.openai.com/docs/pricing).
-USD_PER_MTOKEN_PROMPT = 2.50
-USD_PER_MTOKEN_COMPLETION = 10.00
 # Rough tokenizer ratios for the cost estimate: ~4 chars per token for
 # English, ~2.5 for other languages (Cyrillic packs fewer chars per token).
 CHARS_PER_TOKEN_EN = 4.0

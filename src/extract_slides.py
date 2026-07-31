@@ -34,9 +34,13 @@ The session start point is found by scanning SLIDES/: the first video without
 a result folder is processed first. Images are written to a temporary folder
 and renamed on completion, so an interrupted video is redone on the next run.
 
+--video picks one video by name instead of the next pending ones, which is
+how transcribe_videos.py --slides chains this step.
+
 Examples:
   python src/extract_slides.py _Autotesting lectures
   python src/extract_slides.py _Autotesting lectures --next 3 --threshold 20
+  python src/extract_slides.py _Autotesting lectures --video 01_Introduction
 """
 
 from __future__ import annotations
@@ -624,6 +628,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Slide image format (default: png)",
     )
     parser.add_argument(
+        "--video",
+        metavar="STEM",
+        help=(
+            "Only the video with this file name (without extension); used "
+            "by transcribe_videos.py --slides to follow one video through "
+            "the pipeline"
+        ),
+    )
+    parser.add_argument(
         "--rename-existing",
         action="store_true",
         help=(
@@ -680,18 +693,38 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Renamed {len(renames)} folder(s).", flush=True)
         return 0
 
+    # The keys stay computed over the whole playlist even for a single video:
+    # a short key is unique among all of them, not among the chosen ones.
+    if args.video and not any(video.stem == args.video for video in videos):
+        raise SystemExit(f"No video named '{args.video}' in {playlist_dir}")
+    wanted = [
+        video for video in videos if not args.video or video.stem == args.video
+    ]
     pending = [
-        video for video in videos if not is_extracted(video, slides_dir, keys)
+        video for video in wanted if not is_extracted(video, slides_dir, keys)
     ]
     session = pending[: args.next_count]
 
-    print(
-        f"Videos: {len(videos)} total, {len(videos) - len(pending)} already done, "
-        f"{len(session)} in this session (--next {args.next_count}).",
-        flush=True,
-    )
+    if args.video:
+        print(
+            f"Video '{args.video}' of {len(videos)}: "
+            + ("slides already extracted." if not pending
+               else "not done yet."),
+            flush=True,
+        )
+    else:
+        print(
+            f"Videos: {len(videos)} total, {len(videos) - len(pending)} "
+            f"already done, {len(session)} in this session "
+            f"(--next {args.next_count}).",
+            flush=True,
+        )
     if not session:
-        print("Nothing to do: slides are extracted for all videos.", flush=True)
+        print(
+            "Nothing to do: slides are extracted for "
+            + (f"'{args.video}'." if args.video else "all videos."),
+            flush=True,
+        )
         return 0
 
     for index, video in enumerate(session, start=1):

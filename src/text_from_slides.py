@@ -26,11 +26,19 @@ Two passes over the OpenAI API:
    flagged - rewriting is left to the final-editing step of the pipeline.
 
 The session start point is found by scanning SLIDES/: the first video whose
-slide folder has images but no slides.json is processed first.
+slide folder has images but no slides.json is processed first. --video picks
+one video by name, which is how transcribe_videos.py --slides chains this
+step.
+
+Before reading a video's slides the estimated cost is printed and confirmed
+(y/n), as in every other paid stage; --yes answers it. The prompt side of
+the estimate is arithmetic - a "detail: high" frame costs what its size says
+- and the replies go by the averages of a course.
 
 Examples:
   python src/text_from_slides.py _Autotesting lectures
   python src/text_from_slides.py _Autotesting lectures --next 3
+  python src/text_from_slides.py _Autotesting lectures --video 01_Introduction
 """
 
 from __future__ import annotations
@@ -71,6 +79,34 @@ MIME_TYPES = {
 }
 REQUEST_ATTEMPTS = 3
 REQUEST_TIMEOUT = 300
+# gpt-4o API prices as of 2026-07, USD per 1M tokens (see
+# https://platform.openai.com/docs/pricing). create_final_docs.py reads them
+# from here: the model is named here too, and one place is enough.
+USD_PER_MTOKEN_PROMPT = 2.50
+USD_PER_MTOKEN_COMPLETION = 10.00
+# What a "detail: high" image costs: the frame is scaled to fit a 2048 square,
+# then its shortest side to 768, and every 512x512 tile of the result is
+# charged (https://platform.openai.com/docs/guides/vision). A 1920x1080 screen
+# share becomes 1366x768 - six tiles, 1105 tokens.
+VISION_BOX = 2048
+VISION_SHORT_SIDE = 768
+VISION_TILE = 512
+VISION_BASE_TOKENS = 85
+VISION_TILE_TOKENS = 170
+# A frame whose size the header does not give away (an exotic format): the
+# estimate falls back to the usual screen share.
+FALLBACK_FRAME = (1920, 1080)
+# ~4 characters per token: the prompts and the replies here are English JSON.
+CHARS_PER_TOKEN = 4.0
+# What the model writes is not known before it writes it, so these are
+# fitted to the nine lectures of the test-automation course (7 to 23 slides,
+# token counts from the run logs): the replies come to ~650 + ~150 tokens per
+# slide, and the structure request carries ~170 tokens of slide text. On the
+# same nine the prompt estimate lands within a few per cent of the bill.
+SLIDE_REPLY_TOKENS = 110
+STRUCTURE_PROMPT_PER_SLIDE = 170
+STRUCTURE_REPLY_TOKENS = 650
+STRUCTURE_REPLY_PER_SLIDE = 40
 LANGUAGE_NAMES = {
     "RU": "Russian", "EN": "English", "DE": "German", "FR": "French",
     "ES": "Spanish", "IT": "Italian", "PL": "Polish", "UK": "Ukrainian",
@@ -164,6 +200,90 @@ Reply with JSON only:
   ]
 }
 List every input slide exactly once in "slides", in the input order."""
+
+
+def frame_size(image: Path) -> tuple[int, int] | None:
+    """(width, height) read from the file header, without an image library.
+
+    Only what extract_slides.py writes is understood - PNG, JPEG, WebP.
+    None when the file cannot be read or says nothing: this serves a cost
+    estimate, and an estimate must not be the thing that stops a run.
+    """
+    try:
+        data = image.read_bytes()
+    except OSError:
+        return None
+    if data[:8] == b"\x89PNG\r\n\x1a\n" and data[12:16] == b"IHDR":
+        return (
+            int.from_bytes(data[16:20], "big"),
+            int.from_bytes(data[20:24], "big"),
+        )
+    if data[:2] == b"\xff\xd8":
+        offset = 2
+        while offset + 9 < len(data):
+            if data[offset] != 0xFF:
+                offset += 1
+                continue
+            marker = data[offset + 1]
+            # The frame headers (SOF0..SOF15) carry the size; the rest of the
+            # markers only say how far to jump.
+            if marker in (0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7,
+                          0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF):
+                return (
+                    int.from_bytes(data[offset + 7:offset + 9], "big"),
+                    int.from_bytes(data[offset + 5:offset + 7], "big"),
+                )
+            if marker in (0xD8, 0xD9) or 0xD0 <= marker <= 0xD7:
+                offset += 2
+                continue
+            offset += 2 + int.from_bytes(data[offset + 2:offset + 4], "big")
+        return None
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        if data[12:16] == b"VP8X":
+            return (
+                int.from_bytes(data[24:27], "little") + 1,
+                int.from_bytes(data[27:30], "little") + 1,
+            )
+        if data[12:16] == b"VP8 ":
+            return (
+                int.from_bytes(data[26:28], "little") & 0x3FFF,
+                int.from_bytes(data[28:30], "little") & 0x3FFF,
+            )
+    return None
+
+
+def vision_tokens(width: int, height: int) -> int:
+    """What one "detail: high" frame of this size costs in prompt tokens."""
+    if max(width, height) > VISION_BOX:
+        scale = VISION_BOX / max(width, height)
+        width, height = round(width * scale), round(height * scale)
+    if min(width, height) > VISION_SHORT_SIDE:
+        scale = VISION_SHORT_SIDE / min(width, height)
+        width, height = round(width * scale), round(height * scale)
+    tiles = -(-width // VISION_TILE) * -(-height // VISION_TILE)
+    return VISION_BASE_TOKENS + VISION_TILE_TOKENS * tiles
+
+
+def estimate_cost(images: list[Path]) -> tuple[int, int, float]:
+    """(prompt tokens, completion tokens, dollars) for one video.
+
+    The OCR pass is arithmetic - the frames are all the same size and their
+    price is fixed by it. What the slides say is not known before they are
+    read, so the structure pass goes by the averages of the course.
+    """
+    size = frame_size(images[0]) if images else None
+    per_image = vision_tokens(*(size or FALLBACK_FRAME))
+    ocr_prompt = round(len(OCR_SYSTEM_PROMPT) / CHARS_PER_TOKEN)
+    prompt = len(images) * (per_image + ocr_prompt)
+    completion = len(images) * SLIDE_REPLY_TOKENS
+    prompt += round(len(STRUCTURE_SYSTEM_PROMPT) / CHARS_PER_TOKEN)
+    prompt += len(images) * STRUCTURE_PROMPT_PER_SLIDE
+    completion += STRUCTURE_REPLY_TOKENS
+    completion += len(images) * STRUCTURE_REPLY_PER_SLIDE
+    cost = (
+        prompt * USD_PER_MTOKEN_PROMPT + completion * USD_PER_MTOKEN_COMPLETION
+    ) / 1_000_000
+    return prompt, completion, cost
 
 
 def call_chat_api(api_key: str, payload: dict) -> dict:
@@ -463,6 +583,25 @@ def process_video(
     return len(slides)
 
 
+def confirm_cost(images: list[Path], *, auto_yes: bool) -> bool:
+    """Print what reading these slides will cost and ask, like every other
+    paid stage of the pipeline does."""
+    prompt, completion, cost = estimate_cost(images)
+    print(
+        f"  {len(images)} slide(s) -> ~{prompt} prompt + ~{completion} "
+        f"completion tokens -> ~${cost:.2f} ({MODEL}).",
+        flush=True,
+    )
+    if auto_yes:
+        return True
+    print("  Read the text of these slides? (y/n)", flush=True)
+    try:
+        answer = input().strip().lower()
+    except EOFError:
+        return False
+    return answer in ("y", "yes")
+
+
 def has_slides(folder: Path) -> bool:
     return folder.is_dir() and bool(list_slide_images(folder))
 
@@ -493,6 +632,20 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="How many videos to process this session (default: 1)",
     )
     parser.add_argument(
+        "--video",
+        metavar="STEM",
+        help=(
+            "Only the video with this file name (without extension); used "
+            "by transcribe_videos.py --slides to follow one video through "
+            "the pipeline"
+        ),
+    )
+    parser.add_argument(
+        "--yes",
+        action="store_true",
+        help="Do not ask for the cost confirmation before reading the slides",
+    )
+    parser.add_argument(
         "--workspace",
         type=Path,
         default=WORKSPACE_ROOT,
@@ -521,15 +674,19 @@ def main(argv: list[str] | None = None) -> int:
     videos = list_videos(playlist_dir)
     if not videos:
         raise SystemExit(f"No video/audio files found in {playlist_dir}")
-    api_key = read_api_key(args.workspace)
 
     keys = short_slide_keys([video.stem for video in videos])
     course = channel_dir.name.lstrip("_")
     original_language = detect_original_language(playlist_dir)
 
+    if args.video and not any(video.stem == args.video for video in videos):
+        raise SystemExit(f"No video named '{args.video}' in {playlist_dir}")
+    wanted = [
+        video for video in videos if not args.video or video.stem == args.video
+    ]
     eligible = [
         video
-        for video in videos
+        for video in wanted
         if has_slides(slides_out_dir(slides_dir, video, keys))
     ]
     pending = [
@@ -540,22 +697,46 @@ def main(argv: list[str] | None = None) -> int:
     session = pending[: args.next_count]
 
     print(f"Playlist folder: {playlist_dir}", flush=True)
-    print(
-        f"Videos: {len(videos)} total, {len(eligible)} with slides, "
-        f"{len(eligible) - len(pending)} already processed, "
-        f"{len(session)} in this session (--next {args.next_count}).",
-        flush=True,
-    )
+    if args.video:
+        if not eligible:
+            state = "no slides extracted yet."
+        elif not pending:
+            state = "slides already read."
+        else:
+            folder = slides_out_dir(slides_dir, pending[0], keys)
+            state = f"{len(list_slide_images(folder))} slide(s) to read."
+        print(f"Video '{args.video}' of {len(videos)}: {state}", flush=True)
+    else:
+        print(
+            f"Videos: {len(videos)} total, {len(eligible)} with slides, "
+            f"{len(eligible) - len(pending)} already processed, "
+            f"{len(session)} in this session (--next {args.next_count}).",
+            flush=True,
+        )
     if not session:
         print(
-            "Nothing to do: slides.json exists for every video with slides.",
+            "Nothing to do: "
+            + (
+                f"'{args.video}' has no slides to read."
+                if args.video and not eligible
+                else "slides.json exists for every video with slides."
+            ),
             flush=True,
         )
         return 0
 
+    # Asked for only now: a run with nothing to do (or with a mistyped
+    # --video) has no business demanding an API key.
+    api_key = read_api_key(args.workspace)
+
+    processed = 0
     for index, video in enumerate(session, start=1):
         print(f"[{index}/{len(session)}] {video.name}", flush=True)
         out_dir = slides_out_dir(slides_dir, video, keys)
+        if not confirm_cost(list_slide_images(out_dir), auto_yes=args.yes):
+            print("  Skipped: the cost was not confirmed.", flush=True)
+            continue
+        processed += 1
         count = process_video(
             video,
             out_dir,
@@ -571,7 +752,7 @@ def main(argv: list[str] | None = None) -> int:
             flush=True,
         )
 
-    print(f"Session done: {len(session)} video(s).", flush=True)
+    print(f"Session done: {processed} of {len(session)} video(s).", flush=True)
     return 0
 
 
