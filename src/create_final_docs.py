@@ -47,7 +47,12 @@ How a document is built:
   one in recognizable fragments (e.g. "Benefits of Test Automation"), one
   subsection per bullet is created; when bullets are only mentioned in
   passing and the text does not decompose (e.g. "What Is Test
-  Automation?"), the section stays flat. The model decides per section.
+  Automation?"), the section stays flat. The model decides per section,
+  but it is told where each bullet is named in the speech (bullet_anchors,
+  matched offline) so that a subsection starts there and not two sentences
+  later. A lone subsection on a multi-bullet slide is folded back into the
+  intro; a split that covers most of the bullets but not all is asked for
+  once more (see close_the_table_of_contents).
 - Coverage check: every edited section is diffed (in the original
   language) against the transcript fragment it was made from. Runs of
   words the edit lost - typically a sentence at a section boundary - and
@@ -149,7 +154,11 @@ EDIT_CACHE_FILENAME = "edited_sections.json"
 #   3: punctuation and grammar spelled out as rules 1b and 1c.
 #   4: rule 1a states the 150/200-word limits as limits, not as aims.
 #   5: rule 4a - a subsection starts where its bullet is named.
-EDIT_RULES_VERSION = 5
+#   6: rule 4a takes the anchors found for the bullets in the transcript.
+#   7: a subsection heading is the name of its bullet, not the whole line;
+#      a flat section whose every bullet was named is questioned once.
+#   8: that heading is translated into the original language, not copied.
+EDIT_RULES_VERSION = 8
 
 # gpt-4o API prices as of 2026-07, USD per 1M tokens (see
 # https://platform.openai.com/docs/pricing).
@@ -257,10 +266,15 @@ Editing rules:
    (b) fully decomposed: a short intro (possibly empty) followed by one
        subsection per slide bullet - every bullet, in bullet order -
        together covering all the remaining text. Digressions stay inside
-       the subsection of the bullet being discussed; the last subsection
+       the        subsection of the bullet being discussed; the last subsection
        extends to the end of the section. Each subsection gets a concise
        English heading derived from its bullet plus a translation into the
-       original language.
+       original language: the name of the bullet, two or three words - the
+       part before the colon ("Test Isolation", not "Test Isolation: the
+       result of one test shouldn't be depended on the another"). The
+       original-language heading is that name translated («Изоляция
+       тестов»), never a copy of the English one; only a name that is not
+       translated on this course stays as it is (Playwright, Smoke).
    Choose (b) only when the bullets announce a list of parallel items
    (features, types, practices, tools) that the speaker then demonstrably
    covers one after another, so that the fragment of every bullet can be
@@ -282,6 +296,26 @@ Editing rules:
    and not a few sentences later, where the explanation gets going. The
    naming sentence opens the subsection; whatever came before it belongs
    to the bullet before, however much it sounds like an introduction.
+   "bullet_anchors", when given, has those sentences already found in the
+   transcript, mechanically, by the words of the bullet: start the
+   subsection of a bullet at its "named_at" sentence. A null "named_at"
+   means nothing was matched - not that the bullet was skipped; decide
+   that one from the text. Bullets named one after another are the case
+   layout (b) is for; a bullet named in the same breath as its neighbours
+   ("Есть три раннера: xUnit, NUnit и MSTest") is not a subsection of its
+   own. One subsection alone is never a decomposition: give every
+   discussed bullet one, or keep the section flat.
+   "bullets_without_subsection", when given, lists the bullets your
+   previous answer left out while giving the others a subsection. Either
+   give each of them its own subsection, moving the text that belongs to
+   it out of the intro and the neighbours, or return the whole section
+   flat. Do not invent a subsection for a bullet the speaker never
+   discussed, and do not repeat text to fill one.
+   "every_bullet_was_named", when given, says that each bullet was found
+   named in the text, in slide order, and that your previous answer was
+   nevertheless flat. This is layout (b): give every bullet its
+   subsection, starting at its anchor. Stay flat only if the text really
+   does not divide - if it does not, say so by returning it flat again.
 5. Propose the final section heading in English: keep the given heading if
    it is fine, otherwise fix grammar or awkward wording; keep it short. Use
    normal title casing, not ALL CAPS.
@@ -404,6 +438,7 @@ class Section:
     intro: dict[str, list[str]] = field(default_factory=dict)
     subsections: list[dict] = field(default_factory=list)
     moved: bool = False  # a boundary of this section was refined this run
+    anchors: list[str] = field(default_factory=list)  # see bullet_anchors
 
 
 # --------------------------------------------------------------------------
@@ -795,6 +830,161 @@ def refine_section_boundaries(
 
 
 # --------------------------------------------------------------------------
+# Slide bullets: where the speaker names each of them
+#
+# The reviewer's complaint about the subsections is not that they are wrong
+# but that they are late: the speaker reads a bullet out ("Test Isolation:
+# the result of one test shouldn't be depended on the another"), and the
+# subsection starts two sentences further on, where the explanation gets
+# going - after which the whole table of contents drifts by one item. Which
+# sentence names which bullet is not a matter of judgement, so it is not
+# asked of the model: it is matched here and handed over as a fact.
+#
+# The matching is done on the English transcript against the English slide,
+# and the answer is quoted from the original: the speaker mixes languages
+# ("И последний поинт здесь, что это less adaptability"), the slide does not.
+
+# A bullet is recognized by the words no other bullet of the same slide
+# uses - "test" and "automation" do not tell one bullet from another.
+BULLET_MIN_HITS = 2
+# One rare word is enough when it is long and specific ("parallelization").
+BULLET_RARE_WORD_CHARS = 9
+# How much of the original sentence to quote as the anchor.
+ANCHOR_WORDS = 8
+# Fewer bullets than this is not a list to walk through.
+SPLIT_MIN_BULLETS = 3
+
+
+def bullet_keywords(bullets: list[str]) -> list[set[str]]:
+    """Per bullet, the words that set it apart from the other bullets."""
+    words = [
+        {
+            word for word in re.findall(r"[a-zA-Z]{4,}", bullet.lower())
+            if word not in ANNOUNCE_STOPWORDS
+        }
+        for bullet in bullets
+    ]
+    counts: dict[str, int] = {}
+    for group in words:
+        for word in group:
+            counts[word] = counts.get(word, 0) + 1
+    return [{word for word in group if counts[word] == 1} for group in words]
+
+
+def bullet_anchors(
+    bullets: list[str],
+    orig_sentences: list[tuple[float, str]],
+    en_sentences: list[tuple[float, str]],
+) -> list[str]:
+    """For each bullet, the sentence of the section that first names it.
+
+    Empty string where nothing matched. The anchors are kept in bullet
+    order: a bullet is looked for only after the one before it was found,
+    because the speaker walks the slide from top to bottom.
+    """
+    if not bullets or not en_sentences:
+        return []
+    keywords = bullet_keywords(bullets)
+    anchors: list[str] = []
+    searched_from = 0
+    for wanted in keywords:
+        found = ""
+        for index in range(searched_from, len(en_sentences)):
+            moment, english = en_sentences[index]
+            hits = {
+                word for word in wanted
+                if re.search(rf"\b{re.escape(word)}", english.lower())
+            }
+            rare = any(len(word) >= BULLET_RARE_WORD_CHARS for word in hits)
+            if len(hits) < BULLET_MIN_HITS and not rare:
+                continue
+            spoken = min(
+                orig_sentences or [(moment, english)],
+                key=lambda item: abs(item[0] - moment),
+            )[1]
+            found = " ".join(spoken.split()[:ANCHOR_WORDS])
+            searched_from = index + 1
+            break
+        anchors.append(found)
+    return anchors
+
+
+def sentences_of_section(
+    segments: list[Segment], start: float, end: float
+) -> list[tuple[float, str]]:
+    return [
+        item for item in sentences_with_times(segments)
+        if start <= item[0] < end
+    ]
+
+
+def bullet_name_words(bullet: str) -> list[str]:
+    """The words of the name a bullet goes by - what is before the colon.
+
+    "End-to-End Testing: Simulating real user scenarios" is called
+    "End-to-End", and a heading that says so is a heading for it, however
+    little its wording has in common with the rest of the line.
+    """
+    if ":" not in bullet:
+        return []
+    name = bullet.split(":", 1)[0]
+    return [
+        word for word in re.findall(r"[a-zA-Z]{3,}", name.lower())
+        if word not in ANNOUNCE_STOPWORDS and word not in ("the", "and")
+    ]
+
+
+def every_bullet_named(section: Section) -> bool:
+    """Whether the speaker named every bullet of the slide, in slide order.
+
+    A rare thing - three sections of the eighty-nine on this course - and
+    the very case rule 4 calls a list of parallel items covered one after
+    another. When it happens, a flat section is worth questioning.
+    """
+    bullets = (section.slide or {}).get("body") or []
+    return (
+        len(bullets) >= SPLIT_MIN_BULLETS
+        and len(section.anchors) == len(bullets)
+        and all(section.anchors)
+    )
+
+
+def bullets_without_subsection(section: Section) -> list[str]:
+    """Bullets left without a subsection of their own.
+
+    Rule 4 allows a section to stay flat, but not to be split half way:
+    a bullet that gets no subsection is an item the table of contents
+    loses, and everything after it shifts by one - what the reviewer saw
+    as "оглавление поплыло".
+
+    Only reported when most of the bullets did get one. A slide the
+    speaker never walks through as a list (a comparison table of forty
+    rows) is a different case entirely, and not one to complain about.
+    """
+    bullets = [str(line) for line in (section.slide or {}).get("body") or []]
+    if not section.subsections or len(bullets) < 2:
+        return []
+    headings = [
+        str(sub.get("heading_en") or "").lower()
+        for sub in section.subsections
+    ]
+    missing: list[str] = []
+    for bullet, wanted in zip(bullets, bullet_keywords(bullets)):
+        named = bullet_name_words(bullet)
+        if not wanted and not named:
+            continue
+        if any(
+            any(re.search(rf"\b{re.escape(word)}", heading) for word in wanted)
+            or (named and all(word in heading for word in named))
+            for heading in headings
+        ):
+            continue
+        missing.append(bullet)
+    covered = len(bullets) - len(missing)
+    return missing if covered * 2 > len(bullets) else []
+
+
+# --------------------------------------------------------------------------
 # Section list and document header without slides (INFO/<stem>.json written
 # by transcribe_videos.py in remote mode: title, date, duration, timecodes)
 
@@ -878,6 +1068,8 @@ def request_edit(
     usage: dict[str, int],
     part: tuple[int, int] | None,
     issues: Coverage,
+    missing_bullets: list[str] | None = None,
+    all_named: bool = False,
 ) -> dict:
     slide = section.slide or {}
     orig_name = LANGUAGE_NAMES.get(orig_code, orig_code)
@@ -896,6 +1088,17 @@ def request_edit(
     }
     if part is not None:
         payload["section_part"] = f"{part[0]}/{part[1]}"
+    if any(section.anchors):
+        payload["bullet_anchors"] = [
+            {"bullet": str(bullet), "named_at": anchor or None}
+            for bullet, anchor in zip(
+                slide.get("body") or [], section.anchors
+            )
+        ]
+    if missing_bullets:
+        payload["bullets_without_subsection"] = missing_bullets
+    if all_named:
+        payload["every_bullet_was_named"] = True
     if issues.dropped:
         payload["dropped_fragments"] = [gap.text for gap in issues.dropped]
     if issues.repeated:
@@ -938,6 +1141,13 @@ def apply_edit_result(section: Section, result: dict, orig_code: str) -> None:
         # Explanatory slides (Definition:/Purpose:/Example: lines) do not
         # structure the speech that follows (documented limit case 1);
         # the model still splits them sometimes, so this is enforced here.
+        or (
+            len(section.subsections) == 1
+            and len(slide.get("body") or []) > 1
+        )
+        # A single subsection on a slide of several bullets is not a
+        # decomposition: it is the tail of the section given a heading of
+        # its own, and it leaves the rest of the bullets nowhere.
     ):
         flatten_section(section)
 
@@ -1017,6 +1227,74 @@ def edit_section(
             print(f"      lost: {shorten_fragment(gap.text)}", flush=True)
         for fragment in issues.repeated:
             print(f"      twice: {shorten_fragment(fragment)}", flush=True)
+    issues = close_the_table_of_contents(
+        api_key, section, issues,
+        course=course, doc_title=doc_title, orig_code=orig_code,
+        orig_text=orig_text, en_text=en_text, terms=terms, usage=usage,
+        part=part, source=source, code=code,
+    )
+    return issues
+
+
+def close_the_table_of_contents(
+    api_key: str,
+    section: Section,
+    issues: Coverage,
+    *,
+    course: str,
+    doc_title: str,
+    orig_code: str,
+    orig_text: str,
+    en_text: str,
+    terms: list[str],
+    usage: dict[str, int],
+    part: tuple[int, int] | None,
+    source: str,
+    code: str,
+) -> Coverage:
+    """Ask again when the subsections do not line up with the bullets.
+
+    Two cases, both of them the reviewer's "оглавление поплыло": a split
+    that covers most of the bullets but not all, and a section left flat
+    although every one of its bullets was found named in the speech. The
+    answer is kept only if it settles the case without costing coverage -
+    a subsection invented for a bullet nobody discussed is worse than the
+    missing line in the table of contents.
+    """
+    missing = bullets_without_subsection(section)
+    named = every_bullet_named(section) and not section.subsections
+    if not missing and not named:
+        return issues
+    if missing:
+        print(f"    {len(missing)} bullet(s) without a subsection; asking "
+              f"for the whole list...", flush=True)
+    else:
+        print("    every bullet was named in the speech, the section came "
+              "back flat; asking again...", flush=True)
+    snapshot = section_snapshot(section)
+    result = request_edit(
+        api_key, section,
+        course=course, doc_title=doc_title, orig_code=orig_code,
+        orig_text=orig_text, en_text=en_text, terms=terms, usage=usage,
+        part=part, issues=Coverage([], []), missing_bullets=missing,
+        all_named=named,
+    )
+    apply_edit_result(section, result, orig_code)
+    again = section_coverage(section, source, code)
+    settled = (
+        not bullets_without_subsection(section)
+        if missing
+        else bool(section.subsections)
+    )
+    if settled and again.weight() <= issues.weight():
+        return again
+    restore_snapshot(section, snapshot)
+    left = (
+        ", ".join(shorten_fragment(bullet) for bullet in missing)
+        if missing
+        else "the section stays flat"
+    )
+    print(f"      kept as it was: {left}", flush=True)
     return issues
 
 
@@ -2846,6 +3124,25 @@ def process_video(
             else ""
         )
         texts[section_cache_key(section)] = (orig_text, en_text)
+        section.anchors = bullet_anchors(
+            [str(line) for line in (section.slide or {}).get("body") or []],
+            sentences_of_section(
+                segments[orig_code], section.start, section.end
+            ),
+            sentences_of_section(
+                segments.get("EN") or segments[orig_code],
+                section.start,
+                section.end,
+            ),
+        )
+    anchored = sum(1 for section in sections if any(section.anchors))
+    if anchored:
+        found = sum(sum(1 for a in s.anchors if a) for s in sections)
+        print(
+            f"  Bullets: {found} named in the speech, in {anchored} "
+            f"section(s) - the subsections start there.",
+            flush=True,
+        )
 
     cache = load_edit_cache(cache_path, video.stem)
     # Sections edited before the coverage check existed (or by an older
