@@ -26,7 +26,10 @@ How a document is built:
   sentence: a slide is switched by hand, mid-speech, so the moment it
   changes is not where the text can be cut. The nearest sentence end is
   taken instead, looked for further back than forward, since a speaker
-  announces the next topic before reaching for the slide.
+  announces the next topic before reaching for the slide. When that
+  announcement is a whole sentence - a stop, then "Этот слайд такой
+  себе..." or "Тогда предлагаю перейти...", and only then the new slide -
+  the boundary moves back once more, to the start of it (announced_start).
 - The .srt transcripts are sliced by those time ranges, so every section
   gets its original-language and English text fragments, already split
   into paragraphs at the pauses of the recording (see silences.py: the
@@ -145,7 +148,8 @@ EDIT_CACHE_FILENAME = "edited_sections.json"
 #      rule 1a of the prompt.
 #   3: punctuation and grammar spelled out as rules 1b and 1c.
 #   4: rule 1a states the 150/200-word limits as limits, not as aims.
-EDIT_RULES_VERSION = 4
+#   5: rule 4a - a subsection starts where its bullet is named.
+EDIT_RULES_VERSION = 5
 
 # gpt-4o API prices as of 2026-07, USD per 1M tokens (see
 # https://platform.openai.com/docs/pricing).
@@ -271,6 +275,13 @@ Editing rules:
    to exactly one of them. Text moved into a subsection must not stay in
    the intro as well, and two subsections must not retell each other - the
    same sentences twice is an error, not a summary.
+4a. Where a subsection starts. At the sentence in which the speaker first
+   names its bullet - most often reading it out, in English or in her own
+   words ("Test Isolation: the result of one test shouldn't depend on
+   another", "И последний поинт здесь - less adaptability to changes") -
+   and not a few sentences later, where the explanation gets going. The
+   naming sentence opens the subsection; whatever came before it belongs
+   to the bullet before, however much it sounds like an introduction.
 5. Propose the final section heading in English: keep the given heading if
    it is fine, otherwise fix grammar or awkward wording; keep it short. Use
    normal title casing, not ALL CAPS.
@@ -519,6 +530,32 @@ BOUNDARY_LOOKAHEAD_SECONDS = 12.0
 BOUNDARY_FORWARD_PENALTY = 1.5
 # Neither of the two neighbours may be shortened below this.
 BOUNDARY_MIN_SECTION_SECONDS = 15.0
+# The sentence before the slide change belongs to the section that follows
+# when the speaker stopped for at least this long before saying it: she
+# announces the next topic and only then reaches for the slide. A shorter
+# gap is the rhythm of speech, not a new beginning.
+ANNOUNCE_PAUSE_SECONDS = 1.0
+# An announcement is short ("Тогда предлагаю перейти к практике."); a long
+# sentence before the slide change is the previous topic still running.
+ANNOUNCE_MAX_WORDS = 25
+# Words too common on this course to say which slide is coming.
+ANNOUNCE_STOPWORDS = {
+    "test", "tests", "testing", "automation", "automated", "what", "which",
+    "when", "your", "you", "our", "this", "that", "with", "from", "into",
+    "will", "have", "they", "them", "their", "there", "than", "then", "them",
+    "about", "also", "such", "some", "more", "most", "other", "using", "used",
+}
+SLIDE_MENTION_RE = re.compile(
+    r"\b(слайд\w*|this slide|next slide|last slide)", re.IGNORECASE
+)
+# The speaker saying, in so many words, that she is moving on.
+ANNOUNCE_TRANSITIONS = (
+    "предлагаю перейти", "перейдём", "перейдем", "переходим", "перейти к",
+    "давайте посмотрим", "следующий пункт", "следующая тема", "идём дальше",
+    "поехали дальше", "двигаемся дальше", "поговорим о", "поговорим про",
+    "и последнее", "теперь давайте", "let us look", "let's look",
+    "let's move on", "next point", "moving on",
+)
 # A sentence end followed by the start of the next one. Only half of the .srt
 # segments end at a sentence, so most of the usable cuts are inside the text
 # of a segment; the capital letter keeps abbreviations ("и т.д. и т.п.") from
@@ -582,22 +619,133 @@ def split_segment_at(segments: list[Segment], moment: float) -> bool:
     return False
 
 
+def sentences_with_times(
+    segments: list[Segment]
+) -> list[tuple[float, str]]:
+    """(start, sentence) over a whole transcript.
+
+    A sentence the recognizer split across two segments is glued back
+    together and keeps the time of its first word.
+    """
+    pieces: list[tuple[float, str]] = []
+    for segment in segments:
+        text = segment.text.strip()
+        if not text:
+            continue
+        start = 0
+        for match in SENTENCE_END_RE.finditer(text):
+            pieces.append(
+                (char_time(segment, start), text[start:match.end()].strip())
+            )
+            start = match.end()
+        tail = text[start:].strip()
+        if tail:
+            pieces.append((char_time(segment, start), tail))
+    whole: list[tuple[float, str]] = []
+    for start, text in pieces:
+        if whole and not ends_sentence(whole[-1][1]):
+            whole[-1] = (whole[-1][0], whole[-1][1] + " " + text)
+        else:
+            whole.append((start, text))
+    return whole
+
+
+def slide_words(section: Section) -> set[str]:
+    """The words of the heading and the bullets of a section, worth hearing."""
+    slide = section.slide or {}
+    text = " ".join(
+        [section.heading, str(slide.get("title") or "")]
+        + [str(line) for line in slide.get("body") or []]
+    )
+    return {
+        word for word in re.findall(r"[a-zA-Z]{4,}", text.lower())
+        if word not in ANNOUNCE_STOPWORDS
+    }
+
+
+def distinctive_words(sections: list[Section]) -> list[set[str]]:
+    """Per section, the words of its slide that the other slides do not use.
+
+    "Automation" stands in half the titles of a lecture on test automation:
+    hearing it says nothing about which slide is coming next.
+    """
+    per_section = [slide_words(section) for section in sections]
+    counts: dict[str, int] = {}
+    for words in per_section:
+        for word in words:
+            counts[word] = counts.get(word, 0) + 1
+    limit = max(1, len(sections) // 3)
+    return [
+        {word for word in words if counts[word] <= limit}
+        for words in per_section
+    ]
+
+
+def announces_section(text: str, english: str, wanted: set[str]) -> bool:
+    """Whether this sentence is already about the section that follows."""
+    if SLIDE_MENTION_RE.search(text):
+        return True
+    if any(phrase in text.lower() for phrase in ANNOUNCE_TRANSITIONS):
+        return True
+    return any(
+        re.search(rf"\b{re.escape(word)}", english.lower()) for word in wanted
+    )
+
+
+def announced_start(
+    segments: dict[str, list[Segment]],
+    orig_code: str,
+    boundary: float,
+    low: float,
+    wanted: set[str],
+    pauses: SilenceIndex,
+) -> float | None:
+    """When the section really starts, if the speaker announced it early.
+
+    The slide is switched by hand and the hand is late: the speaker stops,
+    says what comes next ("Этот слайд такой себе...", "Тогда предлагаю
+    перейти..."), and only then reaches for the slide. That last sentence
+    opens the new section, not closes the old one - but only when all three
+    are there: the stop, the announcement, and nothing else between it and
+    the slide change.
+    """
+    source = segments.get(orig_code) or segments.get("EN") or []
+    sentences = sentences_with_times(source)
+    tail = [item for item in sentences if low <= item[0] < boundary - 0.05]
+    if not tail:
+        return None
+    start, text = tail[-1]
+    if len(text.split()) > ANNOUNCE_MAX_WORDS:
+        return None
+    if pauses.duration_at(start) < ANNOUNCE_PAUSE_SECONDS:
+        return None
+    english = " ".join(
+        line for moment, line in sentences_with_times(segments.get("EN") or [])
+        if start <= moment < boundary
+    )
+    return start if announces_section(text, english, wanted) else None
+
+
 def refine_section_boundaries(
-    sections: list[Section], segments: dict[str, list[Segment]], orig_code: str
+    sections: list[Section],
+    segments: dict[str, list[Segment]],
+    orig_code: str,
+    pauses: SilenceIndex | None = None,
 ) -> list[tuple[str, float]]:
-    """Move the boundaries that fall inside a sentence to the sentence end.
+    """Move the boundaries off the middle of a sentence, and off the middle
+    of an announcement (see announced_start).
 
     Returns (heading, shift in seconds) for every section that was moved.
     """
     source = segments.get(orig_code) or segments.get("EN") or []
     if len(sections) < 2 or not source:
         return []
+    wanted = distinctive_words(sections)
     moved: list[tuple[str, float]] = []
-    for previous, section in zip(sections, sections[1:]):
+    for index, (previous, section) in enumerate(
+        zip(sections, sections[1:]), start=1
+    ):
         slide_change = section.start
-        before = [seg for seg in source if seg.start < slide_change]
-        if not before or ends_sentence(before[-1].text):
-            continue
         low = max(
             previous.start + BOUNDARY_MIN_SECTION_SECONDS,
             slide_change - BOUNDARY_LOOKBACK_SECONDS,
@@ -608,23 +756,41 @@ def refine_section_boundaries(
         )
         if low >= high:
             continue
-        spots = sentence_spots(source, low, high)
-        if not spots:
+        target: float | None = None
+        before = [seg for seg in source if seg.start < slide_change]
+        if before and not ends_sentence(before[-1].text):
+            spots = sentence_spots(source, low, high)
+            if spots:
+                target = min(
+                    spots,
+                    key=lambda spot: (
+                        slide_change - spot
+                        if spot < slide_change
+                        else (spot - slide_change) * BOUNDARY_FORWARD_PENALTY
+                    ),
+                )
+        if pauses:
+            announced = announced_start(
+                segments,
+                orig_code,
+                slide_change if target is None else target,
+                low,
+                wanted[index],
+                pauses,
+            )
+            if announced is not None:
+                target = announced
+        if target is None:
             continue
-        target = min(
-            spots,
-            key=lambda spot: (
-                slide_change - spot
-                if spot < slide_change
-                else (spot - slide_change) * BOUNDARY_FORWARD_PENALTY
-            ),
-        )
         for language_segments in segments.values():
             split_segment_at(language_segments, target)
         previous.end = target
         section.start = target
-        previous.moved = section.moved = True
-        moved.append((section.heading, target - slide_change))
+        # A cut that lands exactly on the slide change moves no text: the
+        # sections are as they were, only the segment is now split there.
+        if abs(target - slide_change) >= 0.05:
+            previous.moved = section.moved = True
+            moved.append((section.heading, target - slide_change))
     return moved
 
 
@@ -2644,23 +2810,24 @@ def process_video(
         info_dir.mkdir(parents=True, exist_ok=True)
         cache_path = info_dir / f"{video.stem}.{EDIT_CACHE_FILENAME}"
 
-    moved = refine_section_boundaries(sections, segments, orig_code)
-    if moved:
-        shifts = sorted(shift for _, shift in moved)
-        print(
-            f"  Boundaries: {len(moved)} of {len(sections) - 1} moved off a "
-            f"sentence ({shifts[0]:+.1f}..{shifts[-1]:+.1f} s).",
-            flush=True,
-        )
-
-    # The paragraphs handed to the editor follow the pauses of the recording
-    # (see silences.py); without the media file they fall back to the length
-    # of the text, which is what the .srt alone can tell.
+    # The pauses of the recording (see silences.py) place both the section
+    # boundaries and the paragraphs; without the media file both fall back
+    # to what the .srt alone can tell.
     pauses = SilenceIndex(load_silences(video))
     if not pauses:
         print(
             "  Pauses: no silence data for this video - paragraphs are cut "
             "by length.",
+            flush=True,
+        )
+
+    moved = refine_section_boundaries(sections, segments, orig_code, pauses)
+    if moved:
+        shifts = sorted(shift for _, shift in moved)
+        print(
+            f"  Boundaries: {len(moved)} of {len(sections) - 1} moved off a "
+            f"sentence or an announcement "
+            f"({shifts[0]:+.1f}..{shifts[-1]:+.1f} s).",
             flush=True,
         )
 
