@@ -37,6 +37,12 @@ and renamed on completion, so an interrupted video is redone on the next run.
 --video picks one video by name instead of the next pending ones, which is
 how transcribe_videos.py --slides chains this step.
 
+--presentations looks under each video, before its slides are extracted,
+for the presentation the lecturer may have linked in a comment, and offers
+to download it (see download_presentations.py). download_videos.py already
+does this for videos it downloads; the flag is for the videos that came
+before that step existed.
+
 Examples:
   python src/extract_slides.py _Autotesting lectures
   python src/extract_slides.py _Autotesting lectures --next 3 --threshold 20
@@ -628,6 +634,43 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Slide image format (default: png)",
     )
     parser.add_argument(
+        "--presentations",
+        action="store_true",
+        help=(
+            "Before extracting, look under each video for the presentation "
+            "the lecturer may have linked in a comment, and offer to "
+            "download it into PRESENTATIONS/ (see "
+            "download_presentations.py). download_videos.py does this on "
+            "its own; the flag is for videos downloaded before that step "
+            "existed, and the lookup is slow enough not to be default here"
+        ),
+    )
+    parser.add_argument(
+        "--cookies-from-browser",
+        default=None,
+        metavar="BROWSER",
+        help=(
+            "With --presentations: take YouTube cookies from this browser "
+            "(firefox / chrome / edge) when YouTube asks to confirm you are "
+            "not a bot"
+        ),
+    )
+    parser.add_argument(
+        "--cookies",
+        type=Path,
+        default=None,
+        metavar="FILE",
+        help="With --presentations: cookies.txt exported from a browser",
+    )
+    parser.add_argument(
+        "--yes",
+        action="store_true",
+        help=(
+            "With --presentations: download every presentation found "
+            "without asking (slide extraction itself asks nothing)"
+        ),
+    )
+    parser.add_argument(
         "--video",
         metavar="STEM",
         help=(
@@ -727,8 +770,22 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
 
+    looking_for_presentations = args.presentations
     for index, video in enumerate(session, start=1):
         print(f"[{index}/{len(session)}] {video.name}", flush=True)
+        if looking_for_presentations:
+            # Before the slides, not after: the presentation is what the
+            # frames should have shown, and it is worth having in hand
+            # while looking at what was extracted.
+            from download_presentations import cookie_args, offer_presentation
+
+            _, refused = offer_presentation(
+                playlist_dir,
+                video.stem,
+                cookies=cookie_args(args.cookies, args.cookies_from_browser),
+                auto_yes=args.yes,
+            )
+            looking_for_presentations = not refused
         out_dir = slides_out_dir(slides_dir, video, keys)
         count = extract_video_slides(
             video,

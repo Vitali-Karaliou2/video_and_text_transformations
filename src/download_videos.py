@@ -20,6 +20,12 @@ A video counts as downloaded when the folder already holds a media file
 with its [video id] marker, so an interrupted session simply continues on
 the next run, and --next 1 walks the list one video per run.
 
+Right after a video is downloaded the comments under it are read for a
+presentation the lecturer may have linked, and if there is one it is
+offered for download into PRESENTATIONS/ (see download_presentations.py).
+--no-presentations skips that lookup; for videos downloaded before this
+step existed there is extract_slides.py --presentations.
+
 Usage:
   python src/download_videos.py Game_Design\\_makingitright9305 \
       kurs_geym_dizayna_nri_making_it_right --next 1
@@ -41,6 +47,7 @@ _SRC_DIR = Path(__file__).resolve().parent
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
+from download_presentations import cookie_args, offer_presentation
 from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
 from transcribe_videos import (
     PauseWatcher,
@@ -86,15 +93,6 @@ def human_size(size: float) -> str:
     return f"{size:.1f} GB"
 
 
-def cookie_args(args: argparse.Namespace) -> list[str]:
-    """yt-dlp cookie options; YouTube asks for them when it suspects a bot."""
-    if args.cookies:
-        return ["--cookies", str(args.cookies)]
-    if args.cookies_from_browser:
-        return ["--cookies-from-browser", args.cookies_from_browser]
-    return []
-
-
 def download_video(
     job: dict, playlist_dir: Path, stem: str, args: argparse.Namespace
 ) -> tuple[bool, bool]:
@@ -115,7 +113,7 @@ def download_video(
         "--progress-delta", PROGRESS_DELTA_SECONDS,
         "-o", template,
     ]
-    cmd += cookie_args(args)
+    cmd += cookie_args(args.cookies, args.cookies_from_browser)
     cmd.append(job["url"])
 
     process = subprocess.Popen(
@@ -231,6 +229,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--no-presentations",
+        action="store_true",
+        help=(
+            "Do not look for the presentation the lecturer may have linked "
+            "in a comment under the video (see download_presentations.py); "
+            "by default every downloaded video is checked"
+        ),
+    )
+    parser.add_argument(
         "--yes",
         action="store_true",
         help="Skip the confirmation prompt",
@@ -312,6 +319,8 @@ def main(argv: list[str] | None = None) -> int:
     processed = 0
     failed: list[str] = []
     total_bytes = 0
+    presentations = 0
+    looking_for_presentations = not args.no_presentations
     for position, job in enumerate(session, start=1):
         playlist_dir = playlists_root / job["folder"]
         print(
@@ -350,13 +359,28 @@ def main(argv: list[str] | None = None) -> int:
             total_bytes += size
             processed += 1
             print(f"  Saved: {saved.name} ({human_size(size)})", flush=True)
+            if looking_for_presentations:
+                found, refused = offer_presentation(
+                    playlist_dir,
+                    saved.stem,
+                    cookies=cookie_args(
+                        args.cookies, args.cookies_from_browser
+                    ),
+                    auto_yes=args.yes,
+                )
+                if found is not None:
+                    presentations += 1
+                # One refusal is enough: it is per IP or per account, and
+                # the next lookup would only collect the same answer.
+                looking_for_presentations = not refused
         if watcher.pause_requested() and position < len(session):
             print("Pause requested: stopping after the current video.",
                   flush=True)
             break
 
     print(
-        f"Session done: {processed} video(s), {human_size(total_bytes)}.",
+        f"Session done: {processed} video(s), {human_size(total_bytes)}"
+        + (f", {presentations} presentation(s)." if presentations else "."),
         flush=True,
     )
     if failed:
