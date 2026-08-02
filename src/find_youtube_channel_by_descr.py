@@ -663,11 +663,15 @@ def ask_choice(prompt: str, options: set[str]) -> str:
               flush=True)
 
 
-def run_summary_for(cand: dict, scope: str, lang: str) -> int:
+def run_summary_for(
+    cand: dict, scope: str, lang: str, container: str | None
+) -> int:
     import get_summary_for_channel
 
     ref = cand.get("handle") or cand["id"]
     argv = [ref, scope, "--lang", lang]
+    if container:
+        argv += ["--container", container]
     print("", flush=True)
     print(
         f"=== Summary: {cand['title']} ({ref}, {scope}, lang={lang}) ===",
@@ -691,6 +695,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help=(
             "Original language of the channel videos (two-letter code); "
             "default: guessed from the channel metadata, fallback ru"
+        ),
+    )
+    parser.add_argument(
+        "--container",
+        default=None,
+        metavar="FOLDER",
+        help=(
+            "Folder under _channels/ to create the channel folder in, e.g. "
+            'IT\\Dot.Net (the bat passes its CHANNEL_PATH line here). A '
+            "channel that already has a folder keeps it"
         ),
     )
     return parser.parse_args(argv)
@@ -789,7 +803,7 @@ def main(argv: list[str] | None = None) -> int:
         scope = "bypls" if grouping == "1" else "allpls"
         lang = (args.lang or cand.get("language") or "ru").lower()
 
-        code = run_summary_for(cand, scope, lang)
+        code = run_summary_for(cand, scope, lang, args.container)
         if code:
             print(f"Summary script exited with code {code}.", flush=True)
             return code

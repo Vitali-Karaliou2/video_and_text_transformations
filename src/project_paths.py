@@ -244,3 +244,22 @@ def normalize_channel_folder_arg(name: str) -> str:
     if not cleaned:
         raise ValueError("Invalid channel folder name")
     return f"_{cleaned}"
+
+
+def normalize_container_ref(ref: str) -> str:
+    """The folder under _channels/ a channel is to be grouped into.
+
+    A container is written by hand - in a bat file, next to the channel to
+    look for - so it arrives with whichever slashes its author preferred
+    and often with a trailing one: "IT\\Dot.Net\\". A part that survives
+    sanitising as nothing at all (".." among them, since trailing dots go)
+    is refused rather than quietly dropped: the caller is about to create
+    folders at this path.
+    """
+    parts = []
+    for part in _split_channel_ref(ref):
+        cleaned = sanitize_handle_for_path(part)
+        if not cleaned:
+            raise ValueError(f"Invalid container folder: {ref!r}")
+        parts.append(cleaned)
+    return "\\".join(parts)

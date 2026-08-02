@@ -14,10 +14,19 @@ Detection details (tuned on real lecture recordings):
   (--crop-margin), so static screen-share chrome (browser UI, participant
   panel, clock) does not dilute real slide changes. This allows a lower
   threshold that catches subtle slide flips without noise.
-* The slide image is captured right after the scene start (--start-offset),
-  so every slide_NNN.png matches the Start Timecode of scene NNN in
-  scenes.csv (previously the middle frame of the scene was saved, which
-  could show a different slide).
+* The slide image is the last state of the page: the frame shortly before
+  the scene ends. A page whose bullets appear one by one is a single scene
+  - one bullet is far too small a change to end it - so its first frame is
+  often the bare title, and everything the lecturer then put on the page
+  would be lost. When that late frame no longer holds what the early one
+  had (the lecturer switched windows before the scene was over), the frame
+  right after the scene start is kept instead. --first-frame goes back to
+  always taking the early frame.
+* The moments when a page gained content are found by scanning each scene
+  again, a frame every couple of seconds, and written to reveals.json next
+  to scenes.csv: text_from_slides.py carries them into slides.json, where
+  they say when each part of a page was put on screen. The scan is free but
+  reads the video once more; --no-reveals skips it.
 * Consecutive scenes whose captured frames are nearly identical in the
   central region (window switches, scrolling, popups that revert) are merged
   into one scene with one image. A scene that shows the same slide merely
@@ -52,6 +61,7 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import json
 import math
 import re
 import shutil
@@ -118,6 +128,33 @@ WARP_MIN_COVERAGE = 0.2
 # browser toasts ("To exit full screen, press Esc") are over, so the frame
 # shows what the scene actually settled on.
 SETTLED_TAIL_SECONDS = 2.0
+
+# A page that fills in line by line does not move the content detector at
+# all: one bullet is too small a change, so the whole build-up stays inside
+# one scene. Two things follow from that. The frame saved for the scene is
+# its last state rather than its first, or a page whose bullets appear one
+# by one would be represented by its bare title (measured on lecture 1 of
+# Making It Right: title only, against six bullets, a quote and a picture
+# two minutes later). And the moments when content was added are found by
+# scanning the scene again - free, offline - and written to reveals.json,
+# so that a later stage can tell when each bullet was named.
+REVEAL_SAMPLE_SECONDS = 2.0
+REVEAL_MIN_NEW_EDGES = 250     # a line of text is worth roughly this many
+REVEAL_ADDED_FRACTION = 0.03
+# Old edges still in place: the page grew. Below that the content was
+# replaced, which is a different picture, not a further state of this one.
+REVEAL_KEPT_FRACTION = 0.75
+BAND_PERCENTILE = 5            # the outer twentieth of the new edges is noise
+# The webcam inset of a lecture is never twice the same; a slide is the
+# same until it changes, and it changes a few times a minute. Pixels
+# restless in most of a few dozen pairs half a second apart are left out of
+# the comparison. Adjacent frames will not do: half a second of a talking
+# head is a visible move, a thirtieth of a second is not.
+RESTLESS_PAIRS = 48
+RESTLESS_GAP_SECONDS = 0.5
+RESTLESS_RATE = 0.5
+RESTLESS_GROW = 41             # px at the comparison width, see below
+RESTLESS_MIN_CALM = 0.3        # masking more than that is not believable
 
 
 def sanitize_folder_name(name: str) -> str:
@@ -409,6 +446,227 @@ def capture_settled_frame(stream, scene: tuple):
     )
 
 
+def edge_map(gray, mask=None):
+    """Canny edges of a frame, at the comparison width, as 0/1."""
+    scale = EDGE_COMPARE_WIDTH / gray.shape[1]
+    size = (EDGE_COMPARE_WIDTH, max(1, round(gray.shape[0] * scale)))
+    small = cv2.resize(gray, size, interpolation=cv2.INTER_AREA)
+    edges = (
+        cv2.Canny(small, EDGE_CANNY_LOW, EDGE_CANNY_HIGH) > 0
+    ).astype(np.uint8)
+    return edges * mask if mask is not None else edges
+
+
+def edge_growth(
+    before, after
+) -> tuple[int, float, float, tuple[float, float]]:
+    """How one edge map grew into another.
+
+    Returns (new edge pixels, their share of what is on screen now, share of
+    the old edges still in place, vertical band of the new content). The
+    dilation gives the same few pixels of tolerance the merging uses, so
+    jitter does not read as new content.
+    """
+    kernel = np.ones((EDGE_TOLERANCE_KERNEL,) * 2, np.uint8)
+    added = after & (1 - cv2.dilate(before, kernel))
+    new = int(np.count_nonzero(added))
+    kept = int(np.count_nonzero(before & cv2.dilate(after, kernel)))
+    # Where the new content is, by the bulk of it rather than its extremes:
+    # a photograph on the page speckles the whole picture with compression
+    # noise, and two such specks would otherwise make one new line of text
+    # look like a change spanning the slide.
+    rows = np.nonzero(added)[0]
+    height = added.shape[0]
+    band = (
+        (
+            round(float(np.percentile(rows, BAND_PERCENTILE)) / height, 3),
+            round(
+                float(np.percentile(rows, 100 - BAND_PERCENTILE)) / height, 3
+            ),
+        )
+        if rows.size
+        else (0.0, 0.0)
+    )
+    return (
+        new,
+        new / max(1, int(np.count_nonzero(after))),
+        kept / max(1, int(np.count_nonzero(before))),
+        band,
+    )
+
+
+def restless_mask(video: Path, rect: tuple[int, int, int, int] | None):
+    """Mask of the calm part of the frame: the slide, not the webcam inset.
+
+    A few dozen pairs of frames half a second apart, spread over the whole
+    video: a talking head differs in nearly every pair, a slide in none.
+    Returns None when the result would mask away most of the frame - then
+    the video is not a slide recording, and a mask would only hide real
+    changes.
+    """
+    capture = cv2.VideoCapture(str(video))
+    try:
+        fps = capture.get(cv2.CAP_PROP_FPS) or 30.0
+        frames = capture.get(cv2.CAP_PROP_FRAME_COUNT) or 0
+        if frames <= 0:
+            return None
+        changes = None
+        pairs = 0
+        gap = max(1, round(fps * RESTLESS_GAP_SECONDS))
+        for index in range(RESTLESS_PAIRS):
+            at = int(frames * (index + 0.5) / RESTLESS_PAIRS)
+            capture.set(cv2.CAP_PROP_POS_FRAMES, at)
+            ok_a, frame_a = capture.read()
+            capture.set(cv2.CAP_PROP_POS_FRAMES, at + gap)
+            ok_b, frame_b = capture.read()
+            if not (ok_a and ok_b):
+                continue
+            gray_a = _crop_gray(frame_a, rect)
+            gray_b = _crop_gray(frame_b, rect)
+            scale = EDGE_COMPARE_WIDTH / gray_a.shape[1]
+            size = (EDGE_COMPARE_WIDTH, max(1, round(gray_a.shape[0] * scale)))
+            diff = cv2.absdiff(
+                cv2.resize(gray_a, size, interpolation=cv2.INTER_AREA),
+                cv2.resize(gray_b, size, interpolation=cv2.INTER_AREA),
+            )
+            if changes is None:
+                changes = np.zeros(diff.shape, np.float32)
+            changes += (diff > DEDUP_PIXEL_DELTA).astype(np.float32)
+            pairs += 1
+        if changes is None or pairs == 0:
+            return None
+        # Only what actually moves comes out restless - the lecturer, not
+        # the wall behind him - and the still parts of the inset would then
+        # be read as page content. So the restless area is grown to take in
+        # what surrounds it.
+        restless = cv2.dilate(
+            (changes / pairs >= RESTLESS_RATE).astype(np.uint8),
+            np.ones((RESTLESS_GROW,) * 2, np.uint8),
+        )
+        mask = 1 - restless
+        return mask if mask.mean() >= RESTLESS_MIN_CALM else None
+    finally:
+        capture.release()
+
+
+def capture_page_frame(stream, scene: tuple, anchor, rect, mask):
+    """The frame that shows the whole page - its last state.
+
+    A page whose bullets appear one by one is a single scene, and its first
+    frame holds the least of it. The settled frame is taken instead, unless
+    it lost what the first one had: then the scene ended on something else
+    (a window switched, a video played), and the first frame is the honest
+    picture of it.
+    """
+    settled = capture_settled_frame(stream, scene)
+    if settled is None:
+        return anchor
+    if anchor is None:
+        return settled
+    before = edge_map(_crop_gray(anchor, rect), mask)
+    if int(np.count_nonzero(before)) < EDGE_MIN_COUNT:
+        return settled
+    after = edge_map(_crop_gray(settled, rect), mask)
+    _, _, kept, _ = edge_growth(before, after)
+    return settled if kept >= REVEAL_KEPT_FRACTION else anchor
+
+
+def scan_reveals(
+    video: Path,
+    scenes: list[tuple],
+    rect: tuple[int, int, int, int] | None,
+    mask,
+    every: float = REVEAL_SAMPLE_SECONDS,
+) -> list[list[dict]]:
+    """When content appeared inside each scene, one list per scene.
+
+    A frame every `every` seconds is compared with the last state accepted
+    for its scene. Content added on top of what was there is a reveal of
+    the same page; content that replaced it is recorded too, under its own
+    kind, because whether such a state deserves a slide of its own is a
+    question for later, and the evidence is free to collect now.
+    """
+    reveals: list[list[dict]] = [[] for _ in scenes]
+    if not scenes:
+        return reveals
+    capture = cv2.VideoCapture(str(video))
+    try:
+        fps = capture.get(cv2.CAP_PROP_FPS) or 30.0
+        step = max(1, round(fps * every))
+        bounds = [(start.seconds, end.seconds) for start, end in scenes]
+        current = 0
+        accepted = None
+        index = 0
+        while current < len(bounds):
+            if index % step:
+                if not capture.grab():
+                    break
+                index += 1
+                continue
+            ok, frame = capture.read()
+            if not ok:
+                break
+            seconds = index / fps
+            index += 1
+            while current < len(bounds) and seconds >= bounds[current][1]:
+                current += 1
+                accepted = None
+            if current >= len(bounds) or seconds < bounds[current][0]:
+                continue
+            state = edge_map(_crop_gray(frame, rect), mask)
+            if accepted is None:
+                accepted = state
+                continue
+            new, share, kept, band = edge_growth(accepted, state)
+            if new < REVEAL_MIN_NEW_EDGES or share < REVEAL_ADDED_FRACTION:
+                continue
+            grew = kept >= REVEAL_KEPT_FRACTION
+            reveals[current].append({
+                "seconds": round(seconds, 3),
+                "kind": "added" if grew else "replaced",
+                "added_fraction": round(share, 3),
+                "kept_fraction": round(kept, 3),
+                "band": list(band),
+            })
+            accepted = state
+    finally:
+        capture.release()
+    return reveals
+
+
+def write_reveals(
+    path: Path, video: Path, scenes: list[tuple], reveals: list[list[dict]],
+    every: float,
+) -> None:
+    path.write_text(
+        json.dumps(
+            {
+                "video": video.name,
+                "sampled_every_seconds": every,
+                "explained": (
+                    "Moments when the page gained content without turning: "
+                    "the slide image of a scene is its last state, and these "
+                    "are the steps it went through."
+                ),
+                "scenes": [
+                    {
+                        "scene": number,
+                        "start_seconds": round(start.seconds, 3),
+                        "reveals": found,
+                    }
+                    for number, ((start, _), found) in enumerate(
+                        zip(scenes, reveals), start=1
+                    )
+                ],
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
 def merge_similar_scenes(
     stream,
     scenes: list[tuple],
@@ -501,6 +759,8 @@ def extract_video_slides(
     crop_margin: float,
     start_offset: float,
     merge_duplicates: bool,
+    page_frame: bool = True,
+    reveals: bool = True,
 ) -> int:
     """Detect slide changes and save one image per scene; return scene count."""
     stream = open_video(str(video))
@@ -525,13 +785,42 @@ def extract_video_slides(
         # No cuts detected: treat the whole video as a single slide.
         raw_scenes = [(stream.base_timecode, stream.duration)]
 
-    scenes, frames = merge_similar_scenes(
+    scenes, anchors = merge_similar_scenes(
         stream, raw_scenes, rect, start_offset, merge=merge_duplicates
     )
     if len(scenes) != len(raw_scenes):
         print(
             f"  Scenes: {len(raw_scenes)} detected, "
             f"{len(scenes)} after merging near-duplicates.",
+            flush=True,
+        )
+
+    mask = restless_mask(video, rect) if (page_frame or reveals) else None
+    frames = anchors
+    if page_frame:
+        frames = [
+            capture_page_frame(stream, scene, anchor, rect, mask)
+            for scene, anchor in zip(scenes, anchors)
+        ]
+        grown = sum(
+            1 for new, old in zip(frames, anchors)
+            if new is not None and old is not None and new is not old
+        )
+        print(
+            f"  Saved frame: the last state of the page "
+            f"({grown} of {len(scenes)} scene(s) had one).",
+            flush=True,
+        )
+    found: list[list[dict]] = [[] for _ in scenes]
+    if reveals:
+        print("  Looking for content revealed inside the scenes...",
+              flush=True)
+        found = scan_reveals(video, scenes, rect, mask)
+        moments = sum(len(items) for items in found)
+        pages = sum(1 for items in found if items)
+        print(
+            f"  Reveals: {moments} moment(s) on {pages} of {len(scenes)} "
+            "page(s).",
             flush=True,
         )
 
@@ -558,6 +847,11 @@ def extract_video_slides(
         write_scene_list(csv_file, scenes)
     append_fps_column(csv_path, scenes)
     write_scenes_xlsx(tmp_dir / "scenes.xlsx", scenes)
+    if reveals:
+        write_reveals(
+            tmp_dir / "reveals.json", video, scenes, found,
+            REVEAL_SAMPLE_SECONDS,
+        )
 
     shutil.rmtree(out_dir, ignore_errors=True)
     tmp_dir.rename(out_dir)
@@ -626,6 +920,24 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--no-merge",
         action="store_true",
         help="Keep every detected scene; skip near-duplicate merging",
+    )
+    parser.add_argument(
+        "--first-frame",
+        action="store_true",
+        help=(
+            "Save the frame at the start of each scene instead of the last "
+            "state of the page; on a page whose bullets appear one by one "
+            "that is the bare title, so this is only for going back to the "
+            "old behaviour"
+        ),
+    )
+    parser.add_argument(
+        "--no-reveals",
+        action="store_true",
+        help=(
+            "Skip the scan for content revealed inside a scene, and write "
+            "no reveals.json; the scan is free but reads the video once more"
+        ),
     )
     parser.add_argument(
         "--image-format",
@@ -796,6 +1108,8 @@ def main(argv: list[str] | None = None) -> int:
             crop_margin=args.crop_margin,
             start_offset=args.start_offset,
             merge_duplicates=not args.no_merge,
+            page_frame=not args.first_frame,
+            reveals=not args.no_reveals,
         )
         print(
             f"  Saved: {out_dir.relative_to(playlist_dir)} "

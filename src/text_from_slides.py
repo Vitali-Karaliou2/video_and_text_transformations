@@ -412,6 +412,26 @@ def read_scenes(csv_path: Path) -> dict[int, dict]:
     return scenes
 
 
+def read_reveals(json_path: Path) -> dict[int, list[dict]]:
+    """Scene number -> when the page gained content, from reveals.json.
+
+    The slide image of a scene is its last state, so a page built line by
+    line arrives here whole; these are the steps it took to get there, and
+    they say when each part of it was named.
+    """
+    if not json_path.is_file():
+        return {}
+    try:
+        data = json.loads(json_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+    return {
+        int(scene["scene"]): list(scene.get("reveals") or [])
+        for scene in data.get("scenes") or []
+        if str(scene.get("scene", "")).isdigit()
+    }
+
+
 def list_slide_images(folder: Path) -> list[Path]:
     return sorted(
         (
@@ -523,6 +543,7 @@ def process_video(
     """Extract text from all slides of one video; return the slide count."""
     images = list_slide_images(out_dir)
     scenes = read_scenes(out_dir / "scenes.csv")
+    reveals = read_reveals(out_dir / "reveals.json")
     usage: dict[str, int] = {}
 
     slides: list[dict] = []
@@ -539,6 +560,7 @@ def process_video(
             {
                 "file": image.name,
                 "scene": scenes.get(scene_number),
+                "reveals": reveals.get(scene_number, []),
                 "content": ocr["content"],
                 "title": ocr["title"],
                 "body": ocr["body"],

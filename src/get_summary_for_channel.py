@@ -57,7 +57,9 @@ from project_paths import (
     channel_summaries_dir,
     channels_dir,
     find_channel_folder,
+    is_channel_root,
     normalize_channel_folder_arg,
+    normalize_container_ref,
 )
 from range_args import (
     apply_resolved_range,
@@ -197,6 +199,29 @@ def resolve_channel_handle(channel_id: str, args: argparse.Namespace) -> str | N
     return extract_canonical_handle(html)
 
 
+def resolved_container(args: argparse.Namespace) -> str | None:
+    """--container, checked against the folders that are already there."""
+    if not args.container:
+        return None
+    try:
+        container = normalize_container_ref(args.container)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
+    if not container:
+        # An empty CHANNEL_PATH line in a bat: no group was asked for.
+        return None
+    channels_root = args.output_dir or channels_dir(args.workspace)
+    path = channels_root / Path(*container.split("\\"))
+    if path.exists() and not path.is_dir():
+        raise SystemExit(f"--container is not a folder: {path}")
+    if is_channel_root(path):
+        raise SystemExit(
+            f"--container points at a channel folder, not a group: {path} "
+            "(it has a _playlists folder of its own)"
+        )
+    return container
+
+
 def resolve_output_folder(
     channel_id: str,
     handle: str | None,
@@ -215,15 +240,27 @@ def resolve_output_folder(
         explicit=explicit,
         channel_id=channel_id,
     )
+    container = getattr(args, "container", None)
     if existing:
-        return channel_relative_ref(existing, channels_root)
+        ref = channel_relative_ref(existing, channels_root)
+        if container and not ref.startswith(f"{container}\\"):
+            print(
+                f"NOTE: this channel already has a folder at "
+                f"_channels\\{ref}, so --container {container} is not used. "
+                "Move the folder and run synchronize_folders_in_bats.bat to "
+                "regroup it.",
+                flush=True,
+            )
+        return ref
 
     if explicit:
-        return normalize_channel_folder_arg(explicit)
-    if resolved_handle:
-        return channel_folder_name(resolved_handle)
-    slug = re.sub(r"\W+", "_", channel_name.strip().lower()).strip("_")
-    return f"_{slug[:60]}" if slug else f"_{channel_id}"
+        name = normalize_channel_folder_arg(explicit)
+    elif resolved_handle:
+        name = channel_folder_name(resolved_handle)
+    else:
+        slug = re.sub(r"\W+", "_", channel_name.strip().lower()).strip("_")
+        name = f"_{slug[:60]}" if slug else f"_{channel_id}"
+    return f"{container}\\{name}" if container else name
 
 
 def parse_duration_text(text: str | None) -> str:
@@ -618,6 +655,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--container",
+        default=None,
+        metavar="FOLDER",
+        help=(
+            "Folder under _channels/ to group this channel into, e.g. "
+            "IT\\Dot.Net; used only when the channel has no folder yet"
+        ),
+    )
+    parser.add_argument(
         "--workspace",
         type=Path,
         default=WORKSPACE_ROOT,
@@ -650,6 +696,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    args.container = resolved_container(args)
     now = datetime.now()
     today = date.today()
 
