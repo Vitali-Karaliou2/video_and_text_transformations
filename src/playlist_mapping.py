@@ -7,6 +7,8 @@ import re
 import subprocess
 from typing import Callable
 
+from project_paths import spell_out_tech_names
+
 COURSE_HINTS = re.compile(
     r"курс|course|урок|lecture|tutorial|мастер.?класс|с\s*нул|"
     r"crash\s*course|full\s*course|roadmap|практик|урок",
@@ -23,7 +25,29 @@ LEADING_LESSON_OK = re.compile(
 )
 
 
-def slugify_playlist_name(title: str, max_len: int = 60) -> str:
+def slugify_playlist_name(
+    title: str, max_len: int = 60, context: str = ""
+) -> str:
+    """Folder name for a playlist, transliterated and stripped of marks.
+
+    "context" is what the rest of the channel is about - its other
+    playlist titles, its name - and settles the one name whose meaning
+    the stripping would change: C# (see spell_out_tech_names).
+    """
+    return _slug(spell_out_tech_names(title, context), max_len)
+
+
+def former_folder_name(title: str, max_len: int = 60) -> str:
+    """The folder this title used to be given, before C# was spelled out.
+
+    A channel synced under the old rule keeps its downloads in
+    "advanced_c"; knowing that name lets the folder be renamed rather
+    than left behind next to an empty "advanced_c_sharp".
+    """
+    return _slug(title, max_len)
+
+
+def _slug(title: str, max_len: int) -> str:
     cyr_to_lat = {
         "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "yo",
         "ж": "zh", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m",
@@ -44,6 +68,21 @@ def slugify_playlist_name(title: str, max_len: int = 60) -> str:
     if len(slug) > max_len:
         slug = slug[:max_len].rstrip("_")
     return slug or "unnamed_playlist"
+
+
+def channel_context(playlists_meta: list[dict]) -> str:
+    """What the channel is about, in its own words.
+
+    Every playlist title plus the channel name yt-dlp writes on them:
+    enough to tell a .NET channel from a piano one when a playlist is
+    called "Advanced C#".
+    """
+    titles = [str(pl.get("title") or "") for pl in playlists_meta]
+    names = {
+        str(pl.get("channel") or pl.get("uploader") or "")
+        for pl in playlists_meta
+    }
+    return " ".join(titles + sorted(name for name in names if name))
 
 
 def unique_folder_name(base: str, used: set[str]) -> str:
@@ -139,12 +178,13 @@ def build_video_playlist_catalog(
     video_to_playlists: dict[str, list[tuple[str, str, int]]] = {}
     playlist_info: dict[str, dict] = {}
     details: dict[str, dict] = {}
+    context = channel_context(playlists_meta)
 
     for pl in playlists_meta:
         pl_id = pl.get("id") or ""
         pl_title = pl.get("title") or "unnamed"
         pl_url = pl.get("url") or f"https://www.youtube.com/playlist?list={pl_id}"
-        folder_name = slugify_playlist_name(pl_title)
+        folder_name = slugify_playlist_name(pl_title, context=context)
 
         try:
             videos = yt_dlp_flat_json(run_yt_dlp, pl_url)

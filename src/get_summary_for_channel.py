@@ -60,6 +60,7 @@ from project_paths import (
     is_channel_root,
     normalize_channel_folder_arg,
     normalize_container_ref,
+    spell_out_tech_names,
 )
 from range_args import (
     apply_resolved_range,
@@ -256,9 +257,10 @@ def resolve_output_folder(
     if explicit:
         name = normalize_channel_folder_arg(explicit)
     elif resolved_handle:
-        name = channel_folder_name(resolved_handle)
+        name = channel_folder_name(resolved_handle, channel_name)
     else:
-        slug = re.sub(r"\W+", "_", channel_name.strip().lower()).strip("_")
+        spelled = spell_out_tech_names(channel_name, channel_name)
+        slug = re.sub(r"\W+", "_", spelled.strip().lower()).strip("_")
         name = f"_{slug[:60]}" if slug else f"_{channel_id}"
     return f"{container}\\{name}" if container else name
 

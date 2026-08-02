@@ -54,6 +54,7 @@ from channel_playlists import (
     sync_channel_playlists,
 )
 from playlist_mapping import (
+    channel_context,
     playlist_priority,
     slugify_playlist_name,
     unique_folder_name,
@@ -397,12 +398,15 @@ def organize(args: argparse.Namespace) -> int:
     video_to_playlists: dict[str, list[tuple[str, str, int]]] = {}
     playlist_info: dict[str, dict] = {}
     used_folders: set[str] = set()
+    context = channel_context(playlists_meta)
 
     for pl in playlists_meta:
         pl_id = pl.get("id") or ""
         pl_title = pl.get("title") or "unnamed"
         pl_url = pl.get("url") or f"https://www.youtube.com/playlist?list={pl_id}"
-        folder_name = unique_folder_name(slugify_playlist_name(pl_title), used_folders)
+        folder_name = unique_folder_name(
+            slugify_playlist_name(pl_title, context=context), used_folders
+        )
         print(f"  Fetching: {pl_title} -> {folder_name}")
 
         try:

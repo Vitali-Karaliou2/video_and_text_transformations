@@ -13,6 +13,64 @@ PLAYLISTS_DIRNAME = "_playlists"
 LEGACY_CACHE_DIRNAME = "cache"
 INVALID_PATH_CHARS = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
 
+# A language whose name ends in punctuation: the mark is dropped from
+# every folder name, and "Advanced C#" arrives as "advanced_c".
+TECH_NAME = re.compile(
+    r"(?<![0-9A-Za-z#+.])(c\+\+|[cfj]#)(?![0-9A-Za-z#+])", re.I
+)
+# The name being weighed is left out on purpose: C# is evidence of
+# nothing, which is the whole difficulty with it.
+CODE_HINTS = re.compile(
+    r"\.net|dotnet|program|coding|\bcode\b|developer|development|software|"
+    r"\bapi\b|\basp\b|\bsql\b|database|linux|docker|kubernetes|python|java|"
+    r"script|unity|framework|backend|frontend|microservice|algorithm|"
+    r"\bweb\b|\bcloud\b|\baws\b|\bazure\b|machine learning|"
+    r"разработ|программ|фреймворк|бэкенд|фронтенд|тестирован|отладк|"
+    r"\bкод\b|компилят|нейросет",
+    re.I,
+)
+MUSIC_HINTS = re.compile(
+    r"\bmusic|guitar|piano|\bchord|melody|\bsong|violin|\bvocal|singing|"
+    r"songwrit|\bkeys\b|музык|гитар|фортепиан|пианин|аккорд|мелоди|скрипк|"
+    r"вокал|тональност|\bдиез|бемол|сольфедж",
+    re.I,
+)
+
+
+def sharp_is_a_language(context: str) -> bool:
+    """Whether C# in this channel is a language rather than a note.
+
+    Both readings are real - C# is a semitone above C - so the channel
+    and its playlists are read before the substitution: they have to
+    sing rather than code for it to be skipped. Silence on both counts
+    is read as code, since that is what this workspace downloads.
+    """
+    music = len(MUSIC_HINTS.findall(context))
+    if not music:
+        return True
+    return len(CODE_HINTS.findall(context)) >= music
+
+
+def spell_out_tech_names(title: str, context: str = "") -> str:
+    """Spell out C#, F# and C++ before a folder name eats the marks.
+
+    The name is written out in place ("Advanced C#" -> "Advanced
+    C_sharp") and lands in whatever the caller does next: lowercasing
+    and transliteration for a playlist, character stripping for a
+    channel. Only a standalone name is touched - "C#7" is left alone,
+    being a chord as often as a version.
+    """
+    if not TECH_NAME.search(title):
+        return title
+    if not sharp_is_a_language(f"{title} {context}"):
+        return title
+
+    def spelled(match: re.Match) -> str:
+        token = match.group(1)
+        return token[0] + ("_sharp" if token.endswith("#") else "pp")
+
+    return TECH_NAME.sub(spelled, title)
+
 
 def channels_dir(workspace: Path | None = None) -> Path:
     return (workspace or WORKSPACE_ROOT) / DEFAULT_CHANNELS_DIRNAME
@@ -215,8 +273,8 @@ def channel_summaries_dir(channel_root: Path, day: date | None = None) -> Path:
     return channel_root / "_summaries" / folder_day
 
 
-def sanitize_handle_for_path(handle: str) -> str:
-    name = handle.strip()
+def sanitize_handle_for_path(handle: str, context: str = "") -> str:
+    name = spell_out_tech_names(handle.strip(), context)
     if name.startswith("@"):
         name = name[1:]
     name = name.replace(" ", "_")
@@ -224,9 +282,9 @@ def sanitize_handle_for_path(handle: str) -> str:
     return name.strip(" .")
 
 
-def channel_folder_name(handle: str) -> str:
+def channel_folder_name(handle: str, context: str = "") -> str:
     """Folder name under _channels/ derived from the channel @handle."""
-    name = sanitize_handle_for_path(handle)
+    name = sanitize_handle_for_path(handle, context)
     if not name:
         return "_unnamed_channel"
     return name if name.startswith("_") else f"_{name}"

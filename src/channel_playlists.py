@@ -8,7 +8,13 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Callable
 
-from playlist_mapping import slugify_playlist_name, unique_folder_name, yt_dlp_flat_json
+from playlist_mapping import (
+    channel_context,
+    former_folder_name,
+    slugify_playlist_name,
+    unique_folder_name,
+    yt_dlp_flat_json,
+)
 from project_paths import (
     browse_cache_path,
     channel_cache_dir,
@@ -60,10 +66,13 @@ def fetch_channel_playlist_entries(
     playlists_meta = yt_dlp_flat_json(run_yt_dlp, playlists_url)
     used_folders: set[str] = set()
     entries: list[PlaylistEntry] = []
+    context = channel_context(playlists_meta)
     for pl in playlists_meta:
         pl_id = pl.get("id") or ""
         pl_title = pl.get("title") or "unnamed"
-        folder = unique_folder_name(slugify_playlist_name(pl_title), used_folders)
+        folder = unique_folder_name(
+            slugify_playlist_name(pl_title, context=context), used_folders
+        )
         entries.append(PlaylistEntry(id=pl_id, title=pl_title, folder=folder))
     return entries
 
@@ -181,6 +190,36 @@ def is_misc_folder(folder_name: str, playlist_folders: set[str]) -> bool:
     return normalized == "misc"
 
 
+def rename_folder_of_an_older_rule(
+    root: Path, pl: dict, wanted: set[str]
+) -> bool:
+    """Move a playlist that was foldered under an earlier naming rule.
+
+    Only C# and its kin are spelled out now where they used to be cut
+    down to a letter, so this fires once per such playlist: without it
+    the downloads stay in "advanced_c" while everything after this call
+    looks into an empty "advanced_c_sharp".
+    """
+    folder_name = pl.get("folder") or ""
+    former = former_folder_name(pl.get("title") or "")
+    if former in (folder_name, "") or former in wanted:
+        return False
+    source = root / former
+    if not source.is_dir():
+        return False
+    try:
+        source.rename(root / folder_name)
+    except OSError as exc:
+        print(
+            f"WARNING: playlist folder {former} could not be renamed to "
+            f"{folder_name}: {exc}",
+            flush=True,
+        )
+        return False
+    print(f"Renamed playlist folder: {former} -> {folder_name}", flush=True)
+    return True
+
+
 def ensure_playlist_folders(
     channel_root: Path,
     playlists: list[dict],
@@ -189,18 +228,20 @@ def ensure_playlist_folders(
 ) -> list[str]:
     root = channel_playlists_dir(channel_root)
     root.mkdir(parents=True, exist_ok=True)
+    wanted = {pl["folder"] for pl in playlists if pl.get("folder")}
     created: list[str] = []
     for pl in playlists:
         folder_name = pl.get("folder")
         if not folder_name:
             continue
         folder = root / folder_name
-        if not folder.is_dir():
-            if create:
-                folder.mkdir(parents=True, exist_ok=True)
-                created.append(folder_name)
-            else:
-                created.append(folder_name)
+        if folder.is_dir():
+            continue
+        if create and rename_folder_of_an_older_rule(root, pl, wanted):
+            continue
+        if create:
+            folder.mkdir(parents=True, exist_ok=True)
+        created.append(folder_name)
     return created
 
 
