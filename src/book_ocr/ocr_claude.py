@@ -20,7 +20,7 @@ import sys
 import time
 from pathlib import Path
 
-from anthropic import Anthropic
+from anthropic import Anthropic, APIError
 
 from book_paths import DEFAULT_BOOK, WORKSPACE_ROOT, img_dir, pages_file, text_dir
 
@@ -204,11 +204,11 @@ def format_ocr_markdown(raw: str, line_width: int | None = None) -> str:
     return meta + "\n" + text
 
 
-def ocr_image(client: Anthropic, image_path: Path, model: str) -> tuple[str, dict]:
-    data = base64.standard_b64encode(image_path.read_bytes()).decode("ascii")
+def ocr_png_bytes(client: Anthropic, png: bytes, model: str) -> tuple[str, dict]:
+    data = base64.standard_b64encode(png).decode("ascii")
     message = client.messages.create(
         model=model,
-        max_tokens=4096,
+        max_tokens=8192,
         messages=[
             {
                 "role": "user",
@@ -231,7 +231,73 @@ def ocr_image(client: Anthropic, image_path: Path, model: str) -> tuple[str, dic
         "input_tokens": getattr(message.usage, "input_tokens", None),
         "output_tokens": getattr(message.usage, "output_tokens", None),
     }
+    if getattr(message, "stop_reason", None) == "max_tokens":
+        print("  WARN: output hit max_tokens, transcription may be truncated", flush=True)
     return "\n".join(text_parts).strip() + "\n", usage
+
+
+def ocr_png_with_retries(
+    client: Anthropic, png: bytes, model: str, attempts: int = 3
+) -> tuple[str, dict]:
+    """Retry API errors: content-filter blocks and overloads are sometimes transient."""
+    for i in range(1, attempts + 1):
+        try:
+            return ocr_png_bytes(client, png, model)
+        except APIError as exc:
+            if i == attempts:
+                raise
+            print(f"  WARN: API error (attempt {i}/{attempts}): {exc}", flush=True)
+            time.sleep(3 * i)
+    raise AssertionError("unreachable")
+
+
+def split_spread(image_path: Path) -> list[bytes]:
+    """Left and right page of a 2-up screenshot as separate PNGs."""
+    import io
+
+    from PIL import Image
+
+    with Image.open(image_path) as im:
+        w, h = im.size
+        halves: list[bytes] = []
+        for box in ((0, 0, w // 2, h), (w // 2, 0, w, h)):
+            buf = io.BytesIO()
+            im.crop(box).save(buf, format="PNG")
+            halves.append(buf.getvalue())
+    return halves
+
+
+def ocr_spread_by_halves(
+    client: Anthropic, image_path: Path, model: str
+) -> tuple[str, dict, list[str]]:
+    """Fallback for content-filter blocks: OCR each page of the spread separately.
+
+    The filter judges the whole response, so halves often pass where the full
+    spread does not. Returns (markdown, usage, blocked_half_labels).
+    """
+    widths: list[int] = []
+    parts: list[str] = []
+    blocked: list[str] = []
+    usage_total = {"input_tokens": 0, "output_tokens": 0}
+    for label, png in zip(("left", "right"), split_spread(image_path)):
+        try:
+            text, usage = ocr_png_with_retries(client, png, model, attempts=2)
+        except APIError as exc:
+            print(f"  FAILED {label} half: {exc}", flush=True)
+            blocked.append(label)
+            parts.append(f"## Page ({label} half)\n\n*[OCR blocked by content filter]*")
+            continue
+        width, body = extract_avg_line_chars(text)
+        if width:
+            widths.append(width)
+        parts.append(body.strip())
+        for key in usage_total:
+            usage_total[key] += usage.get(key) or 0
+    text = "\n\n".join(parts) + "\n"
+    if widths:
+        avg = round(sum(widths) / len(widths))
+        text = f"<!-- avg_full_line_chars: {avg} -->\n" + text
+    return text, usage_total, blocked
 
 
 def parse_args() -> argparse.Namespace:
@@ -306,6 +372,7 @@ def main() -> int:
     done = 0
     in_tok = 0
     out_tok = 0
+    failed: list[str] = []
 
     for idx, slug in work:
         img = args.img_dir / f"{slug}.png"
@@ -321,9 +388,32 @@ def main() -> int:
             continue
 
         print(f"[{idx}/{total_label}] OCR {slug} ...", flush=True)
-        text, usage = ocr_image(client, img, args.model)
+        split_note = ""
+        try:
+            text, usage = ocr_png_with_retries(client, img.read_bytes(), args.model)
+        except APIError as exc:
+            # One blocked/failed spread must not kill the batch.
+            if "content filtering" not in str(exc).lower():
+                print(f"  FAILED {slug}: {exc}", flush=True)
+                failed.append(slug)
+                time.sleep(args.delay)
+                continue
+            print("  blocked by content filter, retrying page halves separately...", flush=True)
+            text, usage, blocked_halves = ocr_spread_by_halves(client, img, args.model)
+            if len(blocked_halves) == 2:
+                print(f"  FAILED {slug}: both halves blocked", flush=True)
+                failed.append(slug)
+                time.sleep(args.delay)
+                continue
+            if blocked_halves:
+                failed.append(f"{slug} ({blocked_halves[0]} half only)")
+                split_note = f"ocr-by-halves, {blocked_halves[0]} half blocked"
+            else:
+                split_note = "ocr-by-halves"
         formatted = format_ocr_markdown(text)
         header = f"<!-- source: {img.name} model: {args.model} -->\n"
+        if split_note:
+            header += f"<!-- {split_note} -->\n"
         dest.write_text(header + formatted, encoding="utf-8")
         if usage.get("input_tokens"):
             in_tok += usage["input_tokens"]
@@ -345,6 +435,9 @@ def main() -> int:
         f"est_usd~=${est:.3f}, out={args.out_dir}",
         flush=True,
     )
+    if failed:
+        print(f"FAILED spreads ({len(failed)}): {', '.join(failed)}", flush=True)
+        return 1
     return 0
 
 
