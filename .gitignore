@@ -12,6 +12,9 @@ cache/
 # Secrets
 .env
 
+# Edge debug profile of the book scanner (cookies / session)
+.edge_scan_profile/
+
 # Python / PyInstaller
 __pycache__/
 *.py[cod]

@@ -7,6 +7,13 @@
 
 ```
 yt-dlp/
+  _books/              ← книги: сканы страниц и извлечённый текст (в git,
+    Wojna_Futbolowa/     в отличие от _channels/ — результаты OCR не
+      pages.txt          восстанавливаются повторным скачиванием)
+      pages_expanded.txt ← полный список URL страниц Archive.org
+      pages_extracted/ ← PNG-скриншоты разворотов
+      pages_text/      ← распознанный текст (Markdown, по разворотам)
+      book/            ← собираемый вручную документ
   _channels/           ← папки отдельных YouTube-каналов (не в git)
     _Handle/
       _cache/          ← кэш канала: videos.json, playlists.json, video_playlists.json
@@ -16,11 +23,16 @@ yt-dlp/
   misc/                ← прочие коллекции, не привязанные к каналу (не в git)
   _run_scripts/        ← bat-файлы корня проекта: проверка плейлистов,
                          поиск канала по описанию, синхронизация путей в
-                         bat-файлах (в git, в отличие от _run_scripts
-                         внутри папок каналов)
+                         bat-файлах, OCR очередной порции книги (в git,
+                         в отличие от _run_scripts внутри папок каналов);
+                         логи запусков — в _run_scripts/_logs/ (не в git)
   prompts/             ← расшифровки чатов с агентом и их читаемые копии
                          (не в git)
-  src/                 ← исходники Python
+  src/                 ← исходники Python: пайплайн YouTube-каналов лежит
+                         плоско (его пути зашиты в сгенерированные bat-файлы
+                         каналов и в exe), новые функциональные модули
+                         добавляются подпапками
+    book_ocr/          ← модуль сканирования и OCR книг (см. раздел «Книги»)
   scripts/             ← готовые exe для запуска
   readme.md
 ```
@@ -130,6 +142,40 @@ yt-dlp/
 `quality gate-ов`) распознаватель отсекает, а редактор не восстанавливает,
 и ослышку вне глоссария («гид» вместо Git) не чинит ни код, ни модель.
 Первое — задача для промпта, второе — для `terms.txt`.
+
+## Книги: `src/book_ocr/`
+
+Отдельный от YouTube-пайплайна модуль: оцифровка книги, взятой на
+archive.org по Controlled Digital Lending (Р. Капущинский, «Wojna
+futbolowa», по-польски). Данные — в `_books/Wojna_Futbolowa/`.
+
+Пайплайн из двух шагов:
+
+1. **`scan_pages.py`** — скриншоты разворотов книги в
+   `_books/<книга>/pages_extracted/`. Требует Edge с включённым remote
+   debugging и активным займом книги: сначала запустить
+   `_run_scripts\book_start_edge_for_scan.ps1`, в открывшемся окне Edge
+   выполнить Borrow, затем `python src\book_ocr\scan_pages.py`.
+2. **`ocr_claude.py`** — распознавание польского текста со скриншотов
+   (Claude Sonnet vision, ключ `ANTHROPIC_API_KEY` в корневом `.env`) в
+   `_books/<книга>/pages_text/*.md`. Постобработка локальная: снятие
+   внутристраничных переносов, перенос слова на границе страниц
+   сохраняется как в книге, строки заворачиваются по средней ширине
+   строки оригинала (+3 символа) с выравниванием правого края
+   добавочными пробелами.
+
+Запуск очередной порции — `_run_scripts\book_ocr_next_batch.bat`
+(размер порции задаётся переменной `BATCH_SIZE` в начале файла; лог
+каждого запуска — в `_run_scripts/_logs/book_ocr_next_batch_*.log`):
+
+```bat
+book_ocr_next_batch.bat                 очередные BATCH_SIZE разворотов без .md
+book_ocr_next_batch.bat overwrite-first перераспознать первые BATCH_SIZE
+book_ocr_next_batch.bat page_016        BATCH_SIZE разворотов начиная с page_016
+```
+
+Другая книга — новая папка под `_books/` со своим `pages_expanded.txt`
+и флаг `--book <папка>` у обоих скриптов.
 
 ## Скрипты в `scripts/`
 

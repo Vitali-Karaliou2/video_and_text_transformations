@@ -1,3 +1,6 @@
 openpyxl>=3.1.0
 # Russian morphology for the offline transcript check (check_transcripts.py).
 pymorphy3>=2.0.6
+# Book scanning/OCR module (src/book_ocr/): Archive.org capture + Claude vision.
+playwright>=1.40.0
+anthropic>=0.40.0
