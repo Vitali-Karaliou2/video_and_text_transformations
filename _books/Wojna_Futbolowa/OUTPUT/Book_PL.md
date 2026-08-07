@@ -235,7 +235,7 @@ próchnieje,  sprzęty  w nim liche. Chudobiedne obejście. Ale to
 jest  mieszkanie  bodaj  najbogatszego człowieka w całej Afryce
 Zachodniej,   multimilionera,  Wielkiego  Khouri.  Ten  uliczny
 handlarz  z  Bejrutu ma kapitał, a nie ma wymagań. Wcina razowe
-placki,  piecze na ogniu, i mnoży zyski do zawrotnych sum. Jest
+placki, pieczone na ogniu, i mnoży zyski do zawrotnych sum. Jest
 staruszkiem,  zemrze  może w tym roku. W Bejrucie ma całą ulicę
 domów. Nie widział tego na oczy. Wielki Khouri jest analfabetą.
 Musi mieć zaufanego, który by mu pisał listy handlowe.
