@@ -85,35 +85,36 @@ Jest  zbyt  duszno.  Wilgotne, lepkie powietrze wypełnia pokój.
 Zresztą  nie jest to powietrze, a mokra wata. Oddychać — znaczy
 tyle,  co  łykać  kłębki  waty nasączonej ciepłą wodą. Tego nie
 można znieść. To mdli, upadla, denerwuje. Tną moskity, hałasują
-małpy. Ciało jest lepkie od potu, wstrętne od dotyku. Czas stoi
-w  miejscu,  sen nie przychodzi. O szóstej rano, przez cały rok
+małpy.  Ciało jest lepkie od potu, wstręt w dotyku. Czas stoi w
+miejscu,  sen  nie  przychodzi.  O szóstej rano, przez cały rok
 niezmiennie   o  szóstej  rano  -  wstaje  słońce.  Do  martwej
-duszności tej łaźni dodaje żar swoich promieni. Trzeba wstać. A
-nie ma sił. Napoleon rano nie wiąże sznurówek, bo mówi, że taki
-wysiłek  jak  schylanie  się  do  buta jest dla niego przyduży.
-Psychicznie  taka noc nastraja okropnie. Człowiek czuje się tam
-rozbity  jak  stary  kapeć. Jest zgaszony, bezżenny, workowaty.
-Dręczą   go  nieokreślone  tęsknoty,  niewysłowione  nostalgie,
-mroczne  pesymizmy.  Czeka,  aby  przeszedł dzień, aby przeszła
-noc, aby wszystko już wreszcie, do cholery, przeszło!
+wilgotności tej łaźni dodaje jej swoich promieni. Trzeba wstać.
+A  nie  ma  sił. Napoleon rano nie wiąże sznurówek, bo mówi, że
+taki  wysiłek  jak schylanie się do buta jest dla niego przykrą
+okropnie.  Psychicznie  taka  noc  nastraja  okropnie. Człowiek
+czuje   się   tam  rozbity  jak  stary  kapeć.  Jest  zgaszony,
+bezbrzeżny,   workowaty.   Dręczą   go  nieokreślone  tęsknoty,
+niewysłowione   nostalgie,   mroczne   pesymizmy.   Czeka,  aby
+przeszedł  dzień,  aby przeszła noc, aby wszystko już wreszcie,
+do cholery, przeszło!
 
-No   i   piję.   Przeciw   nocy,   przeciw   chandrze,  przeciw
-nieczystościom  w  kiblu  swojego  losu. Tylko na takie stać go
-zmagania.
+Noi    piję.    Przeciw   nocy,   przeciw   chandrze,   przeciw
+nieczystościom  w  kilbu  swojego  losu. Tylko na takie stać go
+zmaganie.
 
-Wujek  Wally pije jeszcze dlatego, że mu to pomaga na płuca. Ma
-gruźlicę.  Jest  chudy,  dyszy  ciężko,  z  poświstem. Siada na
-werandzie i woła: „Papa - jedna!" Papa idzie do baru i przynosi
-butelkę. Ręce wujka zaczynają drżeć. Do szklanki nalewa whisky,
-dopełnia zimną wodą. Wysącza tę porcję i już szykuje nową. Oczy
-zachodzą  mu  łzami,  wstrząsa  nim  bezgłośny  szloch.  Ruina,
-strzęp.  Londyńczyk,  w  Anglii  był majstrem budowlanym. Wojna
-zaniosła  go do Afryki. Tu został. Jaki był majstrem, tylko się
-rozpił  i  nosi  wygniłe  płuca,  których  nie  leczy. Za co ma
-leczyć?  Połowę zarobku oddaje na hotel, drugą - na whisky. Nie
-ma  nic,  nic literalnie. Koszule w strzępach, jedne wycerowane
-spodnie,  liche sandały. Jego rodacy, eleganccy nieskazitelnie,
-wyklęli  go,  przepędzili. Zabronili mu się przyznawać, że jest
+Wujek  Wally  pije  jeszcze  dlatego, że mu to pomaga na płuca.
+Jest  chudy,  dyszy  ciężko,  z poświstem. Siada na werandzie i
+woła:  „Papa  -  jedna!" Papa idzie do baru i przynosi butelkę.
+Ręce wujka zaczynają drżeć. Do szklanki nalewa whisky, dopełnia
+zimną wodą. Wysącza tę porcję i już szykuje nową. Oczy zachodzą
+mu   łzami,  wstrząsa  nim  bezgłośny  szloch.  Ruina,  strzęp.
+Londyńczyk, w Anglii był majstrem budowlanym. Wojna zaniosła go
+do  Afryki.  Tu został. Dalej jest majstrem, tylko się rozpił i
+nosi  wygniłe płuca, których nie leczy. Za co ma leczyć? Połowę
+zarobku  oddaje  na  hotel,  drugą - na whisky. Nie ma nic, nic
+literalnie.  Koszule  w  strzępach,  jedne  wycerowane spodnie,
+liche  sandały.  Jego rodacy, eleganccy nieskazitelnie, wyklęli
+go,   przepędzili.   Zabronili   mu  się  przyznawać,  że  jest
 Anglikiem.  Dirty  lump. Brudna łajza! Pięćdziesiąt cztery lata
 życia.  Co  mu  zostało? Wypić trochę whisky i zejść do piachu.
 Więc  pije i czeka kolejki na piach. „Nie złość się na rasistów
@@ -139,21 +140,42 @@ zostań  ze mną. Przestanę pić. Kupię ci samochód". Odpowiadała:
 kochać".  Spytała:  „Gdzie?"  Wujek  wstał  od stolika, do jego
 pokoju  było  kilka  kroków.  Otworzył  drzwi, trzymał kurczowo
 klamkę.  W mrocznym kojcu stało żelazne łóżko i mała szafka. An
-wybuchnęła   śmiechem:   trzymał  nas  krótko.  Przed  wyjściem
-musiałem mu mówić, gdzie idę i po co. Inaczej — awantura. „Boję
-się  o  ciebie!” — krzyczał. Kiedy Arab krzyczy, nie trzeba się
-tym  przejmować.  Taki  ma  sposób mówienia. A Papa był Arabem,
-Libańczykiem.  Habib  Zacca.  Dzierżawił  hotel  od  roku.  „Po
-Wielkiej  Klęsce”  —  mówił.  O tak, walnęła w niego strasznie.
-„Zacca?  —  wołał  jego  przyjaciel  —  Zacca  to był milioner!
-Milioner!  Papa  był milioner, samochody, sklepy, ogrody”. „Jak
-mi  stanął  zegarek, wyrzucałem go przez okno — wzdycha Papa. —
-Mój dom miał drzwi zawsze otwarte. Codziennie tłum gości. Jedz,
-pij  —  co  chcesz. A teraz? Oni mnie nie poznają. Muszę się im
-przedstawiać,  a  żarli  u mnie za tysiące”. Papa przyjechał do
-Ghany  dwadzieścia lat temu. Zaczął od sklepiku z tekstyliami i
-doszedł  do  ogromnej fortuny, którą stracił potem przez rok. A
-stracił na wyścigach. „Konie mnie zjadły, Red”.
+wybuchnęła  śmiechem:  „Tu? tu? Moja miłość musi żyć w pałacach
+białych królów!"
+
+Byliśmy  przy  tej  scenie.  Papa podszedł, trącił An w ramię i
+mruknął: „Spływaj". Poszła rozbawiona, machając nam ręką — bye,
+bye.  Wujek Wally wrócił do stolika. Chwycił butelkę i zaczął z
+niej pić duszkiem. Nie dokończył, opadł na krzesło. Położyliśmy
+tego  strańca  w  jego  kojcu,  na  żelaznym  łóżku,  na białym
+prześcieradle — bez An.
+
+Odtąd  mówił  mi  zawsze:  „Red,  jedyna kobieta, która cię nie
+zdradzi,  to  twoja  matka.  Nie  licz  na  więcej". Lubiłem go
+słuchać.  Był  mądry.  Powiedział:  „Modliszki  afrykańskie  są
+uczciwsze   niż   nasze   żony.   Znasz  modliszki?  W  świecie
+modliszkowym zaloty trwają krótko. Potem owady odbywają wesele.
+Para  modliszków  udaje się na noc poślubną. A rano modliszkowa
+zagryza  modliszka  na  śmierć. Po co ma go zamęczać przez całe
+życie?  Wynik  przecież  byłby ten sam. A wszystko, co się robi
+wcześniej, robi się uczciwiej".
+
+Ten  gorzki  ton  w  wynurzeniach  wujka  niepokoił  Papę. Papa
+trzymał nas krótko. Przed wyjściem musiałem mu mówić, gdzie idę
+i  po  co. Inaczej — awantura. „Boję się o ciebie!” — krzyczał.
+Kiedy  Arab  krzyczy,  nie  trzeba  się tym przejmować. Taki ma
+sposób  mówienia. A Papa był Arabem, Libańczykiem. Habib Zacca.
+Dzierżawił  hotel od roku. „Po Wielkiej Klęsce” — mówił. O tak,
+walnęła  w  niego  strasznie. „Zacca? — wołał jego przyjaciel —
+Zacca  to był milioner! Milioner! Papa był milioner, samochody,
+sklepy,  ogrody”.  „Jak  mi stanął zegarek, wyrzucałem go przez
+okno  —  wzdycha  Papa.  —  Mój  dom miał drzwi zawsze otwarte.
+Codziennie tłum gości. Jedz, pij — co chcesz. A teraz? Oni mnie
+nie  poznają.  Muszę  się  im  przedstawiać,  a żarli u mnie za
+tysiące”. Papa przyjechał do Ghany dwadzieścia lat temu. Zaczął
+od  sklepiku z tekstyliami i doszedł do ogromnej fortuny, którą
+stracił  potem  przez  rok. A stracił na wyścigach. „Konie mnie
+zjadły, Red”.
 
 Widziałem  jego  stajnię.  Za  miastem  w  palmowym  lesie miał
 stajnię.  Dziewięć  białych  koni:  wspaniałe  araby. Jak on je
@@ -235,7 +257,7 @@ próchnieje,  sprzęty  w nim liche. Chudobiedne obejście. Ale to
 jest  mieszkanie  bodaj  najbogatszego człowieka w całej Afryce
 Zachodniej,   multimilionera,  Wielkiego  Khouri.  Ten  uliczny
 handlarz  z  Bejrutu ma kapitał, a nie ma wymagań. Wcina razowe
-placki, pieczone na ogniu, i mnoży zyski do zawrotnych sum. Jest
+placki,  piecze na ogniu, i mnoży zyski do zawrotnych sum. Jest
 staruszkiem,  zemrze  może w tym roku. W Bejrucie ma całą ulicę
 domów. Nie widział tego na oczy. Wielki Khouri jest analfabetą.
 Musi mieć zaufanego, który by mu pisał listy handlowe.
@@ -1161,7 +1183,7 @@ bramy  —  zamknięte.  Patrice  mówi  do pustej ulicy, nie widzi
 tego, nie wie o tym, jest tylko jego głos.
 
 Kambi  słucha go bez końca. Jak muzyki. Opiera czoło na dłoni i
-zamyka  oczy. Taśma wałcuje powoli, z lekkim szelestem. Patrice
+zamyka  oczy. Taśma walcuje powoli, z lekkim szelestem. Patrice
 jest  spokojny,  zaczyna  bez  emocji,  nawet  sucho.  Na razie
 informuje,  przedstawia  sytuację.  Mówi  wyraźnie,  z dobitnym
 akcentem,  starannie  wymawia  sylaby,  jak  aktor,  który musi
@@ -1190,6 +1212,44 @@ l'unité, natłok argumentów, porywające frazy, żadnych odwrotów,
 trzeba  iść  tam,  tam, gdzie nasza uhuru, nasz prosty grzbiet,
 nadzieja, maniok i Kongo, zwycięstwo, l'indépendance.
 
+Teraz pali się płomień.
+
+Taśma zdatuje z wałka.
+
+Słyszałem,  jak  przemawiał  Naser.  Jak mówił Nkrumah. I Sekou
+Touré.  A  teraz słyszę Lumumbę. Trzeba widzieć, jak słucha ich
+Afryka.  Trzeba  zobaczyć thum, który idzie na wiec: odświętny,
+przejęty,  z gorączką w oczach. I trzeba mieć mocne nerwy, żeby
+wytrzymać  moment  ekstatycznego  wrzasku, jaki wita pojawienie
+się  każdego  z  nich.  Dobrze  jest stanąć w tłumie. Poklaskać
+razem  z  nim,  pośmiać  się  i zagniewać. Wtedy się czuje jego
+cierpliwość  i  siłę,  jego oddanie i grozę. Więc w Afryce jest
+zawsze  ludowym świętem, radosnym i pełnym godności, jak święto
+plonów. Czarownicy odprawiają zaklęcia, imamowie czytają Koran,
+orkiestry   grają   jazz.   Wiatr  rozwiewa  kolorową  krepinę,
+handlarki  sprzedają  grzechotki,  a  wielcy  mówią z trybuny o
+polityce.  Naser przemawia twardo, dobitnie, zawsze dynamiczny,
+impulsywny, władczy. Touré przekomarza się z tłumem, zdobywa go
+pogodą,  ciągłym uśmiechem, subtelną nonszalancją. Nkrumah jest
+patetyczny,  skupiony, z manierami kaznodziei, które zachował z
+czasów  wystąpień w kościołach murzyńskich Ameryki. A potem ten
+tłum, upojony słowami swoich wodzów, rzuca się w uniesieniu pod
+koła  wozu  Gamala,  unosi z ziemi wóz Sekou, łamie żebra, żeby
+dotknąć wozu Kwame.
+
+Błyskawiczne  kariery,  wielkie  nazwiska.  Przebudzona  Afryka
+potrzebuje  wielkich  nazwisk.  Jako symboli, jako spoiwa, jako
+rekompensaty.  Przez  stulecia  historia  tego  kontynentu była
+anonimowa.  W  ciągu  trzech  wieków  handlarze  wywieźli  stąd
+miliony  niewolników.  Kto  poda jedno nazwisko ofiary? Wiekami
+walczono  z  białą  inwazją. Kto poda jedno nazwisko bojownika?
+Czyje  imiona  przypominają  cierpienia czarnych pokoleń, czyje
+mówią  o  męstwie  wyciętych  plemion? Azja miała Konfucjusza i
+Buddę,   Europa   —   Szekspira   i  Napoleona.  Z  przeszłości
+afrykańskiej  nie  wyłania  się  żadne  nazwisko, które by znał
+świat. Więcej — które by znała sama Afryka.
+
+I  oto  teraz  każdy  niemal rok wielkiego marszu Afryki, jakby
 odrabiając  nieodwracalne zapóźnienia, wpisuje do historii nowe
 nazwisko:  1956  —  Gamal  Naser,  1957 — Kwame Nkrumah, 1958 —
 Sekou Touré, 1960 — Patrice Lumumba.
@@ -1389,7 +1449,7 @@ Nasza pierwsza rozmowa. Przedstawili się:
 
 Było nam bardzo przyjemnie.
 
-Po kilku zdaniach którys z nich powiedział wprost:
+Po kilku zdaniach któryś z nich powiedział wprost:
 
 — Potrzeba nam pieniędzy.
 
@@ -1399,7 +1459,7 @@ Po kilku zdaniach którys z nich powiedział wprost:
 przekupić przywódców naszej prowincji.
 
 Wszyscy  byli młodymi ludźmi, a młodości trzeba wybaczyć. Jarda
-bodaj  powiedział,  że  ten  ustrój  nie  zwycięża  przy pomocy
+bodaj  coś  powiedział,  że ten ustrój nie zwycięża przy pomocy
 pieniędzy.  I  dodał coś o masach. Przede wszystkim masy — taka
 była  myśl Jardy. Socjaliści siedzieli strapieni. Dla nich masa
 nie  była taka ważna. Czy myśmy widzieli, żeby tu poruszyły się
@@ -1408,21 +1468,61 @@ toczy  się  w kręgu wodzów. Maksimum pięćset nazwisk. I właśnie
 te  nazwiska  trzeba kupować. Jak się kupi kilka — to można już
 stworzyć  rząd  i  jakąś  republikę.  Kierunek  nada ten, który
 płaci.  Tak powstał rząd Czombego, Kalondżiego i Bolikango. Ale
-jeszcze   są  duże  możliwości.  Jeszcze  są  nie  wykorzystane
-rezerwy.  Szybko  obliczyłem,  że  zostało  mi  tysiąc dolarów.
-Ciekawe,  czy  mógłbym  sobie  za  to  wiedzieć, co się stało w
-kongijskim  Poznaniu.  Nawet  gdyby  chciał  tam  pojechać, nie
-miałby  za  co. Zresztą odległość między Krakowem a Poznaniem w
-Kongu jest taka, jak między Warszawą a Madrytem.
+jeszcze  są  duże  możliwości. Jeszcze są wykorzystane rezerwy.
+Szybko  obliczyłem,  że zostało mi tysiąc dolarów. Ciekawe, czy
+mógłbym   sobie  za  to  kupić  republikę.  Taką  z  prawdziwym
+wojskiem,  z  rządem  i hymnem. Byłaby to chyba mała republika.
+Tysiąc  dolarów  to  nie  jest  tak  dużo pieniędzy. Nie mogłem
+konkurować z Waszyngtonem ani z Londynem czy Brukselą. Musiałem
+zrezygnować.  Moi  przyjaciele  uczynili  to  samo. Żeby jednak
+podtrzymać rozmowę, Jarda zaczął ich wypytywać o partię. Byli z
+Partii   Socjalistycznej   Kasai.   Mieli   program:   wypędzić
+Kalondziego,  zaprzestać walk plemiennych, utrzymać zjednoczone
+Kongo. Bardzo słuszny program.
+
+— Czy to jest duża partia? — spytał Jarda.
+
+Dali  nam listę członków. Na papierze był wydrukowany nagłówek:
+Partie   Socialiste  du  Kasai.  A  niżej  przeczytaliśmy  trzy
+nazwiska  i funkcje: prezydent, sekretarz generalny i skarbnik.
+To   wszystko?  —  zapytał  ktoś  nietaktownie.  Tak,  to  było
+wszystko,   jeśli   nie   liczyć  zakurzonej  chevrolety,  żony
+prezydenta  i  jego  dwóch małych chłoptasiów. Autorytet w tych
+sprawach  —  Pierre  Artique — wylicza około dziewięćdziesięciu
+partii  kongijskich.  Do  wyborów  w  1960  r.  stawało ich sto
+dwanaście,  a jeśli kto powie, że jest ich dwieście, nie należy
+się  z  nim sprzeczać. U nas ludzie kręcą głowami patrząc na te
+liczby: że tak dużo. Ale to wcale nie jest dużo.
+
+W wielu krajach Europy było też dwieście partii, a może nawet i
+więcej. Tylko że powstawały na dużej przestrzeni czasu. Każdego
+roku  coś  tam  powstawało,  a  potem  nie mogło się utrzymać i
+ginęło.  Życie,  czas i warunki dokonywały naturalnej selekcji.
+Istniały  partie dominujące i partyjki bez większego znaczenia.
+Jedne   wypływały  na  powierzchnię,  inne  tonęły  bez  śladu.
+Nieszczęście  Konga  polegało na tym, że Kongo nie miało na nic
+czasu. W ciągu trzech lat stało się tam to, co w innych krajach
+dokonywało się w ciągu trzech wieków.
+
+Od roku 1958 zaczynają masowo powstawać partie. Często po kilka
+na  tydzień.  Pytają  niekiedy,  dlaczego  tyle  naraz? Czy nie
+wystarczyłoby trzy albo pięć? Pewnie że by starczyło, ale nie w
+Kongu.  Belgowie  trzymali  tu  ludzi  nie  tylko w izolacji od
+świata,  ale  i  w  nieświadomości  tego, co dzieje się w samym
+kraju.  Przeciętny  mieszkaniec  kongijskiego  Krakowa nie mógł
+wiedzieć,  co  się  stało  w  kongijskim  Poznaniu. Nawet gdyby
+chciał tam pojechać, nie miałby za co. Zresztą odległość między
+Krakowem  a  Poznaniem w Kongu jest taka, jak między Warszawą a
+Madrytem.
 
 Tedy w Leo powstało na przykład Stronnictwo Ludowe Konga. W tym
 czasie  takie  same  stronnictwa  powstały  jeszcze  w Kindu, w
-Boende  i  w Kenge. A jedno o drugim nie wiedziało w ogóle nic.
+Boende  i w Kenge. A jedno o drugim nie wiedziało zupełnie nic.
 Dobrze,  ale  był przecież moment, kiedy kraj odzyskał wolność,
 kiedy  można  było  dokonać  zjednoczenia.  Otóż okazało się to
 nierealne.  Bo  zjechali się prezesi tych stronnictw ludowych z
-Leo,  Kindu, Boende i Kenge. Powiedzieli sobie: zjednoczymy się
-w jedną partię.
+Leo, Kindu, Boende i Kenge. Powiedzieli sobie: zjednoczmy się w
+jedną partię.
 
 Ale jedna partia to jeden prezes. Kto będzie tym prezesem numer
 jeden?  Każdy  chce  być! Nikt nie ustąpi, bo niby dlaczego? Ja
@@ -1440,17 +1540,47 @@ generałów. Wszyscy skończyliśmy tę samą szkołę misyjną; wszyscy
 jesteśmy  dziś małymi urzędnikami. Ale jutro, jutro każdy z nas
 może być prezydentem!
 
+1961
+
 ## Ofensywa
 
-ja  nie  mogłem  być wśród nich. Miałem wilczy bilet. Ten bilet
-dostaje  się,  kiedy człowiek mija który tam równoleżnik. Kiedy
-dociera  do miejsca, w którym dowiaduje się, że ma białą skórę.
-Jest  to odkrycie, sensacja, szok. Przeżyłem 25 lat nie wiedząc
-o tej skórze. Na podwórku mojej kamienicy bawi się setka dzieci
-i  ani  jedno  z  nich nie zastanowiło się dotychczas nad swoją
-skórą.  Wiedzą  tylko,  że jeśli jest brudna, to źle. Ale jeśli
-jest  czysta  i  biała?  To dobrze! Otóż właśnie że źle. Bardzo
-źle. Bo biała skóra to jest ten wilczy bilet.
+Wojsko wyjeżdżało o zmierzchu. Usłyszeliśmy huk silników, potem
+przez plac przejechało osiem wielkich kamionów. Żołnierze stali
+oparci  o  poręcze, w hełmach, z karabinami przez plecy. Nie ma
+tu  zwyczaju,  żeby  wojsko śpiewało. Jechali w milczeniu przez
+puste   miasto,   przez   ulice   wyludnione   rygorem  godziny
+policyjnej.  Było  ich  może  trzystu.  Wozy skręcały na szosę,
+słyszało się jeszcze odgłosy motorów, a potem wszystko ginęło w
+ciszy, w dżungli i w mroku gwałtownie zapadającej nocy.
+
+Bardzo chciałem z nimi pojechać. Chciałem zobaczyć wojnę, po to
+przedzierałem  się  do  Konga. Ale w Kongu nie znalazłem wojny,
+tylko  bijatykę,  absurdalne kłótnie i chamską imperialistyczną
+intrygę.  Nie  mieliśmy  co  to  robić.  Były  dnie,  kiedy nie
+wychodziliśmy  na  krok  z hotelu, bo nie było gdzie iść. I nie
+było  po  co.  Wszystko  zdawało  się  zbyt niepojęte albo zbyt
+oczywiste.  Nawet  rozmowy  nie  miały sensu. Zawsze lumumbista
+uważał  mobutowca  za łotra, a mobutowiec lumumbistę za łobuza.
+Ile   razy  człowiek  jest  w  stanie  słuchać  takich  rzeczy?
+Najbardziej  cierpliwy  był  Fediaszin.  Fediaszin  wdawał  się
+ciągle  w  pogawędki, a potem przynosił nam rewelacje: „Wiecie,
+ten  młody  mówił, że w Kindu mają dużo zwolenników". Nie wiem,
+co  się ze mną wtedy działo, ale ten fakt, że w Kindu mają dużo
+zwolenników, zupełnie mnie nie fascynował.
+
+Dlatego  chciałem  pojechać  z  wojskiem.  Wojsko to jest jakaś
+konkretna  rzeczywistość,  a  nie te mdłe bajania przy szklance
+ciepłego   piwa.   Teraz  wojsko  zaczynało  ofensywę.  Trzystu
+żołnierzy  w  sercu  kontynentu  wyruszało na wojnę. Ale ja nie
+mogłem  być  wśród nich. Miałem wilczy bilet. Ten bilet dostaje
+się,  kiedy  człowiek mija który tam równoleżnik. Kiedy dociera
+do  miejsca, w którym dowiaduje się, że ma białą skórę. Jest to
+odkrycie,  sensacja,  szok.  Przeżyłem 25 lat nie wiedząc o tej
+skórze. Na podwórku mojej kamienicy bawi się setka dzieci i ani
+jedno  z  nich  nie zastanowiło się dotychczas nad swoją skórą.
+Wiedzą  tylko,  że  jeśli  jest  brudna, to źle. Ale jeśli jest
+czysta  i biała? To dobrze! Otóż właśnie że źle. Bardzo źle. Bo
+biała skóra to jest ten wilczy bilet.
 
 Dawniej  złościły mnie książki o Afryce: tyle w nich o białym i
 czarnym.  Kolor  taki  i  siaki  we  wszystkich  odmianach.  Aż
@@ -1658,11 +1788,11 @@ zabrał nasze teksty i zasiadł do pisania.
 
 Wróciliśmy  do  samochodu,  na  ulicy było pusto. Jechaliśmy do
 hotelu i zdawało się, że będzie dobrze, kiedy nagle zza zakrętu
-wypadł  jeep pełen żandarmów, znaleźliśmy się na przeciw siebie
+wypadł  jeep  pełen żandarmów, znaleźliśmy się naprzeciw siebie
 auto  w auto. Nie wiem, co stało się, to znaczy myślę, że stała
 się  rzecz  następująca: obecność białych ludzi na ulicy była w
-tej  sytuacji  czymś  tak nieprawdopodobnym, że żandarmi wzięli
-nasz   samochód  za  zjawę,  za  złudzenie  —  zdębieli  i  nie
+tej  sytuacji  czymś  tak nieprawdopodobnym, że żandarmi widząc
+nasz   samochód  za  ziywę,  za  złudzenie  —  zdębieli  i  nie
 zareagowali.  Trwało  to  moment,  bo  Jarda przytomnie odwinął
 kierownicę  i skręcił w najbliższą uliczkę, zaczęliśmy uciekać.
 Nie  dojechaliśmy  do hotelu, kiedy Jarda gwałtownie zahamował,
@@ -1676,16 +1806,51 @@ będziemy  chodzili  po ulicach, spiorą nam białe gęby, więc bez
 obaw  ruszaliśmy do miasta. Najczęściej jeździliśmy na lotnisko
 oczekiwać naszych samolotów, które miały przywieźć pomoc. W tym
 czasie  rząd  Gizengi,  a raczej ta garstka ludzi, którym udało
-się  wraz  z Gizengą przejechać z Leopoldville do Stanleyville,
+się  wraz  z Gizengą przyjechać z Leopoldville do Stanleyville,
 został  uznany  przez  nasze  państwa  za legalny rząd Konga. Z
 kolei  byliśmy  jedynymi  ludźmi,  jakim udało się przedostać z
 Europy  do  Stanleyville,  i  tutejsze władze, nie mając nikogo
 więcej  pod  ręką,  traktowały  nas  bardziej  jako ministrów i
-ambasadorów  niż  zwyczajnych koręce żandarmów jako winowajców.
-To  na  jakiś  czas  uspokoi sytuację. Przykro mi, ale nie mamy
-innego  wyjścia,  nie  panujemy  nad  nimi — i głową wskazał na
-okno,  przez  które widać było wałęsających się, rozebranych do
-pasa żandarmów.
+ambasadorów  niż  zwyczajnych korespondentów, wyrobników pióra.
+Jednakże  rząd  nie  panował  nad  sytuacją i dlatego nawet tak
+wysoki   status   nie  chronił  naszych  głów  przed  pięściami
+gniewnego   ludu.  Słabym  pocieszeniem  było  to,  że  również
+autentyczni  ministrowie  rządu  kongijskiego  byli  bici przez
+własnych  żandarmów,  co  widzieliśmy na własne oczy. Tak więc,
+kiedy  zdarzył  się  spokojny  dzień,  jechaliśmy  na lotnisko.
+Mieliśmy  już stałe miejsce na werandzie jednego z opuszczonych
+domów, skąd był dobry widok na pas startowy. — Dzisiaj na pewno
+przylecą — mówił za każdym razem Jarda. Godzinami wpatrywaliśmy
+się   w  słoneczną  przestrzeń,  w  której  miały  pojawić  się
+samoloty.  Ale  niebo  stało nieruchome, a w powietrzu panowała
+głucha  cisza.  Coraz  bardziej wątpiłem w to, że przylecą, ale
+nie  mówiłem  tego głośno, myśląc, że Jarda ma jakieś specjalne
+wiadomości.
+
+14.   Pewnego  dnia  przyjechał  do  hotelu  patrol  żandarmów.
+Zawieźli  nas  do  sztabu  armii,  który mieścił się na terenie
+koszar.  Między barakami kręcili się żandarmi, ich kobiety, ich
+dzieci,  pełno  było  gotowania,  prania, spożywania, leżenia i
+siedzenia,  wyglądało  to  na  duży  obóz  cygański.  W sztabie
+przywitał  nas  masywny, krwisty osiłek — major Sabo. Kazał nam
+usiąść,  a  potem zapytał: — Kiedy nadejdzie pomoc? — Czekałem,
+co  powie  Jarda, bo może wiedział najwięcej. Jarda opowiedział
+historię,  że  samoloty  czekają w Kairze, ale dyktator Sudanu,
+generał  Abboud,  nie  zgadza się na ich przelot nad terytorium
+swojego  kraju,  a  innej drogi powietrznej nie ma. — Tutaj nie
+mamy  już  nic  —  oświadczył  major.  —  Nie mamy amunicji ani
+żywności. Sam dowódca armii (był nim generał Lundula) rozdziela
+resztki benzyny. Jeżeli nie zmieni się, Mobutu i jego najemnicy
+chwycą  nas za gardło. — I major chwycił się za gardło zapełnie
+dosłownie,  tak  na jego skroniach pokazały się żyły. Atmosfera
+była  napięta i przykra, czuliśmy się bezradni, słabi. — Wojsko
+buntuje  się  —  powiedział  major  —  są  głodni  i  wściekli,
+odmawiają  posłuszeństwa,  pytają,  kto  jest winien, że nie ma
+pomocy. Jeżeli nie nadejdzie pomoc, sztab będzie zmuszony oddać
+wax  w ręce żandarmów jako winowajców. To na jakiś czas uspokoi
+sytuację. Przykro mi, ale nie mamy innego wyjścia, nie panujemy
+nad  nimi  —  i  głową  wskazał na okno, przez które widać było
+wałęsających się, rozebranych do pasa żandarmów.
 
 15.  Znowu  byliśmy  w  hotelu.  Pierwsi chrześcijanie, których
 postanowiono   rzucić   lwom   na  pożarcie.  Wydawało  mi  się
@@ -2220,9 +2385,9 @@ płacenia  za  nieślubne dzieci, będą je zabijać — zabójstwo nic
 nie kosztuje". Po drugie — wzrośnie ilość zdrad małżeńskich: „w
 wyniku  tej  ustawy  mężczyźni  będą unikać stosunku z pannami,
 natomiast  będą  uwodzić cudze żony". Po trzecie — zwiększy się
-ilość rozwodów, „bo jeżeli zonatemu mężczyźnie przyjdzie płacić
+ilość  rozwodów, bo jeżeli zonatemu mężczyźnie przyjdzie płacić
 alimenty  na  nieślubne  dziecko,  jego  żona dowie się o tym i
-będzie  domagać się rozwodu, a nawet może go od razu porzucić".
+będzie  domagać się rozwodu; a nawet może go od razu porzucić".
 Podsumowując   swoją   negatywną   opinię  na  temat  ustawy  o
 alimentach  poseł Mtaki stwierdził: „Eksperci w tej dziedzinie,
 tacy  jak  Karol  Marks,  uczą  nas,  że  prostytucja — to jest
@@ -2232,27 +2397,67 @@ Posła Mtaki popiera zdecydowanie Victor Mkello (Dar es-Salaam),
 który  domaga  się  od  rządu  wycofania „niefortunnej ustawy".
 Zdaniem  posła,  ustawa  ta  będzie  zmuszać mężczyzn do brania
 ślubu  z przygodnymi kobietami, byle tylko uniknąć konieczności
-płacenia  alimentów  na  nieślubne  dziecko.  „Takie małżeństwa
-nigdy  nie  będą  szczęśliwe".  Rząd  powinien  podjąć  kroki w
-kierunku  „uświadomienia  dziewcząt,  jak unikać ciąży". „Jeśli
-już  ustawa  musi  być przyjęta — stwierdza mówca — powinna się
-ona  odnosić  tylko do mężczyzn żonatych; kawalerowie mają zbyt
-wiele okazji, aby mogli ich uniknąć".
+płacenia alimentów na nieślubne dzieci. „Takie małżeństwa nigdy
+nie  będą  szczęśliwe".  Rząd  powinien podjąć kroki w kierunku
+„uświadomienia  dziewcząt, jak unikać ciąży". „Jeśli już ustawa
+musi  być  przyjęta — stwierdza mówca — powinna się ona odnosić
+tylko do mężczyzn żonatych; kawalerowie mają zbyt wiele okazji,
+aby mogli ich uniknąć".
 
 Zabierając  głos w debacie nad ustawą, wiceprezydent Tanganiki,
 poseł  R. Kawawa, sprzeciwił się opinii, że ustawa o alimentach
 spowoduje  wzrost  prostytucji,  rozwój prostytucji jest bowiem
 powstrzymywany    przez    inną   ustawę   skierowaną   przeciw
 prostytucji.  Wiceprezydent  sprzeciwił się również projektowi,
-aby  pouczać  kobiety, jak mają unikać ciąży. „Pogląd taki jest
-obcy  naszemu społeczeństwu i został on przyniesiony z zewnątrz
-— powiedział wiceprezydent. — Uczenie kobiet, jak unikać ciąży,
-byłoby tylko zachęceniem ludzi do niemoralnych praktyk".
+aby  obcy  pouczać kobiety, jak mają unikać ciąży. „Pogląd taki
+jest  obcy  naszemu  społeczeństwu  i  został on przyniesiony z
+zewnątrz  —  powiedział  wiceprezydent.  —  Uczenie kobiet, jak
+unikać  ciąży,  byłoby  tylko zachęceniem ludzi do niemoralnych
+praktyk".
 
 Posłanka   Bibi   Mohammed  (Rufiji)  —  kierowniczka  wydziału
 kobiecego  rządzącej  partii TANU, poświęciła swoje wystąpienie
-obronie  ustawy.  „W niektórych plemionach — który jest zdania,
-że ustawa „spowoduje upadek moralności wśród kobiet".
+obronie  ustawy. „W niektórych plemionach — powiedziała — kiedy
+dziewczęta  osiągną  dojrzałość,  są  zamykane  w  domach,  aby
+rodzice mieli pewność, że nie zajdą w ciążę. Jednakże mężczyźni
+są  jak szczury: zakradają się do domów i w rezultacie zdumieni
+rodzice  stwierdzają  po  pewnym czasie, że dziewczęta, mimo iż
+były  zamknięte  na klucz, są w ciąży. Mężczyźni nigdy nie mają
+dosyć  —  każdy  z  nich,  choćby  zdobył sześćdziesiąt kobiet,
+będzie  się  nadal uganiał i próbował dopaść kobietę, gdzie się
+tylko   da".  Posłanka  Bibi  ostro  wystąpiła  przeciw  mówcom
+sprzeciwiającym  się  ustawie:  „Posłowie, jako przedstawiciele
+całego  narodu Tanganiki, powinni myśleć zarówno o mężczyznach,
+jak  i  kobietach,  nie  powinni wykorzystywać tego faktu, że w
+parlamencie  stanowią liczniejszą grupę niż kobiety, i blokować
+przyjęcie ustawy, która daje wiele korzyści zarówno mężczyznom,
+jak  i kobietom. Kto z was, posłowie, może to powiedzieć, że ma
+czyste  sumienie?  Wiele  kobiet  przychodzi  do  mnie z bardzo
+daleka  i  mówi  mi, że taki a taki poseł parlamentu jest ojcem
+jej  dziecka. Obiecałam tym kobietom, że w parlamencie wymienię
+tych posłów z nazwiska..."
+
+W  tym  momencie  wystąpienie  posłanki  Bibi zostało przerwane
+przez  posła J. Namfua — wiceministra handlu i przemysłu, który
+oświadczył,  że  posłanka  powinna pohamować się w słowach albo
+przestać  dalej  mówić.  Zdaniem  posła,  posłanka "zbyt daleko
+odbiegła  od  tematu  obrad".  Posłanka Bibi zgodziła się, że w
+istocie  "lepiej  będzie,  jeśli skończę na tym, gdyż widzę, że
+zbyt   wielu  zainteresowanych  posłów  ma  bardzo  zakłopotane
+twarze.  Chcę  jeszcze  dodać  —  powiedziała w ostatnim zdaniu
+posłanka  —  że  w  rezultacie  przerywania  ciąży umiera wiele
+dziewcząt.  Gdybyśmy  przyjęli  tę ustawę, nikt nie przerywałby
+ciąży   i  w  ten  sposób  uratowalibyśmy  życie  wielu  młodym
+ludziom".
+
+Poseł  M.  S.  Madenge  (Tabora) oświadcza następnie, że poprze
+ustawę,  jeżeli  będzie  ona dotyczyć uczennic szkolnych, jeśli
+jednak  ma  objąć  również  dziewczyny  uliczne,  mówca  będzie
+zdecydowanie głosował przeciw ustawie.
+
+Podobne  stanowisko  zajmuje poseł H. S. Sarwatt (Mbulu), który
+jest  zdania,  że  ustawa  „spowoduje  upadek  moralności wśród
+kobiet".
 
 Inny   poseł   M.  S.  Haule  (Kondoa)  przypomina,  że  według
 ostatniego  spisu  ludności Tanganiki w kraju tym mieszka 5 500
@@ -2662,14 +2867,51 @@ ruchu trekerów były całkowicie inne: grabieżcze i kolonialne.
 
 Wielki  Trek,  który  wyruszył  spod  Cape  i  którego czołówki
 dotarły  aż  do  dzisiejszego Mozambiku i Rodezji, zostawiał za
-sobą  krwawy  ślad. Trekerzy mordowali dziesiątki tysięcy Wojna
-ta  trwa  blisko  przez  trzy lata i w samych tylko brytyjskich
-obozach  koncentracyjnych  ginie z głodu i epidemii dwadzieścia
-sześć  tysięcy  afrykańskich  kobiet  i  dzieci,  co do dzisiaj
-Afrykanerzy   Anglikom  wypominają.  Ta  wojna,  którą  nazwano
-„skandaliczną", ponieważ poniżała godność białej rasy zmuszając
-białych  do walki przeciw białym na oczach czarnych, kończy się
-w   1902   roku   formalnym   zwycięstwem   brytyjskim,  ale  w
+sobą   krwawy   ślad.  Trekerzy  mordowali  dziesiątki  tysięcy
+Afrykańczyków,  palili  ich  wioski i zagarniali stada bydła. W
+czasie  tego  treku  Afrykanerzy  zajęli obszar stanowiący dziś
+połowę   Południowej   Afryki  i  założyli  w  nim  swoje  trzy
+afrykańskie  republiki:  Natal (1841), który im po roku Anglicy
+zabrali,  oraz  wkrótce  potem  Oranię i Transwal. Te republiki
+Anglicy też potem zabierają i zamieniają w swoje kolonie.
+
+Oto  bowiem  w  1870  roku  zaczęto  w Południowej Afryce kopać
+diamenty,  a  szesnaście  lat  potem odkryto w Transwalu złoto.
+Anglia,  która  patrzy  dotąd obojętnie na sukcesy Afrykanerów,
+zmienia  teraz wobec nich swoją politykę błyskawicznie. Złoto i
+diamenty  znajdują  się  bowiem  właśnie  na  terenie  republik
+afrykanerskich.  Do tych republik napływa z całego świata znany
+z  historii  kolonializmu  element  poszukiwaczy złota, kopaczy
+diamentów    itd.   Często   jest   to   element   przestępczy,
+kombinatorski,  dezorganizujący  życie kraju, kosmopolityczny i
+niezależny.  W istocie ci kopacze diamentów posunęli się w 1872
+roku  do tego, że na terenie Południowej Afryki założyli własną
+republikę,  którą  się  nazywała  Republiką Kopaczy. Ten jednak
+ruch  drobnych  prywaciarzy  został  ukrócony  i na oczyszczony
+teren   wkroczyły  wielkie  firmy  brytyjskie,  wielkie  spółki
+eksploatacji bogactw, kapitał brytyjski i banki brytyjskie.
+
+Był   to  Nowy  Trek,  trek  wielkiego  kapitału  brytyjskiego,
+pierwsza   forpoczta  nowoczesnego  imperializmu  zapowiadająca
+walkę  o  nowy  podział świata. Afrykanerzy, którzy są przecież
+chłopami,  którzy orzą ziemię i doją krowy, szczęśliwi, że mają
+te  swoje  republiki,  gdzie sami się znowu rządzą i sami znowu
+ustanawiają swoje prawa — patrzą na ten nowoczesny, przemysłowy
+ruch  w  zdumieniu, potem podejrzliwie, wreszcie z nienawiścią.
+Zaczyna  się  najpierw  wojna  podjazdowa. Anglicy chcą wymusić
+prawo   wyłączności   na   eksploatację  złotodajnych  terenów.
+Afrykanerzy  odpowiadają  na to szykanami, rekwirują transporty
+żywności dla kopalń brytyjskich w Transwalu, na teren Transwalu
+żadnemu  Anglikowi  nie wolno wjechać z bronią. Wreszcie w 1899
+roku dochodzi do wojny między Afrykanerami a Anglikami.
+
+Wojna  ta  trwa  blisko  przez  trzy  lata  i  w  samych  tylko
+brytyjskich  obozach  koncentracyjnych ginie z głodu i epidemii
+dwadzieścia  sześć  tysięcy afrykańskich kobiet i dzieci, co do
+dzisiaj   Afrykanerzy  Anglikom  wypominają.  Ta  wojna,  którą
+nazwano  „skandaliczną",  ponieważ poniżała godność białej rasy
+zmuszając  białych  do walki przeciw białym na oczach czarnych,
+kończy  się w 1902 roku formalnym zwycięstwem brytyjskim, ale w
 rzeczywistości  —  kompromisem.  Co  więcej,  kiedy w 1910 roku
 powstaje  Unia Południowej Afryki, jej pierwszym premierem jest
 Afrykaner,  generał  z  wojny brytyjsko-afrykanerskiej, farmer,
@@ -2684,7 +2926,7 @@ Afryki.  Ale  okazało się, że jest to nie tylko ziemia uprawna,
 ale  i  niezwykle  zasobna  w  bogactwa mineralne, w diamenty i
 złoto.  „Odkrycie diamentów w Kimberley w 1870 roku — pisze Leo
 Marquard  —  zmieniło  bieg  historii  tego  kraju. Pieniądze i
-ludzie  napłynęli  szerokim  strumieniem. Stopniowo ludzie tacy
+ludzie  napłynęły  szerokim  strumieniem. Stopniowo ludzie tacy
 jak  Cecil Rhodes i Barney Barnato opanowali obszary diamentowe
 i   zrobili  fenomenalne  fortuny,  które  pozwoliły  następnie
 rozwinąć  górnictwo  złota  Transwalu  i  rozszerzyć brytyjskie
@@ -3127,7 +3369,7 @@ do  życia  warstwa biurokratycznej burżuazji. Ci ludzie wiedzą,
 że  zasadniczym źródłem akumulacji wewnętrznej w kraju o takiej
 ekonomice  jak  Algieria — jest pozycja w budżecie przeznaczona
 na płace urzędników. Biurokracja zjada połowę budżetu Algierii.
-Jest   więc  wiadome,  że  wszelki  ambitny  program  budowania
+Jest   więc  wiadomo,  że  wszelki  ambitny  program  budowania
 socjalizmu   w  Algierii  musi  zacząć  się  od  zburzenia  tej
 pokolonialnej struktury płac, a więc od pozbawienia biurokracji
 jej przywilejów materialnych.
@@ -3151,7 +3393,7 @@ Północną — stanowiącą 5 procent powierzchni kraju — i pozostałą
 część kraju.
 
 Te   pięć   procent   decyduje   o   wszystkim  —  gospodarczo,
-politycznie,  społecznie.  Różnica  między  północą  Algierii a
+politycznie,  społecznie.  Różnica  między  północną Algierią a
 pozostałą  Algierią  —  szalona.  Jeżeli  przyjąć średni dochód
 Algierczyka  za  100,  to  dochód mieszkańca części południowej
 wynosi  —  30,  dochód  mieszkańca  północnego  Oranu  — 200, a
@@ -3161,11 +3403,51 @@ W   północnej   i   środkowej   części  kraju  średnia  gęstość
 zaludnienia  wynosi 5 osób na jeden km kw. W części południowej
 — trzech ludzi przypada na dziesięć km kw.
 
-wiosek  i  zamkniętych  w  rezerwatach  albo  przesiedlonych na
-najbardziej   odosobnione   tereny.  400  tysięcy  Algierczyków
-znalazło się w więzieniach albo było internowanych. 300 tysięcy
-zbiegło  do  Tunezji i Maroka. Równolegle, przez wszystkie lata
-wojny,  trwała  ucieczka  ludzi  ze wsi (najbardziej dotkniętej
+Przemysł   algierski  stanowi  najmniejszy  sektor  gospodarki.
+Zatrudnia on 2 procent ludności (ponad 240 tysięcy pracujących)
+i dostarcza 20 procent dochodu narodowego brutto.
+
+Resztę dochodu daje rolnictwo.
+
+W rolnictwie pracuje około 70 procent ludności.
+
+Wojna  algierska  trwała  siedem i pół roku. Była to w ostatnim
+dwudziestoleciu — obok rewolucji chińskiej i wojny wietnamskiej
+— największa wojna wyzwoleńcza na świecie. Lud algierski zdał w
+tej   wojnie   najwyższy  egzamin  bohaterstwa,  wytrwałości  i
+patriotyzmu.
+
+Wojna zakończyła się porażką Francji.
+
+Ale Algieria za to zwycięstwo zapłaciła cenę wielką. I płaci ją
+do dziś.
+
+W   czasie   wojny   wyginęła   jedna  dziesiąta  społeczeństwa
+algierskiego    —    ponad   milion   ludzi.   Tych   zabitych,
+zamordowanych,   spalonych   napalmem  nazywają  tu  chuhada  —
+męczennicy.
+
+Francuzi  dokonali  w  Algierii ogromnych zniszczeń. Zrównali z
+ziemią  ponad  osiem tysięcy wsi algierskich, pozbawiając dachu
+nad  głową miliony ludzi. Spalili tysiące hektarów lasów, które
+osłaniały  ziemie  algierskie  przed  erozją. Wyniszczyli bydło
+stanowiące   dla   połowy   chłopstwa   algierskiego   podstawę
+utrzymania  (z  siedmiu milionów sztuk bydła ocalało tylko trzy
+miliony). Fellach dźwigał główny ciężar tej wojny.
+
+Wojna  była również przyczyną olbrzymich procesów migracyjnych.
+O  ile  idea  walki  wyzwoleńczej  była czynnikiem umacniającym
+jedność  społeczeństwa algierskiego, o tyle migracje powodowały
+jego  rozbicie,  zdziesiątkowanie.  Był  to proces jednoczesny,
+który   odbił   się   na   świadomości  Algierczyków  w  sposób
+szczególnie skomplikowany.
+
+Trzy  miliony Algierczyków zostało wygnanych ze swoich wiosek i
+zamkniętych  w  rezerwatach  albo przesiedlonych na najbardziej
+odosobnione  tereny.  400  tysięcy  Algierczyków znalazło się w
+więzieniach  albo  było  internowanych.  300 tysięcy zbiegło do
+Tunezji  i  Maroka.  Równolegle,  przez  wszystkie  lata wojny,
+trwała   ucieczka   ludzi   ze   wsi   (najbardziej  dotkniętej
 represjami) — do miast.
 
 Dzisiaj 30 procent ludności algierskiej żyje w miastach, co nie
@@ -3338,16 +3620,16 @@ I tak się też stało.
 
 Ale  tym  samym  już  w  momencie  startu Ben Bella miał nogi w
 potrzasku:  był  zawsze na oku wojskowych, którzy wiedzieli, co
-armia potrafi, jeśli tylko tego chce.
+armia potrafi, jeśli tylko chce.
 
 Chcę  tu  bronić Ben Bellę, podobnie jak będę bronił Bumediena.
-Ben  Bella  nie  był „demonem", jak o tym mówiła zbyt nerwowa i
+Ben  Bella  nie  był „demonem”, jak o tym mówiła zbyt nerwowa i
 demagogiczna  deklaracja  z  19  czerwca,  i  Bumedien nie jest
-„reakcjonistą",  jak o tym pisała „Unità". Obaj oni są ofiarami
+„reakcjonistą”,  jak o tym pisała „Unità”. Obaj oni są ofiarami
 tego  samego  dramatu,  jaki  przeżywa  każdy polityk Trzeciego
 Świata,  jeżeli  jest  uczciwy,  jeżeli  jest  patriotą. Był to
 dramat  Lumumby  i Nehru, jest to dramat Nyerere i Sékou Touré.
-Istota  tego  dramatu  polega  na strasziwym oporze materii, na
+Istota  tego  dramatu  polega na straszliwym oporze materii, na
 jaki natrafia każdy z nich przy zrobieniu pierwszego, drugiego,
 trzeciego  kroku  na  szczytach  władzy.  Każdy z nich chce coś
 dobrego zrobić, zaczyna robić i po miesiącu, po roku, po trzech
@@ -3355,9 +3637,49 @@ latach widzi, jak wszystko to nie wychodzi, rozłazi się, osiada
 w   piasku.   Wszystko  staje  w  poprzek  drogi:  wielowiekowe
 zacofanie,   prymitywna   gospodarka,   analfabetyzm,  fanatyzm
 religijny,   zaślepienie   plemienne,  chroniczne  zagłodzenie,
-przeszłość kolonialna z jej polityPrzygotował nowy etap reformy
-rolnej,  która  zmieniłaby  życie  kilkuset  tysięcy robotników
-algierskich.
+przeszłość  kolonialna  z  jej  polityką  upodlenia i otępienia
+podbitych,  szantaż  imperialistów, zachłanność skorumpowanych,
+bezrobocie,  ujemne  bilanse.  Na  takiej  drodze  postęp  jest
+trudny.   Polityk   zaczyna   się  szamotać,  szuka  wyjścia  w
+dyktaturze.   Dyktatura  rodzi  opozycję.  Opozycja  organizuje
+zamach.
+
+I cykl zaczyna się od nowa.
+
+Istnieją  różne  warianty tego mechanizmu, ale w jego schemacie
+nie ma dużych odchyleń. W tym świecie zacofania dyktatury rodzą
+się  z pewną powtarzającą się prawidłowością. Często nie są one
+płodem  indywidualnym patologicznych despotów, ale konsekwencją
+warunków,   w  których  nie  można  rządzić  państwem  na  wzór
+sugerowany przez Platona.
+
+Trzy lata rządów Ben Belli.
+
+Opozycja mu zarzuca, że zrobił mało.
+
+Ale czy to prawda!
+
+Ben  Bella  był  indywidualnością  wielką,  dominował  wyraźnie
+szerokością   horyzontów,  głębią  myśli.  Myślenie  jego  było
+odważne,  płodne,  choć  często niekonsekwentne. Była to postać
+wybitna, tylko że bardzo złożona i nierówna.
+
+Bilans rządów Ben Belli ma swoje niewątpliwe aktywa:
+
+Przede  wszystkim  Ben Bella uporządkował kraj, który wyszedł z
+wojny,    uruchomił   Algierię,   uruchomił   aparat   państwa,
+gospodarki, oświaty, nadał bieg w miarę normalnemu życiu.
+
+Dokonał  śmiałego  aktu  upaństwowienia  i  oddania  pod zarząd
+robotników   pozostawionych   przez   osadników   plantacji   i
+przedsiębiorstw.    W   ten   sposób   stworzył   duży   sektor
+socjalistyczny w gospodarce algierskiej.
+
+Nie  dopuścił  do wojny domowej, która Algierii groziła i która
+mogłaby doprowadzić ten kraj do długotrwałego upadku.
+
+Przygotował  nowy  etap  reformy rolnej, która zmieniłaby życie
+kilkuset tysięcy robotników algierskich.
 
 Dał  Algierii  prestiż  czołowego  państwa  w  Trzecim Świecie.
 Chciał  stworzyć  z  Algierii  pomost  między  Europą i Afryką,
@@ -3544,9 +3866,48 @@ przeciwników  Ben  Belli za swoich przeciwników. Jedni sądzili,
 Niedługo przed upadkiem Ben Bella zaczął układać się z opozycją
 kabylską.  To  się  nie podobało Bumedienowi, który Kabylów nie
 znosi.  Ben  Bella prowadził te rozmowy za plecami rządu. Potem
-zaczął  się  wykręcać  i  publicznie  odwoływać słów. Na krótko
-przed   zamachem   krzyknął   na  posiedzeniu  rządu:  „Ja  was
-wszystkich powyrzucam".
+zaczął  się wykręcać i publicznie odwoływać całą historię. Jego
+zaangażowanie  w  politykę  światową nie podobało się. Drażniła
+otoczenie   ta  polityka  obliczana  na  efekt  międzynarodowy,
+nastawiająca  się  na  imprezy gigantyczne, których koszty były
+ponad  miarę  kieszeni  algierskiej. Otoczenie bało się zresztą
+tego  rozgłosu,  jaki  Ben  Bella  zdobywał,  ponieważ  rosnący
+prestiż  prezydenta  czynił go bardziej niedostępnym, utrudniał
+nad  nim kontrolę. W istocie w jakimś sensie nazwisko Ben Belli
+miało większą wagę za granicą niż w samej Algierii.
+
+Ale dwie przyczyny najbardziej wpłynęły na decyzję zamachu:
+
+Styl rządzenia prezydenta.
+
+Przygotowywana przez Ben Bellę rozprawa z Bumedienem.
+
+Jak  każdy  jedynowładca Ben Bella stopniowo pozbywał się ludzi
+samodzielnie  myślących i gotowych bronić swojego zdania. Tych,
+którzy   zostawali,  nie  szanował,  nie  liczył  się  z  nimi.
+Zdecydowanie  dominował  nad  nimi poziomem, formatem. Trwał ze
+szczególnym   uporem   przy   swoich  koncepcjach,  do  których
+dochodził często na drodze zdumiewającej wytrwałości. Łatwość i
+lekkość,  z  jaką  inni  wyrażali  swoje  zdanie,  raziła  go i
+denerwowała.  Nie  cenił  takiego  zdania.  Ben Bella stopniowo
+przestawał  słuchać  otoczenia.  Przestawał  znosić tych ludzi.
+Krzyczał  na  nich.  Nie  zbierał  ich, aby coś z nimi ustalić.
+Zbierał   ich,  aby  im  komunikować  swoje  decyzje.  „Dzisiaj
+postanowiłem   to   i  to"  —  było  formą,  w  jakiej  zagajał
+posiedzenie Biura Politycznego.
+
+Z  drugiej strony działał mechanizm dworu, który wypycha lidera
+w  stan  izolacji. Stoi na świeczniku, ale stoi sam. Willa Joly
+stopniowo pustoszała. Ben Bella tracił kontakt nawet ze starymi
+przyjaciółmi.  Nie  miał dla nich czasu albo go drażnili. Jeśli
+przychodził  ktoś,  aby zgłosić swoje uwagi, Ben Bella zaperzał
+się,  dzwonił  na  ochronę  i  kazał go zamykać. Ludzie zaczęli
+unikać go, bali się podpaść.
+
+Ben   Bella   był   człowiekiem   nastrojów,  łatwo  wpadał  we
+wściekłość,  a  potem siedział ponury. Unosił się, nie obliczał
+słów.  Na  krótko przed zamachem krzyknął na posiedzeniu rządu:
+„Ja was wszystkich powyrzucam".
 
 Rzeczywiście wyrzucał.
 
@@ -3780,46 +4141,81 @@ zamachu demonstracje ustały, wojsko wróciło do koszar.
 Poza  młodzieżą  w  społeczeństwie  panowało  milczenie. Partia
 milczała, związki zawodowe milczały, inne organizacje milczały.
 Mówiono,  że  dyskutują,  co  robić,  że  są  wahania. Przewrót
-ujawnił   zupełne   rozproszenie   tego   społeczeństwa,   brak
+ujawnił   zupełne   rozprzężenie   tego   społeczeństwa,   brak
 spoistości, brak więzi, całkowity brak sił zorganizowanych.
 
-Siła leżała po stronie armii. I armia miała władzę.
-
-Wśród ludzi lewicy zapanował pesymizm. Oczekiwali represji, nie
-spali  po  domach.  Ale  represje  nie  nastąpiły. Bumedien nie
-zamknął  ani jednego komunisty, ani jednego lewicowca. Te obawy
-brały  się  z  faktu, że w Algierii nikt nie zna armii i ludzie
-tej  armii  się  boją.  Jest  to społeczeństwo zdezintegrowane,
-które  boi  się  każdej  siły  zintegrowanej. Armia jest jedyną
-zintegrowaną   siłą   w  Algierii.  Bumedien  nie  zajmuje  się
-przekonywaniem ludzi. Bumedien działa — jest to człowiek, który
-cały  zamysł się w działaniu praktycznym. W Afryce ludzie lubią
-mieć  przywódcę,  który  mówi,  tłumaczy,  zwierza  się.  Naser
-zwierzał  się  przed tłumem na wiecu, że jego córka nie dostała
-się na uniwersytet, bo nie zdała egzaminu. Mówił o tym z żalem,
-jako  ojciec  dziecka,  któremu  się  nie powiodło, mówił to do
-tysięcy ojców, którzy mają podobne problemy.
+Siła leżała po stronie armii. I armia miała władzę. Wśród ludzi
+lewicy  zapanował  pesymizm.  Oczekiwali represji, nie spali po
+domach.  Ale  represje  nie nastąpiły. Bumedien nie zamknął ani
+jednego  komunisty, ani jednego lewicowca. Te obawy brały się z
+faktu,  że w Algierii nikt nie zna armii i ludzie tej armii się
+boją.  Jest  to  społeczeństwo  zdezintegrowane,  które boi się
+każdej  siły zintegrowanej. Armia jest jedyną zintegrowaną siłą
+w  Algierii.  Bumedien  nie  zajmuje  się przekonywaniem ludzi.
+Bumedien  działa  —  jest  to człowiek, który cały zamyka się w
+działaniu  praktycznym.  W  Afryce ludzie lubią mieć przywódcę,
+który  mówi,  tłumaczy,  zwierza  się. Naser zwierzał się przed
+tłumem  na wiecu, że jego córka nie dostała się na uniwersytet,
+bo  nie  zdała  egzaminu.  Mówił  o  tym  z  żalem, jako ojciec
+dziecka,  któremu  się nie powiodło, mówił to do tysięcy ojców,
+którzy mają podobne problemy.
 
 Naród szanuje takiego przywódcę i będzie mu wierzył.
 
 Przewrót  ukazał Algierię taką, jaka ona jest. Jako typowy kraj
 Trzeciego  Świata.  Na dole — chłopska masa w wiecznym kieracie
-biedy,  w  ciągłym  strachu,  że  przyjdzie  susza,  w  ciągłej
-modlitwie  do  Allacha o miskę strawy, której jałowa ziemia nie
-jest  w stanie dać. Na górze, gdzieś tam w salonach, ktoś kogoś
-zamyka, ktoś kogoś obala. Dwa światy — i żadnej widocznej więzi
-między nimi.
+strachu,  że  przyjdzie susza, w ciągłej modlitwie do Allacha o
+miskę  strawy,  której  jałowa ziemia nie jest w stanie dać. Na
+górze,  gdzieś  tam  w  salonach, ktoś kogoś zamyka, ktoś kogoś
+obala. Dwa światy — i żadnej widocznej więzi między nimi.
 
 Po  przewrocie  władzę  w  Algierii  objęła  Rada  Rewolucyjna.
 Większość  rady  stanowi  elita armii algierskiej. Jest to duża
-armia,  łącznie z oddziałami policji licząca 100 tysięcy ludzi.
+armia,  łącznie z oddziałami policji liczącą 100 tysięcy ludzi.
 Jest dobrze uzbrojona.
 
 W  sytuacji,  jaka  istnieje w Afryce, rząd Bumediena jest dziś
 rządem nacjonalistycznym, lewicowym.
 
 W  Afryce  w  ogóle nie można stosować kryterium socjalizmu, bo
-takiego  socjalizmu  w  Afryce nie ma. W Afryce siły ta), staje
+takiego  socjalizmu  w  Afryce  nie  ma.  W  Afryce siły lewicy
+występują  jeszcze  w  stanie  nie  oczyszczonym,  jako element
+złożonego  obrazu  nie ukształtowanej dotąd w sposób ostateczny
+społecznej    i   politycznej   rzeczywistości.   Rysunek   tej
+rzeczywistości nigdy nie jest czysty.
+
+Być może był sposób na uniknięcie przewrotu, poza wszystkim ten
+przewrót  był  krokiem  taktycznie  tanim.  Ale  trzeba mieć na
+uwadze  jeszcze  jedną  rzecz:  że  to  wszystko  dzieje  się w
+środowisku  ludzi  młodych,  jeśli wziąć standardy europejskiej
+polityki  —  w  środowisku młodzieży. Średni wiek członków Rady
+Rewolucyjnej  waha  się w granicach trzydziestu czterech lat. W
+tym  środowisku  Bumedien,  który ma lat trzydzieści dziewięć —
+jest    najstarszy.    W    Algierii   polityka   jest   domeną
+dwudziesto-trzydziestolatków.  Cała  polityka.  W dodatku są to
+Arabowie,   ludzie  niesłychanie  dumni,  wrażliwi  na  punkcie
+honoru,  ludzie  gorącej krwi, którzy o byle co skaczą sobie do
+gardła.  „Ben Bella nas obraził" — to jest wystarczający powód,
+żeby  Ben  Bellę  zamknąć.  Przecież  dużo  tych  wykrętasów  i
+wyskoków  w  polityce  afrykańskiej ma za tło fakt, że polityka
+jest  robiona przez ludzi jeszcze niedoświadczonych, którzy nie
+umieją   jeszcze  przewidywać  nieodwracalnych  skutków  swoich
+decyzji,  którzy  nie  nasiąkli  jeszcze powagą i przezornością
+starych wyjadaczy politycznych.
+
+To  wszystko jest bardzo skomplikowane i zupełnie nie poddające
+się  utartym schematom weryfikacji politycznych. O ileż łatwiej
+jest  z  polityką  europejską,  gdzie  wiadomo,  że  Szwajcaria
+zachowa  neutralność, że RFN nie uzna NRD i że w Anglii, jeżeli
+nie  będą rządzić labourzyści, to będą rządzić konserwatyści. W
+Afryce  nie  jest  wiadome  nic  na  pewno.  Kraje  najbardziej
+reakcyjne  (jak  Kongo  Brazza)  stają  się  w  ciągu  miesiąca
+najbardziej rewolucyjne, a kraje bardzo rewolucyjne (jak Kenia)
+staczają  się  w  ciągu dwóch miesięcy na dno reakcji. Polityk,
+który   przez  lata  był  symbolem  najbardziej  prozachodniego
+stanowiska   (Nyerere),   staje   się  w  ciągu  dwóch  tygodni
+najbardziej  w  Afryce  entuzjastą  rewolucji, a polityk, który
+przez lata był symbolem walki antykolonialnej (Kenyatta), staje
 się w ciągu kilku miesięcy najbardziej zajadłym reakcjonistą.
 
 Na  scenie  politycznej  Algierii  została  armia. O stosunkach
@@ -4331,12 +4727,12 @@ władzę. „W dalszym ciągu — czytałem — trwa nasza gniewna walka.
 M.in. nasi aktywiści spalili żywcem ośmioletnią uczennicę Janet
 Bosede  Ojo  z  Ikere.  Ojciec  dziewczynki  głosował na NNDP".
 Czytałem  dalej:  „W  Ilesha  został żywcem spalony farmer Alek
-Aleke.  Grupa  aktywistów zastosowała wobec niego metodę «Spray
-and  lit» («spryskaj i zapal», metoda zwana też tutaj «świecami
+Aleke. Grupa aktywistów zastosowała wobec niego metodę «Spray i
+lit»  («spryskaj  i  zapal»,  metoda  zwana też tutaj «świecami
 UPGA»).  Farmer wracał na swoje pole, kiedy aktywiści schwytali
 go  i kazali mu rozebrać się do naga. Farmer rozebrał się, padł
 na  kolana  i  błagał  o litość. W tej pozycji został spryskany
-benzolem  i  spalony". Cała gazeta była pełna takich doniesień.
+benzenem  i  spalony". Cała gazeta była pełna takich doniesień.
 UPGA walczyła o władzę, płomień tej walki pochłaniał ludzi.
 
 Komendant   wrócił,   ale   bez   samochodu.  Wyznaczył  trzech
@@ -4345,11 +4741,10 @@ końcu  wsiedli,  wystawili karabiny przez okna i tak jechaliśmy
 jak  w  pancernym  wozie.  Przy  pierwszej barierze dopalał się
 ogień,  ale  nie było już nikogo. Przy dwóch dalszych barierach
 praca   szła  na  całego,  ale  widząc  policję  aktywiści  nas
-przepuszczali. Policjanci nie pozwolili za nic zatrzymać wozu —
-nie  chcieli  zadzierać  z  aktywem.  Rozumiałem  ich  — oni tu
-mieszkają  i  chcą  żyć.  Dzisiaj mieli karabiny, ale normalnie
-policja  chodzi  tu  bez  broni.  Wielu  policjantów  zginęło w
-okolicy.
+przepuszczali.  Policjanci  nie pozwolili za nic zatrzymać wozu
+przed  aktywem. Rozumiałem ich — oni tu nie chcieli zadzierać z
+aktywem.  Dzisiaj  mieli karabiny, ale normalnie policja chodzi
+tu bez broni. Wielu policjantów zginęło w okolicy.
 
 O zmierzchu byliśmy w Lagos.
 
@@ -4357,9 +4752,38 @@ O zmierzchu byliśmy w Lagos.
 
 ## Nigeria, lato 66:
 
-cały  naród  Nigerii do moralnego odrodzenia, które umożliwi mu
-podjęcie   bezlitosnej   wojny   przeciw   wściekłemu  demonowi
-niezgody, który chce dziś unicestwić nasz naród".
+tego  lata  Nigeria  dużo  się modli. Prasa drukuje modlitwy za
+zbawienie  kraju  od dalszych nieszczęść i nawołuje wiernych do
+wzmożonej   pobożności,   aby   państwo  nie  pogrążyło  się  w
+nieodwracalnym   upadku.  „Nigerian  Daily  Sketch"  pisze,  że
+„prorok  Chrystusowego  Kościoła  Apostolskiego  w Akure wezwał
+wszystkich  wiernych  Kościoła  do trzydniowych modłów i postów
+dla  ocalenia  pokoju  i  jedności  republiki  Nigerii". Prorok
+oświadczył,  że  modli  się, „aby Bóg pomógł nowemu reżimowi we
+wszystkich  jego  poczynaniach".  Ten  sam  dziennik donosi, że
+„główny  imam centralnego meczetu Lagos — Alhadżi Liadi Ibrahim
+— wezwał wiernych wszystkich meczetów stolicy, aby nie ustawali
+w  modłach  do  Allacha  o  dobry rząd dla kraju. Główny imam —
+pisze dziennik — odbył specjalne modły poranne o przywrócenie w
+Nigerii   pokoju  i  jedności,  a  także  o  boską  opiekę  nad
+podpułkownikiem  Yakubu  Gowonem, którego niech Allach prowadzi
+przez wszystkie drogi ziemskiego żywota".
+
+„Morning  Post" donosi, że „wierni Kościoła Pana rozpoczęli pod
+kierunkiem  Apostoła  Adeleke  Adejobi trzynastodniowe modły na
+górze  Tabor (w pobliżu Ogere) o przywrócenie pokoju i jedności
+w   Nigerii".   Ten   sam   dziennik   drukuje  kazanie  wielce
+świątobliwego  proboszcza  katedry kościoła Chrystusa w Lagos —
+F.O. Seguna, w którym to kazaniu proboszcz stwierdza, że upadek
+Nigerii  posunął  się  tak  daleko,  iż  „gdyby Chrystus chciał
+przyjechać   do  Lagos,  to  nie  dostałby  wizy  wjazdowej,  a
+telewizja nie chciałaby go filmować".
+
+„Daily  Times"  pisze,  że  przewodniczący  Kościoła metodystów
+okręgu  Ibadan, wielebny Nathanel O. Saleko, „wezwał cały naród
+Nigerii  do  moralnego  odrodzenia,  które umożliwi mu podjęcie
+bezlitosnej  wojny  przeciw wściekłemu demonowi niezgody, który
+chce dziś unicestwić nasz naród".
 
 Duże  poruszenie  wywołała  ta  informacja  podana  przez „West
 African  Pilot"  (z  11.8.1966)  na  temat widzenia, jakie miał
@@ -4580,10 +5004,10 @@ Mój   bohater,  Wasz  bohater,  Nasz  bohater;  Pierwszy  wśród
 Najpierwszych;  Największy wśród Wielkich; Majestat stoi, prawo
 w  głosie, los w jego rękach; Uczony, dojrzały uczony, dojrzały
 i  dobry.  Awolowo  — Prorok. Szedł do Wielkości i doszedł. Nie
-dał  się  okpić,  Chcieli  jego krwi, a on tylko patrzył i nic.
+dał  się  chycić,  Chcieli jego krwi, a on tylko patrzył i nic.
 Jego  proroctwa będą wypełnione; Mówi: spieszyłem się, jak król
 mam  prawo  do  tronu. Wielki człowiek musi osiągnąć Wielkość —
-powiedział  Awolowo.  Awo  przyszedł,  światło  przyszło. Niebo
+powiedziała  Awolowo.  Awo  przyszedł,  światło przyszło. Niebo
 otworzyło  swoje  wrota, a w nich stanął tłum aniołów oraz dusz
 ludzkich,  aby  śpiewać  chwałę  chiefa  Awolowo:  Awo, przyjdź
 tutaj,  przyjdź  do  mnie,  ukojenie  moje wielkie. Awo na nich
@@ -4592,23 +5016,61 @@ radować.  Jego  wielkość,  ozdoba  wszystkiego. Wschód, Zachód,
 Północ  i  Południe,  Sarah  i  Daniel  —  wszyscy przed nim na
 kolanach i w pokłonach.
 
-(„Nigerian Tribune” 20.8.1966)
+("Nigerian Tribune" 20.8.1966)
 
 Ale  rzeczywiście:  na  czym  polega wielkość chiefa Awolowo? A
-ściślej — jakie są źródła jego k u l t u?
+ściślej — jakie są źródła jego kultu?
 
 Awolowo należy do starszej generacji polityków afrykańskich, do
 pokolenia Burgiby, Bandy i Houphouet-Boigny. Urodził się w 1909
 roku,  w  rodzinie farmera, niedaleko Lagos. Jego rodzinna wieś
-nazywa  się  Ikenne  („Oto  odbyłem pielgrzymkę do Ikenne, tego
+nazywa  się  Ikenne  ("Oto  odbyłem pielgrzymkę do Ikenne, tego
 Nazaretu  Nigerii" itd. — pisze teraz Olawumi Falodun) i leży w
 ziemi Jorubów.
 
 Awolowo to Joruba.
 
 Po  skończeniu  szkoły  jest kolejno nauczycielem, urzędnikiem,
-dziennikarzem  i przedsiębiorcą transportowym. W 1944 sztywny i
-sformalizowany, posiada jednak łagodzący rys demokratyczny.
+dziennikarzem  i  przedsiębiorcą  transportowym.  W  1944  roku
+wyjeżdża  do Londynu studiować prawo. W rok później zakłada tam
+stowarzyszenie  Jorubów,  które  nazywa  się  Egbe  Omo Oduduwa
+(wedle  wierzeń  Jorubów  pochodzą  oni  od  wspólnego  przodka
+nazwiskiem Oduduwa).
+
+To  jest początek kariery Awolowo. Ma wówczas trzydzieści sześć
+lat.  Egbe  Omo jest rodzajem plemiennej masonerii. Organizacja
+ta, z początku jawna, będzie stopniowo przybierać formę tajnego
+porozumienia,  czegoś  na kształt mafii — mafii Jorubów. Będzie
+wiadomo,  że  Egbe  Omo  istnieje,  ale nikt nie przyzna się do
+członkostwa.   Na  tajnych  spotkaniach  będą  zapadać  decyzje
+rozstrzygające o losie Jorubów.
+
+Awolowo,  który  wymyślił  i  założył Egbe Omo, napisał również
+jego program. Program mówi, że celem Egbe Omo będzie:
+
+Rozwijać i krzewić nacjonalizm Jorubów.
+
+Umacniać monarchistyczne instytucje Jorubów.
+
+Utworzyć państwo Jorubów.
+
+Jorubowie  zamieszkują region Nigerii zachodniej. Według samego
+Awolowo  jest ich trzynaście milionów, inne źródła podają sześć
+milionów.  Być  może  rzeczywista liczba leży między tymi dwoma
+skrajnymi  szacunkami. Joruba zajmują ekskluzywną pozycję wśród
+ludów afrykańskich, ponieważ od wieków żyją w miastach — miasta
+Jorubów   stanowią   historyczny  fenomen  Afryki,  która  jest
+kontynentem  wiejskim, chłopskim. Organizacja państwowa Jorubów
+przypomina starożytną Grecję z epoki miast-państw. Każde miasto
+Jorubów  ma  swojego  króla,  który  nazywa  się  Oba.  Oba  są
+podzieleni  według  hierarchii  pięćdziesięciu  jeden szczebli.
+Cały  ten  feudalizm  Jorubowie  zachowali  do dziś i są bardzo
+dumni  z  tego, że żaden naród na świecie nie ma tylu królów co
+oni. Ta duża liczba królów wynika z faktu, że monarchia Jorubów
+jest zdecentralizowana. Są królowie bardziej i mniej ważni, ale
+nie ma króla centralnego, króla-monopolisty. Tak więc feudalizm
+Jorubów,  mimo  że  sztywny  i  sformalizowany,  posiada jednak
+łagodzący rys demokratyczny.
 
 Marzeniem  każdego  Joruby  jest  zostać  albo  feudałem,  albo
 businessmanem. Ale jest wielu Jorubów, którym się to nie udaje.
@@ -4758,7 +5220,7 @@ Patriotyczna opinia jorubowska upatruje przyczynę tego rozkładu
 i  zagłady  w nieobecności chiefa Awolowo. Aresztowanie Awolowo
 to  był  spisek przeciw nim, to było wstępne uderzenie ofensywy
 unicestwienia.   On,   Awolowo,   poprowadził  Jorubów  do  ich
-prażródła,  do  prochów  Oduduwy,  z których się poczęli. Potem
+prażniędła,  do  prochów  Oduduwy, z których się poczęli. Potem
 prowadził ich do władzy. I oto podstępnie zadano mu cios.
 
 Za  murami  Kalabaru  chief  Awolowo ma domek i ogród, w którym
@@ -4770,7 +5232,7 @@ metamorfozę. Chief się deifikuje. Staje się wielki. Największy.
 
 Między   przyszłością   Jorubów   i   losem   Awolowo   została
 przeciągnięta  nić  tożsamości. Im chief będzie większy, tym my
-będziemy   więksi.  Im  on  bardziej  boski,  tym  my  bardziej
+będziemy  większi.  Im  on  bardziej  boski,  tym  my  bardziej
 nieśmiertelni.  Ta  deifikacja  chiefa  Awolowo  jest nie tylko
 dziełem  ekstatycznej  apoteozy,  zawiera  się  w  niej również
 element  dumy czysto nacjonalistycznej: skoro on jest boski, to
@@ -4778,7 +5240,7 @@ Jorubowie  są  narodem  wybranym.  A  także  jest w niej pewien
 odruch  samoobrony:  bo chief, przeniesiony między bogi i sam w
 boga  zmieniony,  zostaje wyjęty spod krytyki, postawiony ponad
 wiecowe  awantury,  staje  się  —  jak mówi poeta (Jola West) —
-„Pierwszy wśród Najpierwszych".
+"Pierwszy wśród Najpierwszych".
 
 Rola  więzienia  w procesach mitotwórczych jest wielka. Polityk
 przed  więzieniem i po więzieniu ma zupełnie dwie różne pozycje
@@ -4788,9 +5250,32 @@ przeskakuje  wiele  szczebli  kariery.  I  często przechodzi do
 historii.
 
 Im  bardziej  zaostrzał  się  kryzys  w  Nigerii,  tym częściej
-mówiono o sprawie Awolowo. Niech wypuszczą Awolowo, on znajdzie
-wyjście.  Ludzie  wierzyli  w  objawienie. Ludzie wiedzieli, że
-Awolowo siedzi i że siedząc, na pewno myśli. A
+mówiono  o  s  p r a w i e Awolowo. Niech wypuszczą Awolowo, on
+majdzie   wyjście.   Ludzie   wierzyli   w  objawienie.  Ludzie
+wiedzieli, że Awolowo siedzi i że siedząc, na pewno myśli. A że
+długo  siedzi,  musiał  dużo  wymyślić. Ludzie czekali na słowo
+chiefa. Chcieli, żeby mówił. Czekali na program. Na ewangelię.
+
+Chief Awolowo jest znowu wśród nas.
+
+Porównuję jego twarz ze znaną mi fotografią. Zimą zeszłego roku
+ludzie musieli podróżować po ziemi Jorubów z fotografią Awolowo
+przypiętą  do  koszuli.  Uzbrojone  bojówki  Action Group Party
+kontrolowały na drogach samochody:
+
+— Masz fotografię Awolowo?
+
+Nie  masz?  To kopa, to nożem. Chcesz żyć, człowieku, to musisz
+uznać wielkość chiefa Awolowo.
+
+Ta   sama   twarz:   pogodna,   trochę   belferska,  spojrzenie
+krótkowidza za grubymi szkłami w drucianej oprawie.
+
+„Mówi: spieszyłem się, jak król mam prawo do tronu".
+
+Ale w ogóle mówi mało. Dużo myśli (podobno).
+
+1966
 
 ## Cd. planu nigdy nie napisanej książki, która mogłaby (itd.)
 
@@ -4995,16 +5480,53 @@ ustępowały  innym, zachowanym w rezerwie przez moją przeszłość,
 do  których  nie przywiązywałem żadnej wartości, kiedy związane
 były  jeszcze z otaczającą mnie rzeczywistością. W drodze przez
 krainy   oglądane   dotychczas  przez  niewiele  oczu,  dzieląc
-egzystencję  lud  mnie  samego. Przed moimi oczami rozwijał się
-dalej  film  afrykański,  bez  zatrzymania,  non-stop, seans po
-seansie,  a  tymczasem  nikogo  nie obchodziło, co dzieje się w
-moim   kinie.   Ludzie  mówili  o  tym,  kto  kogo  zamienił  w
+egzystencję   lud  ani  ludzi,  ani  otaczających  krajobrazów,
+towarzyszyły  mi  wizje  porzuconej wsi francuskiej, której się
+wyrzekłem,  albo fragmenty muzyki lub poezji będące najbardziej
+konwencjonalnym  wyrazem cywilizacji Starego Świata, a przecież
+musiałem przekonywać samego siebie, że dokonałem wyboru przeciw
+niej,   gdyż   inaczej   naraziłbym  się  na  niebezpieczeństwo
+zapoznania  sensu,  jaki nadałem memu życiu. Na płaskowyżu Mato
+Grosso  byłem tygodniami opętany nie przez to, co mnie otaczało
+i czego już nigdy więcej nie miałem zobaczyć, lecz przez ograną
+melodię,  którą  moje  wspomnienie  jeszcze  zubożyło:  melodię
+etiudy  nr  3  opus 10 Szopena. Zdawało mi się, na wzgórowisku,
+którego  gorycz tak bardzo odczuwałem, że w tej melodii zawarte
+jest  wszystko  to,  co  pozostawiłem  za  sobą"  (tłum. Aniela
+Steinsberg).
+
+37.  Przyszła  zgoda  na  powrót  do  kraju  i  prosto  z Lagos
+znalazłem się na łóżku w szpitalu przy ulicy Płockiej. Na małej
+salce,  w  dławiącym  ścisku,  leżało  może  piętnastu ludzi, z
+których  dwóch  przy  mnie  umarło, a reszta chrapała, jęczała,
+kłóciła  się lub wspominała wojnę. Przez okno widać było martwe
+podwórze,  zamknięte  murem  kostnicy, szarolniane niebo zawsze
+bez  słońca i nagie drzewo przypominające miotłę, którą dozorca
+wbił trzonkiem w zaspę śniegu i poszedł na wódkę. A jednak było
+mi tu dobrze.
+
+38.  Wróciłem  do  redakcji (był początek roku 1967) i zupełnie
+nie  wiedziałem,  co  robić.  Czułem  się  wewnętrznie rozbity,
+rozsypany,  nie  przystawałem  do  niczego,  nie kontaktowałem,
+byłem  nieobecny.  Swojego  pobytu  w  Afryce  nie  traktowałem
+formalnie,   jako   prostego  wykonywania  warunków  kontraktu.
+Pojechałem na ten kontynent po latach, w których funkcjonowałem
+jako  tryb  w  rygorystycznym mechanizmie instrukcji i poleceń,
+też  i wytycznych, Afryka była więc moim prywatnym wyzwoleniem,
+gdzieś  tam między 37° 21' a 34° 52' szerokości geograficznej i
+17°  32' a 51° 23' geograficznej długości, to znaczy poczynając
+od  północy  między  przylądkiem  Ras  Ben  Sekka a przylądkiem
+Igiebym i między zachodnim przylądkiem Almadi a wschodnim — Ras
+Hafun,  została  jakaś  część  mnie  samego. Przed moimi oczami
+rozwijał  się dalej film afrykański, bez zatrzymania, non-stop,
+seans  po seansie, a tymczasem nikogo nie obchodziło, co dzieje
+się  w  moim  kinie.  Ludzie  mówili o tym, kto kogo zamienił w
 Koszalinie,   spierali   się   na   temat   jakiegoś  widowiska
 telewizyjnego,  w którym Ćwiklińska była pierwszorzędna, a inni
 twierdzili, że nie, albo udzielali sobie życzliwych rad, w jaki
 sposób  wyjechać  na  wczasy  do  Bułgarii nie tylko na tym nie
 tracąc,   ale   jeszcze  nieźle  zarabiając.  Nie  znałem  tego
-człowieka,  który  przyjechał  do Koszalina, nie widziałem tego
+człowieka,  który  przyszedł  do  Koszalina, nie widziałem tego
 programu  w  telewizji  i nigdy nie byłem w Bułgarii. Najgorsze
 jednak,  że  znajomi, którzy spotykali mnie na ulicy, zaczynali
 od  słów:  „A  co  ty  tutaj  robisz?”  albo:  „Co, jeszcze nie
@@ -5016,8 +5538,8 @@ wyłączony.
 
 39. W redakcji widzieli, że włóczę się po korytarzach bez sensu
 i  celu.  W  zasadzie  jest to normalne, że korespondent, który
-wraca  z placówki, przez jakiś czas nie ma przydziału zajęcia i
-jest   piątym  kołem  u  wozu  naszego  ofiarnego,  pracowitego
+wraca  z placówki, przez jakiś czas nie ma przydziału i zajęcia
+i  jest  piątym  kołem  u  wozu  naszego ofiarnego, pracowitego
 zespołu.  Ale  moje  zachowanie  outsidera  i przedłużające się
 nieróbstwo  przekroczyło  już  wszelkie  granice  tolerancji  i
 Hofman  postanowił coś ze mną zrobić. Odbyła się więc — kolejna
@@ -5028,11 +5550,11 @@ oceniłem  sytuację:  maszynistka  — tak, sympatyczna, natomiast
 biurko  —  wstrętne. Było to jedno z tych małych biurek, mysich
 pułapek,   których   tysiące  stoi  w  naszych  zatłoczonych  i
 zagraconych  urzędach.  Człowiek  za  takim biurkiem przypomina
-bardziej inwalidę w gorsecie ortopedycznym niż odpowiedzialnego
+bardziej  inwalidę  w  gorsecie  ortopedycznym odpowiedzialnego
 pracownika zajętego poważną pracą. Nie może on zwyczajnie wstać
 i  podać  nam  ręki, lecz musi najpierw delikatnie cofnąć się z
 krzesłem  i  prostować  się  ostrożnie poświęcając główną uwagę
-biurka,  a  nie  nam,  gdyż  nawet  za  lekkim  potrąceniem ten
+biurku,  a  nie  nam,  gdyż  nawet  za  lekkim  potrąceniem ten
 rachityczny  stwór  na  cienkich  nóżkach zwali się z hukiem na
 podłogę.  Powaga całego urzędu musi obrócić się w śmiech, kiedy
 zamiast  urzędnika  występującego  w majestacie monumentalnego,
@@ -5459,10 +5981,10 @@ zadzwonił  do  straży  pożarnej.  Przyszło  trzech  strażaków w
 strojach  bojowych,  w  hełmach,  z toporkami. Witaliśmy się po
 omacku,  nie widziałem ich twarzy. Powiedziałem, że błagam, aby
 zaprowadzili  mnie na pocztę. Znam dobrze Honduras, kłamałem, i
-wiem,  że  jest  to  kraj  najbardziej gościnnych ludzi. Jestem
+wiem,  że  to  jest  kraj  najbardziej gościnnych hadzi. Jestem
 pewien,  że  mi  nie  odmówią.  Jest  bardzo  ważne, żeby świat
 dowiedział  się prawdy, kto zaczął wojnę, kto strzelił pierwszy
-i  tak  dalej,  a  chcę ich zapewnić, że napisałem najszczerszą
+i  tak  dalej,  a  chcę  im zapewnić, że napisałem najszczerszą
 prawdę. Teraz decyduje czas, musimy się spieszyć.
 
 Wyszliśmy  z  hotelu.  Noc  była  ciemna, widziałem tylko linię
@@ -5480,7 +6002,7 @@ zbrojną. Trwało to bardzo długo, ponieważ prezydent i ambasador
 używali niebywale kwiecistego języka, poza tym połączenie rwało
 się co chwilę.
 
-Dopiero  o  północy  nawiązałem  łączność  z  Warszawą. Maszyna
+Dopiero  o  północy  nawiązałem  łączność  z  Warszawą, Maszyna
 wystukała numer TL 813480 PAP VARSOVIA. Podskoczyłem z radości.
 Operator zapytał:
 
@@ -5491,18 +6013,57 @@ Operator zapytał:
 —  Polonia, Polonia — powtórzył, ale widziałem, że ta nazwa nie
 chce mu się z niczym skojarzyć.
 
-Zapytał Warszawy:
+Zapytał Warszawę:
 
-HOW RECEIVED MSG BIBI ++ =:?
+*HOW RECEIVED MSG BIBI ++ =:?*
 
 I Warszawa odpowiedziała:
 
-RECEIVED OK OK GREE FOR RYSIEK TKS TKS ++ +!
+*RECEIVED OK OK GREE FOR RYSIEK TKS TKS ++ +!*
 
 Wyściskałem  operatora, życzyłem mu, żeby cały i zdrowy przeżył
 wojnę,  i ruszyłem w drogę powrotną do hotelu. Ledwie znalazłem
 się  na  ulicy  i  przeszedłem kilkanaście metrów, zdałem sobie
-sprawę,  że  jestem  zgubiony.  Znalazłem  się  w  sób,  w tych
+sprawę,  że  jestem  zgubiony.  Znalazłem  się  w  straszliwych
+ciemnościach,      w     ciemnościach     gęstych,     zbitych,
+nieprzeniknionych, jakby czarna i gęsta maź zalała mi oczy, nie
+widziałem  dosłownie  nic,  nawet wyciągniętych przed sobą rąk.
+Niebo  musiało się zachmurzyć, bo zniknęły gwiazdy, nigdzie nie
+było widać żadnego światła.
+
+Byłem  sam  wśród  obcego  i nie znanego mi miasta, którego nie
+widziałem,   które  jakby  zapadło  się  pod  ziemię.  Panowała
+przejmująca  cisza, miasto milczało jak zaklęte, znikąd żadnego
+głosu,  żadnego  dźwięku.  Szedłem  przed  siebie,  jak ślepiec
+obmacując mury, rynny i kraty w witrynach sklepów. Uświadomiłem
+sobie,  że  mój krok dudni głośno, więc zacząłem skradać się na
+palcach. Nagle poczułem, że mur skończył się, musiałem dojść do
+jakiejś  przecznicy. A może zaczyna się plac? A może jestem nad
+wysoką  skarpą  i  dalej  jest  przepaść? Zacząłem badać nogami
+teren.  Asfalt!  To  znaczy,  że  jestem na jezdni. Przeszedłem
+jezdnię  i  znowu  uczepiłem  się  muru.  Nie wiedziałem, gdzie
+poczta,  gdzie  hotel,  błądziłem,  ale  szedłem  dalej.  Nagle
+rozległ  się  potężny  huk,  poczułem,  że  tracę  równowagę  i
+zwaliłem się na chodnik.
+
+Wywróciłem blaszany śmietnik.
+
+Ulica  musiała być tu pochyła, bo śmietnik potoczył się w dół z
+przeraźliwym  łoskotem. W tym momencie usłyszałem ponad sobą ze
+wszystkich  stron naraz trzask otwieranych okien i histeryczne,
+przerażone   szepty  —  silencio!  silencio!  —  miasto,  które
+chciało,  żeby  na  tę  noc  świat  o nim zapomniał, żeby mogło
+zatonąć  w  ciemnościach  i  w  milczeniu  —  broniło się przed
+zdemaskowaniem.  W  miarę  jak  pusty śmietnik toczył się w dół
+ulicy,  kolejno coraz dalej i dalej ode mnie otwierały się okna
+i niósł się to błagalny, to pełen wściekłości szept — silencio!
+silencio!  Ale nie było sposobu powstrzymać blaszanego potwora,
+który  turlał  się  przez  wymarłe ulice jak opętany, łomotał o
+kamienie,  walił  w  latarnie,  grzmiał i huczał. Przywarłem do
+chodnika.  Leżałem  przerażony, pot ściekał ze mnie. Bałem się,
+że  zaczną  strzelać  w moją stronę. Dopuściłem się aktu zdrady
+wobec  miasta.  Wróg  mógł  usłyszeć  hałas śmietnika i ustalić
+położenie   Tegucigalpy,   której   w   inny   sposób,  w  tych
 ciemnościach  i  ciszy,  nie można było znaleźć. Pomyślałem, że
 mam  tylko jedno wyjście — uciekać, wiać jak najdalej. Zerwałem
 się  i  popędziłem  przed  siebie.  Bolała mnie głowa, ponieważ
@@ -5802,12 +6363,13 @@ roznosili im wodę, dość prymitywni sanitariusze opatrywali, jak
 umieli.  To, co zobaczyłem, nie mieściło mi się w głowie. Jeden
 z  sanitariuszy, z lancetem w ręku, szedł od rannego do rannego
 i  wydłubywał  z  nich  kule,  tak  jak  wydłubuje się pestki z
-jabłka. Drugi zalewał ranę jodyną i kładł na niej tampon.
+jabłka. Drugi zalewał ranę jodyną i kładł na nią tampon.
 
 W  pewnym  momencie  żołnierze  przywieźli  ciężarówką  rannego
-chłopa.  Salwadorczyka.  Kula  ugrzęzła mu w kolanie. Chłop był
-bosy,  blady,  schlapany  krwią. Sanitariusz szperał lancetem w
-kolanie, szukał kuli. Chłop jęknął.
+chłopa.  Salwadorczyka.  Kula  ugrzęzła mu w kolanie. Kazali mu
+położyć  się na trawie. Chłop był bosy, blady, schlapany krwią.
+Sanitariusz  szperał  lancetem  w  kolanie,  szukał kuli. Chłop
+jęknął.
 
 —   Cicho,   biedaku   —   powiedział   sanitariusz   —  bo  mi
 przeszkadzasz.
@@ -5823,21 +6385,39 @@ powiedział słowa, nie pisnął.
 
 — Właź na górę — zakomenderował żołnierz.
 
-Rzuciliśmy   się,   żeby   chłopu  pomóc,  ale  ten  z  eskorty
-odtrąraniony  dawno  by  nie  żył.  Ale  kule wtargnęły w ciało
-młode, silne, mocno zbudowane i śmierć natrafiła na opór. Ranny
-zlazł nieprzytomny, już po drugiej stronie istnienia, ale jakaś
+Rzuciliśmy  się,  żeby chłopu pomóc, ale ten z eskorty odtrącił
+nas karabinem. To był już żołnierz zły, frontowy, z poruszonymi
+nerwami.  Chłop  chwycił się ręką za wysoką burtę i wdrapał się
+na  górę.  Jego ciało łomotnęło o podłogę. Myślałem, że skonał.
+Ale  po  chwili wychyliła się twarz, szara, ściągnięta, naiwna,
+wyczekująca z pokorą na następny akt przeznaczenia.
+
+—  Dajcie  zapalić  —  zwrócił  się  do  nas cichym, zachrypłym
+głosem.
+
+Wrzuciliśmy  mu  do  ciężarówki  wszystkie papierosy, jakie kto
+miał.  Wóz  ruszył,  a  on roześmiał się uradowany taką ilością
+papierosów, że mógłby nią obdzielić całą wieś.
+
+Teraz  sanitariusze  dawali kroplówkę żołnierzowi, który konał.
+Przyglądało  się  temu  wielu  ciekawych.  Jedni  usiedli wkoło
+noszy,  na których ranny umierał, inni stali oparci o karabiny.
+Miał  może  dwadzieścia  lat.  Trafiło go jedenaście kul. Gdyby
+tych  jedenaście  kul  ugodziło  w starego i wątłego człowieka,
+raniony  dawno  by  nie  żył. Ale kule wtargnęły w ciało młode,
+silne,  mocno zbudowane i śmierć natrafiła na opór. Ranny leżał
+nieprzytomny,  już  po  drugiej  stronie  istnienia,  ale jakaś
 cząstka  życia toczyła w nim ostatni, rozpaczliwy bój. Żołnierz
-był nagi do pasa i wszyscy widzieli, jak pręży się jego muskuły
+był nagi do pasa i wszyscy widzieli, jak prężą się jego muskuły
 i jak po śniadej skórze ścieka pot. Po tych napiętych mięśniach
 i po strugach potu wszyscy mogli ocenić, jak ciężka jest walka,
 którą  toczy życie ze śmiercią. Wszyscy byli ciekawi tej walki,
-ponieważ  chcieli  wiedzieć, ile jest siły w życiu i ile siły w
-śmierci.  Każdy  chciał  wiedzieć,  jak długo życie potrafi się
-zmagać  ze  śmiercią  i czy młode ciało, które jeszcze jest nie
-chce się poddać, zdoła przetrzymać śmierć.
+ponieważ  chcieli  wiedzieć,  ile  jest siły w życiu i ile jest
+siły  w śmierci. Każdy chciał wiedzieć, jak długo życie potrafi
+się  zmagać ze śmiercią i czy młode życie, które jeszcze jest i
+nie chce się poddać, zdoła przetrzymać śmierć.
 
-— Może wyżyje? — spytał jeden z żołnierzy.
+— Może wyżyć? — spytał jeden z żołnierzy.
 
 —  Nie  może  —  stwierdził  sanitariusz,  trzymając wysoko nad
 rannym butelkę glukozy.
@@ -5845,14 +6425,36 @@ rannym butelkę glukozy.
 Zapanowało  ponure milczenie. Ranny oddychał gwałtownie, jak po
 długim i ciężkim biegu.
 
-— Nikt go nie znał? — spytał po chwili którys żołnierz.
+— Nikt go nie znał? — spytał po chwili który żołnierz.
 
 Serce  rannego  pracowało  z  wytężoną  siłą, słychać było jego
-poraczkowe łomotanie.
+gorączkowe łomotanie.
 
-tyłu.  Żołnierze  siedzieli  albo  cisnęli  się  skuleni, jakby
-dogasło  ognisko  i  wionęło  chłodem.  W końcu, ale to jeszcze
-trwało długą chwilę, ktoś odezwał się:
+— Nikt — odpowiedział inny żołnierz.
+
+Drogą  wspinały się ciężarówki, wyły silniki. Pod lasem czterej
+żołnierze kopali dół.
+
+— To nasz czy ich? — spytał żołnierz siedzący przy noszach.
+
+— Nie wiadomo — odparł po chwili milczenia sanitariusz.
+
+—  On  matki  swojej  —  powiedział  jeden  ze  stojących  obok
+żołnierzy.
+
+—  On  Boga  teraz  —  dorzucił  po  chwili inny. Zdjął czapkę,
+zawiesił ją na lufie karabinu.
+
+Ranny dygotał, pod lśniącą, śniadą skórą pulsowały mięśnie.
+
+— Życie jakie silne — odezwał się ze zdumieniem żołnierz oparty
+na karabinie. — Ciągle jest. Ciągle jest.
+
+Inni  przyglądali  się  rannemu  w  skupieniu,  panowała cisza.
+Tamten oddychał już coraz wolniej, głowa odchylała się do tyłu.
+Żołnierze  siedzieli  albo  cisnęli  się skuleni, jakby dogasło
+ognisko i wionęło chłodem. W końcu, ale to jeszcze trwało długą
+chwilę, ktoś odezwał się:
 
 — Nie ma człowieka. Wszystko z niego poszło.
 
@@ -6784,16 +7386,54 @@ nastąpić  od  wewnątrz,  gdyby  na  przywódców napadła zbrojnie
 jakaś  piąta  kolumna.  W  związku  z  tym korytarze nie są ani
 proste,   ani  przelotowe,  ale  kręte,  łamane,  elipsoidalne,
 spadowe,  biegnące  zakosami, półkolami, wirażami. W ten sposób
-napastnik  nie  może  trzymać na celowniku całego piętemu w pół
-zdania.  Wszystko  wyglądało  tak,  jak  gdyby tych sześciu lat
-rządów  Abbuda  w  ogóle  nie  było.  Te  sześć  lat było tylko
-przerwaniem  pewnej ciągłości, która odnalazła teraz swój wątek
-i przędzie go dalej".
+napastnik  nie  może  trzymać  na  celowniku  całego piętra, bo
+wystarczy, że napadnięty uskoczy za róg i już jest bezpieczny.
+
+Ze   względów   bezpieczeństwa   nie  wolno  było  State  House
+fotografować  —  ani  z  bliska,  ani  z  daleka. Za to policja
+zamykała.  Nie  wolno  było również zatrzymywać się przed State
+House  i  długo  mu  się  przyglądać.  Kto  zaczynał się dłużej
+przyglądać, był legitymowany i przeganiany.
+
+WIZYTA  —  W  1862 roku, w czasie wyprawy do źródeł Nilu, Speke
+dotarł  do  Ugandy. Złożył tu wizytę królowi Baganda — Mutesie.
+„Speke   —  pisze  Moorehead  —  został  posadzony  na  krześle
+naprzeciw tronu, na którym siedział Mutesa. Speke czekał teraz,
+co się stanie.
+
+Nic się nie stało.
+
+Przez   godzinę   ci  dwaj  ludzie  siedzieli  przeciw  siebie,
+przyglądając  się  sobie  wzajemnie.  Panowała  zupełna  cisza.
+Wreszcie  do  Speke'a  podszedł  dworzanin  i  zapytał:  —  Czy
+obejrzałeś   króla?   —  Oglądałem  go  przez  całą  godzinę  —
+odpowiedział  Speke. Dworzanin przetłumaczył odpowiedź królowi.
+Król wstał i oddalił się w głąb pałacu.
+
+Wizyta była skończona".
+
+ŻYCIE  — Dyktatura generała Abbuda trwała w Sudanie przez sześć
+lat.  Jego  reżim upadł 21 października 1964 roku. Był to reżim
+ostry,  ale powierzchowny, bez żadnego oparcia w masach. O tym,
+co nastąpiło po 21 października, opowiadał mi w Chartumie jeden
+z  rozmówców:  „Było to niezwykłe zjawisko — w ciągu trzech dni
+Chartum  wyglądał  dokładnie tak, jak na tydzień przed dojściem
+Abbuda  do  władzy,  jak  wyglądał  w  roku  1958.  Natychmiast
+pojawiły  się  wszystkie  stare partie polityczne. Dokładnie te
+same  partie,  pod  tymi  samymi nazwami, z tymi samymi ludźmi.
+Zaczęły  ukazywać  się  te same co kiedyś gazety, z tymi samymi
+tytułami,  z tą samą czcionką i programem. Odnaleźli się starzy
+woźni,  którzy  samorzutnie  zaczęli sprzątać gmach parlamentu.
+Politycy  od  razu rozpoczęli swoje kłótnie przerwane sześć lat
+temu  w  pół  zdania.  Wszystko  wyglądało  tak, jak gdyby tych
+sześciu  lat  rządów  Abbuda  w ogóle nie było. Te sześć lat to
+było  tylko  przerwanie pewnej ciągłości, która odnalazła teraz
+swój wątek i przędzie go dalej".
 
 10.  Ale  nie  napisałem  ani słownika, ani książki, bo ilekroć
 zaczynałem  to robić, już zaczerpnąwszy oddechu i przeżegnawszy
 się jak przed skokiem w głębinę, na mapie zapalało się czerwone
-światełko  —  umówiony  sygnał,  że  w  takim  to takim punkcie
+światełko  —  umówiony  sygnał,  że  w takim to a takim punkcie
 naszego  zatłoczonego, niespokojnego i swarliwego globu drgnęła
 ziemia  i  zatoczył  się  świat.  Bowiem przez cały czas rwie i
 napiera  nie  kończący  się  strumień zdarzeń, z którego trudno
@@ -6806,7 +7446,7 @@ później  Turcy zajmują połowę Cypru, na której to wyspie pewien
 dobry  człowiek  szmugluje  mnie  w swoim samochodzie ze strony
 greckiej  na turecką. Wracam z Cypru, kiedy Janusz Roszkowski —
 naczelny  Polskiej  Agencji Prasowej, mówi mi, że jest ostatnia
-szansa,  aby próbować dostać się do Angoli. Muszę spieszyć się,
+szansa, aby spróbować dostać się do Angoli. Muszę spieszyć się,
 aby uprzedzić moment, nim Luanda stanie się miastem zamkniętym.
 Jest  pięć  przed  dwunastą, kiedy lotnicy portugalscy przewożą
 mnie tam z Lizbony wojskowym samolotem.
@@ -6815,12 +7455,12 @@ mnie tam z Lizbony wojskowym samolotem.
 zapakować,  maszyna  do  pisania  (Hermes  Baby),  paszport (SA
 323273), bilet, lotnisko, schodki, samolot, zapiąć pasy, start,
 odpiąć  pasy,  lot,  kołysanie, słońce, gwiazdy, kosmos, biodra
-spacerujących   stewardes,   sen,   chmury,   spadające  obroty
-silników,  zapiąć pasy, zniżanie, kołowanie, lądowanie, ziemia,
-odpiąć  pasy,  schodki,  lotnisko,  książeczka szczepień, wiza,
-cło,  taksówka,  ulice,  domy,  ludzie,  hotel,  klucz,  pokój,
-duszno,   pragnienie,   głodno,  obcość,  samotność,  czekanie,
-zmęczenie, życie.
+spacerujących stewards, sen, chmury, spadające obroty silników,
+zapiąć  pasy,  znizanie,  kolowanie,  lądowanie, ziemia, odpiąć
+pasy,  schodki,  lotnisko,  książeczka  szczepień,  wiza,  cło,
+taksówka,  ulice,  domy,  ludzie,  hotel,  klucz, pokój, dużno,
+pragnienie,  inność,  obcość,  samotność,  czekanie, zmęczenie,
+życie.
 
 ## Buty
 
@@ -6982,10 +7622,10 @@ sobą widzimy sprzęt. Widzimy czołgi, działa pancerne, rakiety i
 samoloty.  W  bunkrach  oficerowie  naciskają guziki, obserwują
 zielone  linie skaczące po ekranie, manipulują suwakiem i znowu
 naciskają  guziki: huk, gwizd, gdzieś daleko rozpada się czołg,
-gdzieś w niebie rozlatuje się samolot.
+gdzieś w niebie rozłatuje się samolot.
 
 Z  obrazu  wojny  zniknęła  zwykła, ludzka twarz. — Hej, Dick —
-woła  przez  telefon  szef  biura  „Camera  Press”  do  swojego
+woła  przez  telefon  szef  biura  „Camera  Press"  do  swojego
 fotoreportera,  który  pracuje  na  wzgórzach  Golan — przestań
 podrzucać  mi  ciągle  rakiety.  Przyślij zdjęcie jakiejś żywej
 gęby jednego z tych facetów, którzy tam się tłuką!
@@ -6994,8 +7634,39 @@ Ale żywe gęby są schowane za wieżami czołgów.
 
 ## Nie będzie raju
 
-nym  na  placu,  jaki  czeka  ich  los, kto im ten los poprawi.
-Paliło słońce i oblewałem się potem.
+Prosto  z  samolotu,  nim  jeszcze  ochłonąłem po locie z Aten,
+wsadzili  mnie  do  samochodu,  który  pognał  krętą  szosą,  z
+początku  nie  wiedziałem dokąd. Dopiero w drodze siedzący obok
+mnie  Grek powiedział, że jedziemy do obozu uchodźców na wiec i
+że   możemy  się  spóźnić.  Spoglądał  na  zegarek  i  poganiał
+kierowcę.  Byłem  pierwszy  raz na Cyprze, od razu zachłysnąłem
+się urokiem tej wyspy. Pędziliśmy po łagodnych wzgórzach, wśród
+nie  kończących się winnic szosą wysadzoną cyprysami, po drodze
+wioski  białe, w wapiennego kamienia, a dalej morze, przez cały
+czas morze.
+
+Po  kwadransie  wjechaliśmy  na  równinę  pokrytą  namiotami, w
+jednym  miejscu  stał  tłum  wielki,  zobaczyłem,  że  ktoś  na
+trybunie  wymachuje  rękami, w głośnikach dudniła niepojęta dla
+mnie  mowa.  Ci  ludzie,  którzy  mnie  przywieźli  (nie znałem
+żadnego  nazwiska),  zaczęli  przepychać  się przez tłum, ja za
+nimi,   w  tym  ścisku  poczułem,  że  duszno,  zapachniało  po
+chłopsku, mlekiem, wełną, jeszcze czymś takim, migały mi twarze
+milczące,  skupione, kamienne, śniade. Grek, który mnie ciągnął
+za  rękę  przez  tłum,  powiedział,  że  to wszystko uchodźcy z
+Północy, biedni ludzie — powiedział torując łokciem drogę — bez
+domów  i dobytku. Ale oczywiście nie było to warunki na dłuższą
+rozmowę,  tym  bardziej  że  zanim  połapałem  się  w sytuacji,
+zostałem  wepchnięty  na trybunę, jakiś młody człowiek podsunął
+mi mikrofon.
+
+Mów, powiedział inny człowiek, będę tłumaczył.
+
+Byłem  pewien,  że  nastąpiła  pomyłka,  że biorą mnie za kogoś
+innego,  za  dygnitarza, za ministra, za międzynarodową figurę,
+która  powie  tym  nieszczęsnym  ludziom zgromadzonym na placu,
+jaki  czeka  ich  los,  kto im ten los poprawi. Paliło słońce i
+oblewałem się potem.
 
 Chciałem  zejść  z  trybuny,  odszukać organizatorów i wyjaśnić
 nieporozumienie.  Nie  będę  przemawiać, przemawianie z trybuny
@@ -7149,7 +7820,7 @@ Jedna  z  tych kobiet nazywa się Maria Salatas. Jej męża zabili
 dwie  córki. Żołnierze zniewalali dziewczyny, jeśli im wpadły w
 ręce, mąż o tym wiedział. Jej córkom pomogli schować się w polu
 miejscowi  policjanci  —  Turcy  cypryjscy.  O tych cypryjskich
-Turkach  kobieta  mówi  — dzikimas, co znaczy po grecku — nasi.
+Turkach  kobieta  mówi  — dżikimas, co znaczy po grecku — nasi.
 Potem przez trzy miesiące trzymali Marię w obozie tureckim. Nie
 było  wody  ani  co  jeść.  Grekom jedzenie przynosili po cichu
 sąsiedzi  z  wioski  —  Turcy  cypryjscy.  Ta wioska nazywa się
@@ -7160,32 +7831,73 @@ przed   inwazją   wszystkim  było  dobrze.  Owszem,  we  wsiach
 spotykało  się  nienawiść,  ale  i  Grecy,  i  Turcy byli z nią
 oswojeni.  Byli z nią pogodzeni. Ona stanowiła część ich życia,
 była  ich  wewnętrzną  gromadzką  sprawą.  We  wsiach  istniała
-równowaga  nienawiści,  ludzie  wiedzieli,  kiedy zejść sobie z
+równonowaga  nienawiści,  ludzie wiedzieli, kiedy zejść sobie z
 drogi,  żeby nie doszło do katastrofy. Nigdy nie było tak, żeby
 grecka  część  wsi  wycięła  w  pień  turecką  część  wsi, albo
 odwrotnie. Czasem chłopi skakali sobie do gardła, padali zabici
 i  ranni.  Ale  tak  jest  na  całym świecie. Kto zna chłopskie
 życie,  ten wie, jak wieś jest głodna wydarzeń, choćby je miała
 okupić  własną  krwią.  Czy  to  jest  powód, żeby przychodziło
-tureckie  wojsko  z czołgami i posyłało Greków na wygnanie? One
-chcą,  żeby to wojsko wyszło i żeby było jak dawniej. Już i tak
+tureckie  wojsko  z  zodgami i posyłano Greków na wygnanie? One
+chcą,  żeby  to  wojsko wyszło i żeby było jak dawniej. Już tak
 zmarnowała  się  połowa  majątku.  Nikt  nie zebrał pomarańczy,
 winogrona zgniły na krzewach, bydło na pewno wyrżnięte, a mięso
 zjedzone.
 
-Spytały  mnie,  czy  wiem,  jak wygląda sprawa zaginionych? Nie
-wiedziałem.
+Spytały mnie, czy wiem, jak wygląda sprawa zaginionych?
+
+Nie wiedziałem.
 
 Szkoda,  one  o to pytają wszystkich. W czasie inwazji zaginęło
 kilka tysięcy młodych Greków. Czy żyją, gdzie są — nie ma na to
 odpowiedzi.  Nie  ma dowodów, że zginęli, ale nie ma też śladów
 ich  życia.  Strona  turecka  mówi, że nic o nich nie wie, a po
 stronie  greckiej tych młodych nie ma. Więc gdzie są? Cypr jest
-małą  wyspą,  można  tu ukryć dziesięciu ludzi, stu, Dziewczyna
-nie  może  iść  sama, towarzyszy jej mama albo babcia. Nie może
-rozglądać  się,  bo to jest w złym guście, to stwarza wrażenie,
-jakby  polowała  na  chłopaka.  W  oczach mamy lub babci jest i
-duma,  i  czujność.  Z  tarasów  kawiarni  przyglądają  się tym
+małą wyspą, można tu ukryć dziesięciu ludzi, stu, ale nie kilka
+tysięcy.  One  nie dopuszczają myśli, że ci chłopcy są w ziemi.
+Nikt  przecież  nie  widział  ich  grobów.  Ktoś powiedział, że
+wywieźli  ich w morze i zatopili, ale taka rzecz nie mieści się
+w głowie.
+
+Jeszcze  pokazały  mi swoje namioty. Przepraszają, że obóz jest
+taki biedny. Gdyby to było dawniej, mógłbym odwiedzić ich domy.
+W domach było wszystko — i światło, i woda, i meble. Zawsze był
+ogród,  nigdy  nie  brakowało  owoców.  O tych domach, o swoich
+wioskach  mówią jak o raju utraconym. Ich życie zostało złamane
+i one nie wiedzą, do kogo się odwołać. One pytają mężczyzn, ale
+ci milczą i wzruszają ramionami. Mężczyźni mogą pójść w świat i
+żyć  byle gdzie, ale kobieta nie może żyć bez domu, coś takiego
+jest nie do pojęcia.
+
+Wieczór,  noc  i  poranek  w  Nikozji.  Nikozja: urocze miasto,
+słoneczne,  jasne, pastelowe. Dużo nowych dzielnic o wspaniałej
+architekturze,    samo    oglądanie    budynków   jest   wielką
+przyjemnością.  W  sklepach towary z całego świata, bo przemysł
+cypryjski niewielki, trzeba wszystko importować. Tu i tam ślady
+inwazji  —  ściany  przebite  pociskami,  puste  framugi okien,
+spalone  samochody. Ale straty, jakie poniosło miasto, nie były
+duże.  W  dniach  inwazji  ludzie  szli  do  pracy, sklepy były
+otwarte.
+
+—  W  czasie  całej wojny — powiedziała mi jedna Polka mając na
+myśli  inwazję  z lipca-sierpnia roku 1974 — widziałam tu tylko
+jedną kolejkę: na film porno.
+
+Od  rana,  przez  cały  dzień,  Grecy siedzą na krzesłach przed
+kafejkami.  Do południa siedzą wystawieni do słońca, w południe
+cofają  się z krzesłami w cień, po południu znowu przenoszą się
+w  słońce.  Sami mężczyźni, żadnej kobiety. Siedzą w milczeniu,
+bez  słowa,  bez ruchu, często odwróceni plecami do siebie, ale
+istnieje  między  nimi jakaś niewidoczna wspólnota, bo kiedy do
+jednego  z  nich podchodzi z ulicy Grek i zaczynają się kłócić,
+wszyscy zaczynają się kłócić.
+
+O zmierzchu wychodzą na spacer piękne dziewczyny.
+
+Dziewczyna  nie może iść sama, towarzyszy jej mama albo babcia.
+Nie  może  rozglądać  się, bo to jest w złym guście, to stwarza
+wrażenie,  jakby  polowała na chłopaka. W oczach mamy lub babci
+jest i duma, i czujność. Z tarasów kawiarni przyglądają się tym
 dziewczynom  żołnierze  z  ONZ,  opaleni  na  różowo blondasi —
 Szwedzi,  Duńczycy,  Finowie. Żołnierz z ONZ: dobra partia, ale
 jeśli  ma  poważne zamiary. Nikt z tych blondynów nie rusza się
@@ -7278,7 +7990,7 @@ posterunków,  jakiś  Turek  strzela dalej, więc Grecy wznawiają
 ogień,  wtedy Turcy już na całego, huk tak straszny, że nic nie
 słychać,  drugą  godzinę  trwa  ta piekielna haratanina, ludzie
 kryją  się  w  piwnicach,  leżą  na podłogach, w schronach, pod
-samochodami, ci, co mieszkają najbliżej linii frontu, ucieka ją
+samochodami,  ci, co mieszkają najbliżej linii frontu, uciekają
 na  drugi  koniec  miasta,  tymczasem  ONZ ustala z Turkami i z
 Grekami,  że przerwą ogień o 2.05, i znowu strzelanina zacicha,
 ale  tym  razem  jakiś  Grek nie słyszy rozkazu, wali z cekaemu
@@ -7290,13 +8002,46 @@ ustala  przerwanie  ognia  na  2.45,  wreszcie tym razem rozkaz
 dociera do wszystkich, ogień wygasa, strzelanina milknie, cisza
 ogarnia miasto.
 
-Po tej nocy, od rana, Grecy siedzą przed kafejkami bez ru (brak
-widocznego tekstu — strona pusta)
+Po  tej  nocy, od rana, Grecy siedzą przed kafejkami bez ruchu,
+bez słowa, jakby nic się nie stało. W południe przesuwają się w
+cień.  O zmierzchu wychodzą na spacer piękne dziewczyny, którym
+towarzyszą  mamy  i  babcie. Blondasi z ONZ patrzą za nimi, ale
+nie ruszają się i dalej piją piwo. Wieczorem miasto pustoszeje,
+nikogo  nie  ma na ulicach. Na granicy sektorów dwaj żołnierze:
+grecki   i  turecki.  Milczą  skuleni  z  zimna,  rozpylacze  w
+zgrabiałych dłoniach.
+
+Page illegible (text obscured/too faint to transcribe).
 
 ## Ogaden, jesień 76:
 
-stugębny, monstrualny, jęczący z bólu, nie własny, wyobcowany z
-siebie.
+nocą  ugryzł  mnie  skorpion.  Wpełznąłem  do namiotu w duszną,
+dławiącą  ciemność  i położyłem się na pryczy. Ani latarki, ani
+zapałki.  Zresztą  komendant  każe ograniczać światło, żeby nie
+zdradzić  miejsca naszego obozu. Mogą leżeć pierścieniem o krok
+od nas i czekać z okiem na celowniku.
+
+Nagle  coś  poruszyło  się na przecieradle w tym miejscu, gdzie
+położyłem  głowę.  Myślałem, że to jaszczurka. To nie mogła być
+kobra,  bo  poruszenie  było za lekkie, za słabe. Jeszcze jedno
+drgnięcie  czegoś koło mnie, zaszemranie i znowu cisza, martwo.
+Tak  to  trwa cicho, milcząco, niewidocznie, ale czuję, że trwa
+blisko,  nawet  coraz  bliżej.  Nagle  huknęło  mnie  w  czoło,
+ogłuszająco,  jakby  ktoś  trzasnął młotkiem w głowę. Boleśnie.
+Zerwałem się i zacząłem wołać — skorpion! skorpion!
+
+Po  chwili  przybiegł  Marcos,  a potem żołnierze. Jeden z nich
+poświecił   latarką.  Na  przecieradle  leżała  płaska,  szara,
+jadowita wstrętność. Żołnierze ostrożnie zgarnęli przecieradło,
+położyli  na ziemi i zaczęli deptać skorpiona. Inni przyglądali
+się, jakby obserwując rytualny taniec wypędzania złego ducha.
+
+Momentalnie  zaczęła  mi  puchnąć  twarz. Żołnierz skierował na
+mnie  latarkę  i  wszyscy  patrzyli teraz z uwagą na gwałtownie
+pęczniejącą głowę, która rosła jak ciasto w dzieży, oczy robiły
+się  coraz mniejsze i mniejsze, aż pewnie zniknęły, utonęły, bo
+przestałem  widzieć.  Patrzyli, jak stałem przed nimi stugębny,
+monstrualny, jęczący z bólu, nie własny, wyobcowany z siebie.
 
 Ale  co  można  było zrobić? Skorpiony cięły ludzi jak moskity.
 Ci, którzy dostali większą dawkę jadu — ginęli. Do najbliższego
@@ -7314,10 +8059,10 @@ Przylecieliśmy z Marcosem do Gode małym samolocikiem. Wyjście z
 samolotu było jak wjazd na szuflę do pieca. Od razu uciekaliśmy
 pod  skrzydła,  w  cień. Przyszła policja i zaczęła się rewizja
 osobista,  grzebanie,  obłapywanie, szukanie broni, sprawdzanie
-przepustek.   Nie   miałem   przepustki.   Moja  sytuacja  była
+przepustki.   Nie   miałem   przepustki.   Moja  sytuacja  była
 dwuznaczna.  Wyleciałem  z  Addis Abeby w ostatniej chwili, bez
-pewności,  że  dotrę do Ogadenu, prowincji zamknietej dla ludzi
-obcych.  Jedż,  powiedział  Y.  z  Ministerstwa Informacji, dam
+pewności,  że  dotrę do Ogadenu, prowincji zamkniętej dla ludzi
+obcych.  Jedź,  powiedział  Y.  z  Ministerstwa Informacji, dam
 drogą   radiową  wiadomość,  żeby  cię  wpuścili.  W  samolocie
 poznałem chłopaka imieniem Marcos. Wiózł środki trujące przeciw
 jakimś  robakom,  które  gryzą  kukurydzę. Pomyślałem, że muszę
@@ -7327,8 +8072,46 @@ skrzynki  z  trucizną. W ogóle zachowywałem się tak, jakbym był
 służbowo   do   niego   przydzielony.   Uczepiłem   się  trochę
 bezczelnie,  ale  nie miałem etiopskich dokumentów i nie znałem
 nikogo  w  Ogadenie.  Jak będę poruszać się bez samochodu w tym
-piekle,  w  którym  Marcos,  prowadziło  tu swoją wojnę o życie
-ginących koczowników.
+piekle, w którym przejście stu metrów jest ciężkim wysiłkiem, i
+gdzie będę spać, skoro nie ma tam hoteli? Ale najbardziej bałem
+się   wzbudzić   podejrzenie  policjantów  i  żołnierzy.  Biały
+człowiek, w strefie frontu, na końcu świata, co on tu robi?
+
+Pokaż papiery.
+
+Nie mam papierów.
+
+No to jedziemy do koszar, na przesłuchanie.
+
+Samolot  odleciał,  zostaliśmy  sami,  w  słońcu,  z  trucizną.
+Przykryliśmy  głowy  gazetami,  żeby  wytrzymać roztopiony żar,
+żeby  nie  upaść,  tak  było  gorąco.  Dookoła płonęła pustynia
+Ogadenu,  teraz, w samo południe, nie widziało się śladu życia.
+Mieliśmy  przed  sobą  obraz  najprostszy, zredukowany do dwóch
+płaszczyzn:  na  dole  — pasmo ziemi, wyżej, w nieskończoność —
+obszar nieba. Pośrodku dwie kropie potu — Marcos i ja.
+
+Długo  czekaliśmy,  aż  nadjechał land-rover, z którego wysiadł
+drobny,  brodaty  mężczyzna.  To  Getahun,  powiedział  Marcos,
+komendant.  Załadowaliśmy  skrzynki,  wszystko jak w zwolnionym
+filmie,  każdy  ruch  był  torturą. Jechałem nie wiadomo dokąd,
+jakby  w  łodzi błądzącej po morzu. Oni rozmawiali po amharsku,
+nie  rozumiałem  ani  słowa.  Posuwaliśmy  się  w tumanach pyłu
+wolno, wóz przerzucało z boku na bok.
+
+A ty kim jesteś? — spytał Getahun.
+
+Powiedziałem.
+
+Papier masz ?
+
+Nie mam, ale powiedzą przez radio.
+
+Zamilkł,  potem  rozmawiał  dalej z Marcosem. Byliśmy w strefie
+suszy.  W tym miejscu, gdzie rząd Etiopii zorganizował obóz dla
+głodujących i spragnionych, dla tych, którym udało się uratować
+przed  śmiercią.  Kilku  ludzi,  takich  jak  Getahun i Marcos,
+prowadziło tu swoją wojnę o życie ginących koczowników.
 
 Codziennie  rano  Getahun  szedł  do obozu namawiać ludzi, żeby
 wyszli  na  pustynię.  Przekopiemy kanał, mówił, popłynie woda,

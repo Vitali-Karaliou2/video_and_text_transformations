@@ -42,6 +42,9 @@ Desktop.ini
 # Run logs of the root automation bats
 /_run_scripts/_logs/
 
+# Run logs of the per-book automation bats
+_books/*/_run_scripts/_logs/
+
 # Scratch dumps and one-off helper scripts kept in the project root
 # (_comments2.txt, _dump_doc.py, _sim3_tail.txt, ...)
 /_*.txt

@@ -317,6 +317,18 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--overwrite", action="store_true")
     p.add_argument("--delay", type=float, default=0.4)
     p.add_argument("--model", default=MODEL)
+    p.add_argument(
+        "--slugs",
+        nargs="+",
+        default=None,
+        help="Process only these spread slugs (e.g. page_008 page_042)",
+    )
+    p.add_argument(
+        "--split",
+        action="store_true",
+        help="OCR each page of the spread as a separate request "
+        "(more reliable for dense pages, ~same cost)",
+    )
     args = p.parse_args()
     if args.pages_file is None:
         args.pages_file = pages_file(args.book)
@@ -348,7 +360,16 @@ def main() -> int:
     args.out_dir.mkdir(parents=True, exist_ok=True)
     client = Anthropic(api_key=api_key)
 
-    if args.next_batch is not None:
+    if args.slugs is not None:
+        wanted = set(args.slugs)
+        unknown = wanted - set(slugs)
+        if unknown:
+            print(f"Unknown slugs (not in pages file): {sorted(unknown)}", file=sys.stderr)
+            return 2
+        work = [(i, s) for i, s in enumerate(slugs, start=1) if s in wanted]
+        total_label = len(slugs)
+        args.overwrite = True
+    elif args.next_batch is not None:
         pending = [s for s in slugs if not (args.out_dir / f"{s}.md").exists()]
         if not pending:
             print("No pending spreads (all .md files already exist).", flush=True)
@@ -389,6 +410,36 @@ def main() -> int:
 
         print(f"[{idx}/{total_label}] OCR {slug} ...", flush=True)
         split_note = ""
+        if args.split:
+            text, usage, blocked_halves = ocr_spread_by_halves(client, img, args.model)
+            if len(blocked_halves) == 2:
+                print(f"  FAILED {slug}: both halves blocked", flush=True)
+                failed.append(slug)
+                time.sleep(args.delay)
+                continue
+            if blocked_halves:
+                failed.append(f"{slug} ({blocked_halves[0]} half only)")
+                split_note = f"ocr-by-halves, {blocked_halves[0]} half blocked"
+            else:
+                split_note = "ocr-by-halves"
+            formatted = format_ocr_markdown(text)
+            header = f"<!-- source: {img.name} model: {args.model} -->\n"
+            header += f"<!-- {split_note} -->\n"
+            dest.write_text(header + formatted, encoding="utf-8")
+            if usage.get("input_tokens"):
+                in_tok += usage["input_tokens"]
+            if usage.get("output_tokens"):
+                out_tok += usage["output_tokens"]
+            print(
+                f"  saved {dest.name} ({len(formatted)} chars; "
+                f"in={usage.get('input_tokens')} out={usage.get('output_tokens')})",
+                flush=True,
+            )
+            done += 1
+            time.sleep(args.delay)
+            if args.next_batch is None and args.limit is not None and done >= args.limit:
+                break
+            continue
         try:
             text, usage = ocr_png_with_retries(client, img.read_bytes(), args.model)
         except APIError as exc:
