@@ -45,6 +45,18 @@ Desktop.ini
 # Run logs of the per-book automation bats
 _books/*/_run_scripts/_logs/
 
+# Superseded versions of the assembled/translated book, kept by hand
+_books/*/OUTPUT/Archived/
+
+# Re-OCR results awaiting comparison; the accepted ones land in pages_text/
+_books/*/pages_text_recheck/
+
+# Per-story exports made by hand for reading and comparing translations
+_books/*/separate_stories/
+
+# One-off helper superseded by _books/*/_run_scripts/reextract_pages.bat
+/src/book_ocr/recheck_pages.bat
+
 # Scratch dumps and one-off helper scripts kept in the project root
 # (_comments2.txt, _dump_doc.py, _sim3_tail.txt, ...)
 /_*.txt
