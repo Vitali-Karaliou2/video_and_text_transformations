@@ -2,8 +2,22 @@
 Translate a assembled book (OUTPUT/Book_XX.*) into another language in portions.
 
 Source language is taken from the last two letters of the Book_XX stem.
-Target language is --to (e.g. RU). Progressive runs translate the next ~portion
-of main-story content (default 10%, accepted as 8–12% by whole stories).
+Target language is --to (e.g. RU). Each run translates the next portion of the
+main content (default 10%, accepted anywhere in the 8-12% window).
+
+How a portion is cut, coarsest first, each rule used only when the previous one
+cannot land inside the window:
+  1. whole sections;
+  2. a paragraph boundary, nearest below the top of the window;
+  3. a sentence boundary, nearest below the top of the window;
+  4. neither: the run refuses and explains, since such a text cannot be
+     portioned at all.
+A run never takes less than MIN_PORTION_CHARS, however small the requested
+percentage; if less than that is left, the rest goes in a single run.
+
+A section may therefore be translated across several runs. Progress is kept in
+the working file as a hidden marker per block naming the source section and,
+for a partial one, how many of its sentences are done.
 
 While translation is incomplete, only one working file is written, matching the
 source format, with mode/model suffixes:
@@ -42,6 +56,15 @@ from paths import DEFAULT_BOOK, WORKSPACE_ROOT, output_dir
 DEFAULT_PORTION = 10.0
 PORTION_LO = 0.8
 PORTION_HI = 1.2
+# Splitting text finer than this is not worth the loss of context, so a run
+# never asks for less, whatever percentage was requested. If less than this
+# is left to translate, the rest goes in one run.
+MIN_PORTION_CHARS = 5000
+# One API answer must stay well below MAX_TOKENS; long sections are therefore
+# sent in several requests. Russian output runs ~2.7 chars per token, so this
+# leaves a wide margin.
+MAX_REQUEST_CHARS = 12000
+MAX_TOKENS = 16384
 DEFAULT_WRAP_WIDTH = 63  # same as Book_PL.md (avg_full_line + 3)
 FRONT_TITLES = {"Przedmowa", "Spis treści", "Nota końcowa"}
 # Titles that are not counted in the "main content" portion meter.
@@ -84,6 +107,101 @@ class Section:
     @property
     def is_main_story(self) -> bool:
         return self.kind == "h2" and self.title not in FRONT_TITLES
+
+
+@dataclass
+class Unit:
+    """One sentence — the finest grain a portion may be cut at."""
+
+    text: str
+    para: int
+    para_start: bool
+
+
+@dataclass
+class Piece:
+    """A run of units of one section: what a single run translates of it."""
+
+    section: Section
+    start: int  # index of the first unit
+    end: int  # index after the last unit
+    total_units: int
+
+    @property
+    def units(self) -> list[Unit]:
+        return section_units(self.section)[self.start : self.end]
+
+    @property
+    def chars(self) -> int:
+        return units_chars(self.units)
+
+    @property
+    def is_section_start(self) -> bool:
+        return self.start == 0
+
+    @property
+    def is_section_end(self) -> bool:
+        return self.end >= self.total_units
+
+
+# Sentence end: terminal punctuation plus optional closing quote/bracket.
+# Common Polish abbreviations must not be mistaken for one.
+SENTENCE_END_RE = re.compile(r'(?<=[.!?…])["»”\')\]]*\s+')
+ABBREVIATIONS = {
+    "np", "itd", "itp", "tzw", "tj", "ok", "r", "w", "ul", "dr", "prof", "mgr",
+    "godz", "str", "nr", "cd", "m", "in", "por", "gen", "płk", "św", "ww", "jw",
+}
+
+
+def split_sentences(paragraph: str) -> list[str]:
+    parts: list[str] = []
+    start = 0
+    for m in SENTENCE_END_RE.finditer(paragraph):
+        head = paragraph[start : m.start()]
+        last_word = re.split(r"[\s(«„\"]", head.rstrip("."))[-1].lower()
+        # A lone initial or a known abbreviation does not end a sentence.
+        if last_word in ABBREVIATIONS or len(last_word) <= 1:
+            continue
+        parts.append(head.strip())
+        start = m.end()
+    tail = paragraph[start:].strip()
+    if tail:
+        parts.append(tail)
+    return parts or [paragraph.strip()]
+
+
+_UNITS_CACHE: dict[int, list[Unit]] = {}
+
+
+def section_units(sec: Section) -> list[Unit]:
+    cached = _UNITS_CACHE.get(id(sec))
+    if cached is not None:
+        return cached
+    units: list[Unit] = []
+    for p_idx, par in enumerate(sec.paragraphs):
+        for s_idx, sentence in enumerate(split_sentences(par)):
+            units.append(Unit(sentence, p_idx, s_idx == 0))
+    _UNITS_CACHE[id(sec)] = units
+    return units
+
+
+def units_chars(units: list[Unit]) -> int:
+    return sum(len(u.text) + 1 for u in units)
+
+
+def units_to_paragraphs(units: list[Unit]) -> list[str]:
+    paragraphs: list[str] = []
+    current: list[str] = []
+    prev_para: int | None = None
+    for u in units:
+        if prev_para is not None and u.para != prev_para:
+            paragraphs.append(" ".join(current))
+            current = []
+        current.append(u.text)
+        prev_para = u.para
+    if current:
+        paragraphs.append(" ".join(current))
+    return paragraphs
 
 
 def load_dotenv(path: Path) -> None:
@@ -173,31 +291,65 @@ def parse_book_md(text: str) -> tuple[str, list[Section]]:
 # translated block is therefore preceded by a hidden marker naming its SOURCE
 # section, which makes progress tracking exact.
 H1_MARK = "<!-- src-h1 -->"
-BLOCK_MARK_RE = re.compile(r"(?m)^<!--\s*src-(?:h1|title:\s*(.+?))\s*-->[ \t]*$")
+BLOCK_MARK_RE = re.compile(
+    r"(?m)^<!--\s*src-(?:h1"
+    r"|title:\s*(?P<title>.+?)(?:;\s*sentences:\s*(?P<done>\d+)/(?P<total>\d+))?)"
+    r"\s*-->[ \t]*$"
+)
 
 
-def src_mark(title: str) -> str:
-    return f"<!-- src-title: {title} -->"
+def src_mark(title: str, done: int | None = None, total: int | None = None) -> str:
+    """Marker for a translated block; a partial section records its progress."""
+    if done is None or total is None or done >= total:
+        return f"<!-- src-title: {title} -->"
+    return f"<!-- src-title: {title}; sentences: {done}/{total} -->"
 
 
-def split_marked_blocks(text: str) -> tuple[str, list[tuple[str | None, str]]]:
-    """Split a working file into (header, [(source title | None for H1, body)])."""
+@dataclass
+class MarkedBlock:
+    title: str | None  # None = the book's H1
+    body: str
+    done: int | None = None  # sentences of the section translated so far
+    total: int | None = None
+
+
+def split_marked_blocks(text: str) -> tuple[str, list[MarkedBlock]]:
+    """Split a working file into its header and its marked blocks."""
     marks = list(BLOCK_MARK_RE.finditer(text))
     if not marks:
         return text, []
     header = text[: marks[0].start()].strip("\n")
-    blocks: list[tuple[str | None, str]] = []
+    blocks: list[MarkedBlock] = []
     for i, m in enumerate(marks):
         end = marks[i + 1].start() if i + 1 < len(marks) else len(text)
-        blocks.append((m.group(1), text[m.end() : end].strip("\n")))
+        body = text[m.end() : end].strip("\n")
+        done = int(m.group("done")) if m.group("done") else None
+        total = int(m.group("total")) if m.group("total") else None
+        blocks.append(MarkedBlock(m.group("title"), body, done, total))
     return header, blocks
 
 
-def translated_source_titles(dest: Path) -> set[str]:
+def translated_progress(dest: Path) -> dict[str, int | None]:
+    """Source title -> sentences already translated (None = whole section)."""
     if not dest.exists():
-        return set()
+        return {}
     _header, blocks = split_marked_blocks(dest.read_text(encoding="utf-8"))
-    return {title for title, _body in blocks if title}
+    progress: dict[str, int | None] = {}
+    for b in blocks:
+        if not b.title:
+            continue
+        if b.done is None:
+            progress[b.title] = None  # complete
+        elif progress.get(b.title, 0) is not None:
+            progress[b.title] = max(progress.get(b.title) or 0, b.done)
+    return progress
+
+
+def units_done(progress: dict[str, int | None], sec: Section) -> int:
+    if sec.title not in progress:
+        return 0
+    done = progress[sec.title]
+    return len(section_units(sec)) if done is None else done
 
 
 def ensure_markers(dest: Path) -> bool:
@@ -207,52 +359,81 @@ def ensure_markers(dest: Path) -> bool:
     return bool(BLOCK_MARK_RE.search(dest.read_text(encoding="utf-8")))
 
 
-def select_next_portion(
-    sections: list[Section],
-    done_titles: set[str],
-    portion_pct: float,
-) -> list[Section]:
-    """Pick whole main stories until cumulative share is in [8%, 12%] of remaining? 
+class PortionError(Exception):
+    """The text cannot be cut anywhere near the requested portion size."""
 
-    Spec: each run translates ~portion of the *document* (default 10%), mapped to
-    an interval portion*(0.8..1.2), choosing whole stories. We measure against
-    total main-story words (not remaining), and skip already-done titles.
+
+def select_next_pieces(
+    sections: list[Section],
+    progress: dict[str, int | None],
+    portion_pct: float,
+) -> tuple[list[Piece], str]:
+    """Choose what to translate next, cutting as coarsely as the size allows.
+
+    The portion is measured in characters against the whole main content. Cuts
+    are preferred in this order, each one finer than the last and used only
+    when the coarser one cannot land inside the [lo, hi] window:
+    section boundary, paragraph boundary, sentence boundary. A text that
+    offers none of them within the window cannot be portioned at all.
     """
     main = [s for s in sections if s.is_main_story]
-    total = sum(s.word_count for s in main) or 1
-    target = portion_pct / 100.0
+    total = sum(units_chars(section_units(s)) for s in main) or 1
+    target = max(total * portion_pct / 100.0, MIN_PORTION_CHARS)
     lo, hi = target * PORTION_LO, target * PORTION_HI
 
-    pending = [s for s in main if s.title not in done_titles]
+    pending: list[tuple[Section, int, int]] = []  # section, first unit, unit count
+    for sec in main:
+        n = len(section_units(sec))
+        start = units_done(progress, sec)
+        if start < n:
+            pending.append((sec, start, n))
     if not pending:
-        return []
+        return [], ""
 
-    chosen: list[Section] = []
-    cum = 0.0
-    for s in pending:
-        share = s.word_count / total
-        # Always take at least one story.
-        if chosen and cum + share > hi and cum >= lo:
-            break
-        chosen.append(s)
-        cum += share
-        if cum >= lo and cum <= hi:
-            break
-        if cum > hi:
-            # Single oversized story: still take it alone.
-            break
-    return chosen
+    remaining = sum(units_chars(section_units(s)[start:]) for s, start, _ in pending)
+    if remaining <= hi:
+        return [Piece(s, start, n, n) for s, start, n in pending], "all that is left"
+
+    pieces: list[Piece] = []
+    cum = 0
+    for sec, start, n in pending:
+        units = section_units(sec)[start:]
+        sec_chars = units_chars(units)
+        if cum + sec_chars <= hi:
+            pieces.append(Piece(sec, start, n, n))
+            cum += sec_chars
+            if cum >= lo:
+                return pieces, "section boundary"
+            continue
+
+        # The section overshoots the window: cut inside it, as coarsely as
+        # possible. Candidates are cut points whose total lands in [lo, hi].
+        cut_para = cut_sentence = None
+        consumed = 0
+        for i in range(1, len(units)):
+            consumed += len(units[i - 1].text) + 1
+            if cum + consumed > hi:
+                break
+            if cum + consumed >= lo:
+                cut_sentence = i
+                if units[i].para_start:
+                    cut_para = i
+        cut = cut_para or cut_sentence
+        if cut is None:
+            raise PortionError(
+                f"section '{sec.title}' offers no paragraph or sentence boundary "
+                f"between {lo:.0f} and {hi:.0f} characters"
+            )
+        pieces.append(Piece(sec, start, start + cut, n))
+        return pieces, "paragraph boundary" if cut_para else "sentence boundary"
+
+    return pieces, "section boundary"
 
 
-def estimate_tokens(sections: list[Section], h1: str, include_front: bool) -> tuple[int, int]:
+def estimate_tokens(chars: int) -> tuple[int, int]:
     """Rough input/output token estimate for costing."""
-    chars = len(h1)
-    for s in sections:
-        chars += len(s.title) + sum(len(p) for p in s.paragraphs) + 10
     # Polish ~3.5 chars/token; output RU similar + prompt overhead
-    inp = int(chars / 3.5) + 800
-    out = int(chars / 3.2) + 200
-    return inp, out
+    return int(chars / 3.5) + 800, int(chars / 3.2) + 200
 
 
 def estimate_usd(model_id: str, inp: int, out: int, batch: bool) -> float:
@@ -273,6 +454,8 @@ Rules:
 - Keep personal names, place names, and well-known foreign phrases as appropriate for {tgt} literary practice.
 - Do not summarize, omit, or add commentary.
 - Do not wrap lines or insert extra blank lines beyond paragraph separation.
+- A fragment that starts without a heading continues the previous one: translate
+  it as running text and do not invent a heading for it.
 - Output Markdown only.
 """
 
@@ -290,6 +473,38 @@ def fragment_user_message(h1: str | None, sections: list[Section]) -> str:
             parts.append(p)
             parts.append("")
     return "\n".join(parts).rstrip() + "\n"
+
+
+def chunk_units(units: list[Unit], limit: int = MAX_REQUEST_CHARS) -> list[list[Unit]]:
+    """Split units into request-sized groups, breaking at paragraph starts."""
+    chunks: list[list[Unit]] = []
+    current: list[Unit] = []
+    size = 0
+    for u in units:
+        add = len(u.text) + 1
+        # Break before a new paragraph; an oversized paragraph breaks mid-way.
+        if current and size + add > limit and (u.para_start or size >= limit):
+            chunks.append(current)
+            current = []
+            size = 0
+        current.append(u)
+        size += add
+    if current:
+        chunks.append(current)
+    return chunks
+
+
+def piece_requests(piece: Piece) -> list[str]:
+    """User messages translating a piece, small enough for one answer each."""
+    messages: list[str] = []
+    for i, chunk in enumerate(chunk_units(piece.units)):
+        title = piece.section.title if (i == 0 and piece.is_section_start) else ""
+        messages.append(
+            fragment_user_message(
+                None, [Section(title=title, kind="h2", paragraphs=units_to_paragraphs(chunk))]
+            )
+        )
+    return messages
 
 
 def justify_line(words: list[str], width: int) -> str:
@@ -394,40 +609,48 @@ def read_source_wrap_width(source: Path, fallback: int = DEFAULT_WRAP_WIDTH) -> 
 
 
 def append_translated_blocks(
-    dest: Path, blocks: list[tuple[str | None, str]], wrap_width: int
+    dest: Path, blocks: list[tuple[str, str]], wrap_width: int
 ) -> None:
-    """Append translated blocks, each tagged with its source section marker."""
+    """Append (marker, raw translation) pairs to the working file."""
     dest.parent.mkdir(parents=True, exist_ok=True)
-    pieces: list[str] = []
+    out: list[str] = []
     is_new = not dest.exists() or not dest.read_text(encoding="utf-8").strip()
     if is_new:
-        pieces.append(
+        out.append(
             f"<!-- translated by book_translate; wrap_width: {wrap_width}; "
             f"incomplete until all stories done -->"
         )
     else:
-        pieces.append(dest.read_text(encoding="utf-8").rstrip())
+        out.append(dest.read_text(encoding="utf-8").rstrip())
 
-    for title, raw in blocks:
+    for marker, raw in blocks:
         body = format_translated_markdown(raw, wrap_width).strip("\n")
         if not body:
             continue
-        if title is None:
+        if marker == H1_MARK:
             # The book title must stay an H1 even if the model returned "## ".
             body = re.sub(r"^#+\s+", "# ", body)
-            pieces.append(H1_MARK)
-        else:
-            pieces.append(src_mark(title))
-        pieces.append(body)
-    dest.write_text("\n\n".join(pieces) + "\n", encoding="utf-8")
+        out.append(marker)
+        out.append(body)
+    dest.write_text("\n\n".join(out) + "\n", encoding="utf-8")
+
+def check_complete(msg, label: str) -> None:
+    """A translation cut off by the token limit must never reach the file."""
+    if getattr(msg, "stop_reason", None) == "max_tokens":
+        raise RuntimeError(
+            f"{label}: the answer hit the {MAX_TOKENS}-token limit and is cut off "
+            f"mid-text. Lower MAX_REQUEST_CHARS (now {MAX_REQUEST_CHARS}) and retry."
+        )
+
 
 def call_realtime(client, model_id: str, system: str, user: str) -> tuple[str, dict]:
     msg = client.messages.create(
         model=model_id,
-        max_tokens=16384,
+        max_tokens=MAX_TOKENS,
         system=system,
         messages=[{"role": "user", "content": user}],
     )
+    check_complete(msg, "realtime request")
     text = "".join(b.text for b in msg.content if getattr(b, "type", None) == "text")
     usage = {
         "input_tokens": getattr(msg.usage, "input_tokens", 0) or 0,
@@ -448,7 +671,7 @@ def run_batch_multi(
             custom_id=cid,
             params=MessageCreateParamsNonStreaming(
                 model=model_id,
-                max_tokens=16384,
+                max_tokens=MAX_TOKENS,
                 system=system,
                 messages=[{"role": "user", "content": user}],
             ),
@@ -482,6 +705,7 @@ def run_batch_multi(
         if result.result.type != "succeeded":
             raise RuntimeError(f"Batch item {result.custom_id} failed: {result.result}")
         msg = result.result.message
+        check_complete(msg, f"batch item {result.custom_id}")
         text = "".join(b.text for b in msg.content if getattr(b, "type", None) == "text")
         texts[result.custom_id] = text.strip() + "\n"
         usage["input_tokens"] += getattr(msg.usage, "input_tokens", 0) or 0
@@ -539,6 +763,24 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
+def run_requests(
+    client, model_id: str, system: str, items: list[tuple[str, str]], batch: bool
+) -> tuple[dict, list[str]]:
+    """Run all requests, returning total usage and answers in item order."""
+    if batch:
+        texts_map, usage = run_batch_multi(client, model_id, system, items)
+        return usage, [texts_map[cid] for cid, _ in items]
+    usage = {"input_tokens": 0, "output_tokens": 0}
+    texts: list[str] = []
+    for i, (_cid, user) in enumerate(items, start=1):
+        print(f"  request {i}/{len(items)} ...", flush=True)
+        text, u = call_realtime(client, model_id, system, user)
+        texts.append(text)
+        usage["input_tokens"] += u["input_tokens"]
+        usage["output_tokens"] += u["output_tokens"]
+    return usage, texts
+
+
 def make_client_and_system(src_lang: str, tgt_lang: str):
     api_key = os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("CLAUDE_API_KEY")
     if not api_key:
@@ -569,10 +811,10 @@ def redo_sections(
     unknown = wanted - {s.title for s in sections}
     if unknown:
         print(f"WARN: titles not found in source, ignored: {sorted(unknown)}", flush=True)
-    done = translated_source_titles(dest)
+    started = set(translated_progress(dest))
     by_title = {s.title: s for s in sections}
-    todo = [by_title[t] for t in args.redo_titles if t in done]
-    skipped = wanted - unknown - done
+    todo = [by_title[t] for t in args.redo_titles if t in started]
+    skipped = wanted - unknown - started
     if skipped:
         print(
             f"Not translated yet, nothing to redo (will be picked up by future "
@@ -584,7 +826,7 @@ def redo_sections(
         return 0
 
     words = sum(sec.word_count for sec in todo)
-    inp_est, out_est = estimate_tokens(todo, "", False)
+    inp_est, out_est = estimate_tokens(sum(len(u.text) + 1 for s in todo for u in section_units(s)))
     usd = estimate_usd(model_id, inp_est, out_est, args.batch)
     print("=== redo translation estimate ===", flush=True)
     print(f"Target:  {dest.name}  ({src_lang} -> {tgt_lang})", flush=True)
@@ -609,29 +851,35 @@ def redo_sections(
         return 2
 
     stamp = int(time.time())
-    items = [(f"{stamp}-redo{i}", fragment_user_message(None, [sec])) for i, sec in enumerate(todo)]
-    if args.batch:
-        texts_map, usage = run_batch_multi(client, model_id, system, items)
-        chunks = [texts_map[cid] for cid, _ in items]
-    else:
-        usage = {"input_tokens": 0, "output_tokens": 0}
-        chunks = []
-        for _cid, user in items:
-            chunk, u = call_realtime(client, model_id, system, user)
-            chunks.append(chunk)
-            usage["input_tokens"] += u["input_tokens"]
-            usage["output_tokens"] += u["output_tokens"]
+    items: list[tuple[str, str]] = []
+    owner: list[str] = []  # section title each request belongs to
+    for i, sec in enumerate(todo):
+        units = section_units(sec)
+        for j, user in enumerate(piece_requests(Piece(sec, 0, len(units), len(units)))):
+            items.append((f"{stamp}-redo{i}-{j}", user))
+            owner.append(sec.title)
+    usage, texts = run_requests(client, model_id, system, items, args.batch)
 
-    # Replace the marked blocks in place, keeping file order untouched.
+    fresh: dict[str, str] = {}
+    for title, text in zip(owner, texts):
+        fresh[title] = (fresh.get(title, "") + "\n\n" + text.strip()).strip()
+
+    # Replace the marked blocks in place, keeping file order untouched. A
+    # section translated in several runs collapses back into one block.
     header, blocks = split_marked_blocks(dest.read_text(encoding="utf-8"))
-    fresh = {sec.title: chunk for sec, chunk in zip(todo, chunks)}
-    pieces = [header] if header else []
-    for title, body in blocks:
-        if title in fresh:
-            body = format_translated_markdown(fresh[title], wrap_width).strip("\n")
-        pieces.append(H1_MARK if title is None else src_mark(title))
-        pieces.append(body)
-    dest.write_text("\n\n".join(p for p in pieces if p) + "\n", encoding="utf-8")
+    written: set[str] = set()
+    out_parts = [header] if header else []
+    for b in blocks:
+        if b.title in fresh:
+            if b.title in written:
+                continue  # drop the leftover partial blocks of this section
+            written.add(b.title)
+            out_parts.append(src_mark(b.title))
+            out_parts.append(format_translated_markdown(fresh[b.title], wrap_width).strip("\n"))
+            continue
+        out_parts.append(H1_MARK if b.title is None else src_mark(b.title, b.done, b.total))
+        out_parts.append(b.body)
+    dest.write_text("\n\n".join(p for p in out_parts if p) + "\n", encoding="utf-8")
 
     pin, pout = PRICE_IN_OUT[model_id]
     actual = (usage["input_tokens"] / 1e6) * pin + (usage["output_tokens"] / 1e6) * pout
@@ -678,43 +926,63 @@ def main() -> int:
     if args.redo_titles:
         return redo_sections(args, dest, sections, src_lang, tgt_lang, model_id, wrap_width)
 
-    done = translated_source_titles(dest)
-    portion_secs = select_next_portion(sections, done, args.portion)
-    if not portion_secs:
+    progress = translated_progress(dest)
+    try:
+        portion, cut_note = select_next_pieces(sections, progress, args.portion)
+    except PortionError as exc:
+        print(
+            f"ERROR: cannot split the text into portions: {exc}.\n"
+            "Check the source: a text without paragraph or sentence breaks of a "
+            "usable size cannot be translated in portions. Raise --portion to take "
+            "the whole section at once.",
+            file=sys.stderr,
+        )
+        return 2
+    if not portion:
         print("Nothing left to translate (all main stories present in target file).", flush=True)
         return 0
 
     include_front = args.include_front or (not dest.exists())
-    front: list[Section] = []
+    front: list[Piece] = []
     if include_front:
         for s in sections:
-            if s.title == "Przedmowa" and s.title not in done:
-                front.append(s)
+            if s.title == "Przedmowa" and s.title not in progress:
+                n = len(section_units(s))
+                front.append(Piece(s, 0, n, n))
     # The book title belongs to the file only once, at its very top.
     need_h1 = include_front and bool(h1) and H1_MARK not in (
         dest.read_text(encoding="utf-8") if dest.exists() else ""
     )
 
-    to_translate = front + portion_secs
-    words = sum(s.word_count for s in to_translate)
-    main_total = sum(s.word_count for s in sections if s.is_main_story) or 1
-    main_share = sum(s.word_count for s in portion_secs) / main_total * 100
+    to_translate = front + portion
+    chars = sum(p.chars for p in to_translate)
+    main_total = sum(units_chars(section_units(s)) for s in sections if s.is_main_story) or 1
+    main_share = sum(p.chars for p in portion) / main_total * 100
 
-    inp_est, out_est = estimate_tokens(to_translate, h1 if need_h1 else "", include_front)
+    inp_est, out_est = estimate_tokens(chars + (len(h1) if need_h1 else 0))
     usd = estimate_usd(model_id, inp_est, out_est, args.batch)
 
     print("=== book translate estimate ===", flush=True)
     print(f"Source:  {source}", flush=True)
     print(f"Target:  {dest.name}  ({src_lang} -> {tgt_lang})", flush=True)
     print(f"Model:   {model_id}  batch={args.batch}  wrap_width={wrap_width}", flush=True)
-    print(f"Portion: ~{main_share:.1f}% of main stories (request {args.portion}%, window {args.portion*PORTION_LO:.0f}-{args.portion*PORTION_HI:.0f}%)", flush=True)
+    print(
+        f"Portion: ~{main_share:.1f}% of main content (request {args.portion}%, "
+        f"window {args.portion*PORTION_LO:.0f}-{args.portion*PORTION_HI:.0f}%, "
+        f"min {MIN_PORTION_CHARS} chars), cut at {cut_note}",
+        flush=True,
+    )
     print("Sections:", flush=True)
-    for s in to_translate:
-        label = s.title or "(H1/preamble)"
-        print(f"  - {label}  ({s.word_count} words)", flush=True)
+    for p in to_translate:
+        where = ""
+        if not (p.is_section_start and p.is_section_end):
+            where = f", sentences {p.start + 1}-{p.end} of {p.total_units}"
+            if p.is_section_end:
+                where += " (completes it)"
+        print(f"  - {p.section.title}  ({p.chars} chars{where})", flush=True)
     if need_h1:
         print(f"  - [H1] {h1.replace(chr(10), ' / ')}", flush=True)
-    print(f"Words≈{words}; est tokens in≈{inp_est} out≈{out_est}; est USD≈${usd:.3f}", flush=True)
+    print(f"Chars≈{chars}; est tokens in≈{inp_est} out≈{out_est}; est USD≈${usd:.3f}", flush=True)
 
     if args.estimate_only:
         return 0
@@ -732,30 +1000,32 @@ def main() -> int:
     if client is None:
         return 2
 
-    # One API item per section (plus optional H1) so long stories do not hit max_tokens.
+    # Every piece is split into request-sized chunks so that no single answer
+    # can run into the token limit and come back cut off mid-word.
     stamp = int(time.time())
     items: list[tuple[str, str]] = []
-    labels: list[str | None] = []  # source title per item; None = H1
+    owner: list[int] = []  # index into to_translate; -1 = H1
     if need_h1:
         items.append((f"{stamp}-h1", fragment_user_message(h1, [])))
-        labels.append(None)
-    for i, sec in enumerate(to_translate):
-        items.append((f"{stamp}-s{i}", fragment_user_message(None, [sec])))
-        labels.append(sec.title)
+        owner.append(-1)
+    for i, piece in enumerate(to_translate):
+        for j, user in enumerate(piece_requests(piece)):
+            items.append((f"{stamp}-p{i}-{j}", user))
+            owner.append(i)
+    print(f"Requests: {len(items)}", flush=True)
 
-    if args.batch:
-        texts_map, usage = run_batch_multi(client, model_id, system, items)
-        chunks = [texts_map[cid] for cid, _ in items]
-    else:
-        usage = {"input_tokens": 0, "output_tokens": 0}
-        chunks = []
-        for _cid, user in items:
-            chunk, u = call_realtime(client, model_id, system, user)
-            chunks.append(chunk)
-            usage["input_tokens"] += u["input_tokens"]
-            usage["output_tokens"] += u["output_tokens"]
+    usage, texts = run_requests(client, model_id, system, items, args.batch)
 
-    append_translated_blocks(dest, list(zip(labels, chunks)), wrap_width)
+    joined: dict[int, str] = {}
+    for idx, text in zip(owner, texts):
+        joined[idx] = (joined.get(idx, "") + "\n\n" + text.strip()).strip()
+    blocks: list[tuple[str, str]] = []
+    if need_h1:
+        blocks.append((H1_MARK, joined[-1]))
+    for i, piece in enumerate(to_translate):
+        blocks.append((src_mark(piece.section.title, piece.end, piece.total_units), joined[i]))
+
+    append_translated_blocks(dest, blocks, wrap_width)
     pin, pout = PRICE_IN_OUT[model_id]
     actual = (usage["input_tokens"] / 1e6) * pin + (usage["output_tokens"] / 1e6) * pout
     if args.batch:
