@@ -38,6 +38,11 @@ Re-translating sections whose source text changed (e.g. after re-extracting
 lost pages), in place, only if they are already present in the working file:
   python src\\book_translate\\translate_book.py --book Wojna_Futbolowa --to RU \\
       --model sonnet --batch --yes --redo-titles "Lumumba" "Prezesi"
+
+Applying an already-ended Message Batch after a local wait was interrupted
+(no new generation charge; portion must still match current progress):
+  python src\\book_translate\\translate_book.py --book Wojna_Futbolowa --to RU \\
+      --model opus --batch --yes --apply-batch msgbatch_01...
 """
 
 from __future__ import annotations
@@ -659,6 +664,64 @@ def call_realtime(client, model_id: str, system: str, user: str) -> tuple[str, d
     return text.strip() + "\n", usage
 
 
+def parse_batch_slot(custom_id: str) -> tuple[int, int]:
+    """Map a batch custom_id to (piece_index, chunk_index); piece -1 = H1."""
+    if custom_id.endswith("-h1"):
+        return (-1, 0)
+    m = re.search(r"-p(\d+)-(\d+)$", custom_id)
+    if not m:
+        raise RuntimeError(f"Unrecognized batch custom_id: {custom_id}")
+    return int(m.group(1)), int(m.group(2))
+
+
+def fetch_ended_batch_results(client, batch_id: str) -> tuple[dict[str, str], dict]:
+    """Load texts/usage from an already-ended Message Batch (no new spend)."""
+    batch = client.messages.batches.retrieve(batch_id)
+    status = batch.processing_status
+    counts = getattr(batch, "request_counts", None)
+    extra = ""
+    if counts:
+        extra = (
+            f" succeeded={getattr(counts, 'succeeded', '?')}"
+            f" errored={getattr(counts, 'errored', '?')}"
+            f" processing={getattr(counts, 'processing', '?')}"
+        )
+    print(f"Batch {batch_id}: status={status}{extra}", flush=True)
+    if status != "ended":
+        raise RuntimeError(
+            f"Batch {batch_id} is not finished yet (status={status}). "
+            "Wait for it to end, or keep polling with a normal --batch run."
+        )
+
+    texts: dict[str, str] = {}
+    usage = {"input_tokens": 0, "output_tokens": 0}
+    for result in client.messages.batches.results(batch_id):
+        if result.result.type != "succeeded":
+            raise RuntimeError(f"Batch item {result.custom_id} failed: {result.result}")
+        msg = result.result.message
+        check_complete(msg, f"batch item {result.custom_id}")
+        text = "".join(b.text for b in msg.content if getattr(b, "type", None) == "text")
+        texts[result.custom_id] = text.strip() + "\n"
+        usage["input_tokens"] += getattr(msg.usage, "input_tokens", 0) or 0
+        usage["output_tokens"] += getattr(msg.usage, "output_tokens", 0) or 0
+    return texts, usage
+
+
+def texts_for_slots(
+    texts_map: dict[str, str], expected_slots: list[tuple[int, int]]
+) -> list[str]:
+    """Order batch answers to match the request slots of the current portion."""
+    got = {parse_batch_slot(cid): text for cid, text in texts_map.items()}
+    if set(got) != set(expected_slots):
+        raise RuntimeError(
+            "Batch results do not match the portion currently pending in the "
+            f"working file.\n  expected slots: {expected_slots}\n  got slots: "
+            f"{sorted(got)}\nRefuse to append: the next portion may have changed, "
+            "or this batch belongs to a different run."
+        )
+    return [got[slot] for slot in expected_slots]
+
+
 def run_batch_multi(
     client, model_id: str, system: str, items: list[tuple[str, str]]
 ) -> tuple[dict[str, str], dict]:
@@ -699,17 +762,7 @@ def run_batch_multi(
             raise RuntimeError(f"Batch {batch.id} canceled")
         time.sleep(30)
 
-    texts: dict[str, str] = {}
-    usage = {"input_tokens": 0, "output_tokens": 0}
-    for result in client.messages.batches.results(batch.id):
-        if result.result.type != "succeeded":
-            raise RuntimeError(f"Batch item {result.custom_id} failed: {result.result}")
-        msg = result.result.message
-        check_complete(msg, f"batch item {result.custom_id}")
-        text = "".join(b.text for b in msg.content if getattr(b, "type", None) == "text")
-        texts[result.custom_id] = text.strip() + "\n"
-        usage["input_tokens"] += getattr(msg.usage, "input_tokens", 0) or 0
-        usage["output_tokens"] += getattr(msg.usage, "output_tokens", 0) or 0
+    texts, usage = fetch_ended_batch_results(client, batch.id)
     missing = [cid for cid, _ in items if cid not in texts]
     if missing:
         raise RuntimeError(f"Missing batch results for: {missing}")
@@ -759,6 +812,14 @@ def parse_args() -> argparse.Namespace:
         help="Re-translate these source-language section titles IN PLACE in the "
         "working file (sections not translated yet are skipped). Used when the "
         "source text of already-translated sections has changed.",
+    )
+    p.add_argument(
+        "--apply-batch",
+        metavar="BATCH_ID",
+        default=None,
+        help="Do not submit a new batch: pull an already-ended Message Batch "
+        "(e.g. after the local wait was interrupted) and append it as the "
+        "next pending portion. No extra API spend for generation.",
     )
     return p.parse_args()
 
@@ -983,13 +1044,24 @@ def main() -> int:
     if need_h1:
         print(f"  - [H1] {h1.replace(chr(10), ' / ')}", flush=True)
     print(f"Chars≈{chars}; est tokens in≈{inp_est} out≈{out_est}; est USD≈${usd:.3f}", flush=True)
+    if args.apply_batch:
+        print(
+            f"Apply mode: will pull ended batch {args.apply_batch} "
+            "(no new generation charge) and append as this portion.",
+            flush=True,
+        )
 
     if args.estimate_only:
         return 0
 
     if not args.yes:
         try:
-            ans = input("Proceed with translation? [y/N] ").strip().lower()
+            prompt = (
+                "Proceed with applying this batch? [y/N] "
+                if args.apply_batch
+                else "Proceed with translation? [y/N] "
+            )
+            ans = input(prompt).strip().lower()
         except EOFError:
             ans = "n"
         if ans not in {"y", "yes"}:
@@ -1005,16 +1077,23 @@ def main() -> int:
     stamp = int(time.time())
     items: list[tuple[str, str]] = []
     owner: list[int] = []  # index into to_translate; -1 = H1
+    expected_slots: list[tuple[int, int]] = []
     if need_h1:
         items.append((f"{stamp}-h1", fragment_user_message(h1, [])))
         owner.append(-1)
+        expected_slots.append((-1, 0))
     for i, piece in enumerate(to_translate):
         for j, user in enumerate(piece_requests(piece)):
             items.append((f"{stamp}-p{i}-{j}", user))
             owner.append(i)
+            expected_slots.append((i, j))
     print(f"Requests: {len(items)}", flush=True)
 
-    usage, texts = run_requests(client, model_id, system, items, args.batch)
+    if args.apply_batch:
+        texts_map, usage = fetch_ended_batch_results(client, args.apply_batch)
+        texts = texts_for_slots(texts_map, expected_slots)
+    else:
+        usage, texts = run_requests(client, model_id, system, items, args.batch)
 
     joined: dict[int, str] = {}
     for idx, text in zip(owner, texts):
@@ -1028,7 +1107,7 @@ def main() -> int:
     append_translated_blocks(dest, blocks, wrap_width)
     pin, pout = PRICE_IN_OUT[model_id]
     actual = (usage["input_tokens"] / 1e6) * pin + (usage["output_tokens"] / 1e6) * pout
-    if args.batch:
+    if args.batch or args.apply_batch:
         actual *= BATCH_DISCOUNT
     print(
         f"Saved {dest}  tokens in={usage['input_tokens']} out={usage['output_tokens']} "
