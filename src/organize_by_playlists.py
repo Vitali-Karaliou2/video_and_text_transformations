@@ -55,6 +55,7 @@ from channel_playlists import (
 )
 from playlist_mapping import (
     channel_context,
+    no_playlists_tab,
     playlist_priority,
     slugify_playlist_name,
     unique_folder_name,
@@ -391,9 +392,17 @@ def organize(args: argparse.Namespace) -> int:
         )
 
     print("Fetching channel playlists...")
-    playlists_meta = yt_dlp_flat_json(args, playlists_url)
-    if not playlists_meta:
-        raise SystemExit("No playlists found for this channel.")
+    try:
+        playlists_meta = yt_dlp_flat_json(args, playlists_url)
+    except RuntimeError as exc:
+        if not no_playlists_tab(exc):
+            raise
+        # Nothing to sort the videos into: they all belong to misc/.
+        print("  This channel keeps no playlists; every video goes to misc/.")
+        playlists_meta = []
+    else:
+        if not playlists_meta:
+            raise SystemExit("No playlists found for this channel.")
 
     video_to_playlists: dict[str, list[tuple[str, str, int]]] = {}
     playlist_info: dict[str, dict] = {}

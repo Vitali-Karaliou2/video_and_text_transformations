@@ -792,15 +792,22 @@ def main(argv: list[str] | None = None) -> int:
         if answer in ("n", "no"):
             continue
 
-        grouping = ask_choice(
-            "  Group the summary by playlists? "
-            "(1 = by playlists [bypls], 2 = flat list [allpls], q = quit)",
-            {"1", "2", "q"},
-        )
-        if grouping == "q":
-            print("Quit.", flush=True)
-            break
-        scope = "bypls" if grouping == "1" else "allpls"
+        if cand.get("playlists"):
+            grouping = ask_choice(
+                "  Group the summary by playlists? "
+                "(1 = by playlists [bypls], 2 = flat list [allpls], q = quit)",
+                {"1", "2", "q"},
+            )
+            if grouping == "q":
+                print("Quit.", flush=True)
+                break
+            scope = "bypls" if grouping == "1" else "allpls"
+        else:
+            # Nothing to group by: the channel keeps no playlists, and all
+            # of its videos will live in the one misc folder.
+            print("  This channel has no playlists: a flat list it is.",
+                  flush=True)
+            scope = "allpls"
         lang = (args.lang or cand.get("language") or "ru").lower()
 
         code = run_summary_for(cand, scope, lang, args.container)

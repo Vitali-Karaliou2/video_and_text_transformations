@@ -10,10 +10,10 @@ from typing import Callable
 
 from playlist_mapping import (
     channel_context,
+    channel_playlists_json,
     former_folder_name,
     slugify_playlist_name,
     unique_folder_name,
-    yt_dlp_flat_json,
 )
 from project_paths import (
     browse_cache_path,
@@ -62,8 +62,7 @@ def fetch_channel_playlist_entries(
     channel_id: str,
     run_yt_dlp: Callable[..., object],
 ) -> list[PlaylistEntry]:
-    playlists_url = f"https://www.youtube.com/channel/{channel_id}/playlists"
-    playlists_meta = yt_dlp_flat_json(run_yt_dlp, playlists_url)
+    playlists_meta = channel_playlists_json(run_yt_dlp, channel_id)
     used_folders: set[str] = set()
     entries: list[PlaylistEntry] = []
     context = channel_context(playlists_meta)
@@ -230,6 +229,16 @@ def ensure_playlist_folders(
     root.mkdir(parents=True, exist_ok=True)
     wanted = {pl["folder"] for pl in playlists if pl.get("folder")}
     created: list[str] = []
+    if not wanted:
+        # A channel that keeps no playlists still needs the one folder its
+        # videos go to - the same misc/ that holds whatever falls outside
+        # a playlist elsewhere. Left to itself, _playlists/ would stay
+        # empty and every later step would have nowhere to put a video.
+        misc = root / resolve_misc_folder_name(set())
+        if not misc.is_dir():
+            if create:
+                misc.mkdir(parents=True, exist_ok=True)
+            created.append(misc.name)
     for pl in playlists:
         folder_name = pl.get("folder")
         if not folder_name:
@@ -330,9 +339,16 @@ def sync_channel_playlists(
         )
         if created:
             print(
-                f"Created {len(created)} playlist folder(s) under _playlists/.",
+                f"Created {len(created)} folder(s) under _playlists/: "
+                f"{', '.join(created)}.",
                 flush=True,
             )
+    if not payload["playlists"]:
+        print(
+            "This channel keeps no playlists; its videos go to "
+            f"_playlists/{resolve_misc_folder_name(set())}/.",
+            flush=True,
+        )
     return payload
 
 

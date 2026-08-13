@@ -324,6 +324,17 @@ python src\get_summary_for_channel.py @Channel allpls --new --from 401 --next 20
 | `playlists.json` | Плейлисты канала + алиасы `#A`… |
 | `video_playlists.json` | `video_id → playlist title` |
 
+**Канал без плейлистов.** Бывают каналы, у которых вкладки Playlists нет
+вовсе — только видео. yt-dlp сообщает об этом ошибкой (`This channel does
+not have a playlists tab`), но для проекта это не сбой, а ответ: список
+плейлистов пуст, `playlists.json` сохраняется пустым, и рядом создаётся
+единственная папка `_playlists/misc/` — та же, куда в остальных каналах
+попадают видео вне плейлистов. Туда идут все видео такого канала. Summary
+для него строится плоским списком (`allpls`) — про группировку по
+плейлистам скрипт поиска канала уже не спрашивает, — а
+`transcribe_and_edit_next_bypl.bat` не создаётся: группировать нечего,
+и работает плоский `transcribe_and_edit_next.bat`.
+
 **Smart refresh** (автоматически при каждом обращении):
 
 - `length_curr` уменьшилась → аварийный полный refresh, команда прерывается (в `_summaries` — notice)

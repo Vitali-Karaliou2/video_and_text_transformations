@@ -132,6 +132,38 @@ def _numbered_ratio_for_playlist(video_titles: list[str]) -> float:
     return numbered / len(video_titles)
 
 
+# A channel that never made a playlist has no playlists tab at all, and
+# yt-dlp reports the missing tab as an error.
+NO_PLAYLISTS_TAB = re.compile(r"does not have a playlists tab", re.I)
+
+
+def channel_playlists_url(channel_id: str) -> str:
+    return f"https://www.youtube.com/channel/{channel_id}/playlists"
+
+
+def no_playlists_tab(error: object) -> bool:
+    """Whether this yt-dlp failure means "this channel keeps no playlists"."""
+    return bool(NO_PLAYLISTS_TAB.search(str(error)))
+
+
+def channel_playlists_json(
+    run_yt_dlp: Callable[..., subprocess.CompletedProcess],
+    channel_id: str,
+) -> list[dict]:
+    """Every playlist of a channel - and none is an answer, not a failure.
+
+    A channel can simply have videos and nothing else; then all of them
+    belong to the misc folder, and the rest of the pipeline works from
+    an empty playlist list.
+    """
+    try:
+        return yt_dlp_flat_json(run_yt_dlp, channel_playlists_url(channel_id))
+    except RuntimeError as exc:
+        if no_playlists_tab(exc):
+            return []
+        raise
+
+
 def yt_dlp_flat_json(run_yt_dlp: Callable[..., subprocess.CompletedProcess], url: str) -> list[dict]:
     proc = run_yt_dlp("--flat-playlist", "--dump-json", url)
     if proc.returncode != 0:
@@ -170,8 +202,7 @@ def build_video_playlist_catalog(
     url, index in the winning playlist) so summaries can also list videos that
     appear only in playlists and not in the channel Videos/uploads feed.
     """
-    playlists_url = f"https://www.youtube.com/channel/{channel_id}/playlists"
-    playlists_meta = yt_dlp_flat_json(run_yt_dlp, playlists_url)
+    playlists_meta = channel_playlists_json(run_yt_dlp, channel_id)
     if not playlists_meta:
         return {}, {}
 
