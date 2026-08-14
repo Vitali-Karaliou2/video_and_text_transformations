@@ -62,6 +62,7 @@ from transcribe_videos import (
     run_tool,
     watch_url,
 )
+from yt_dlp_opts import cookie_args
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -113,15 +114,6 @@ CONTENT_TYPE_SUFFIX = {
     "application/vnd.oasis.opendocument.presentation": ".odp",
     "application/zip": ".zip",
 }
-
-
-def cookie_args(cookies: Path | None, browser: str | None) -> list[str]:
-    """yt-dlp cookie options; YouTube asks for them when it suspects a bot."""
-    if cookies:
-        return ["--cookies", str(cookies)]
-    if browser:
-        return ["--cookies-from-browser", browser]
-    return []
 
 
 def video_id_from_stem(stem: str) -> str | None:

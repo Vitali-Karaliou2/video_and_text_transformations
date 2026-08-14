@@ -93,6 +93,7 @@ from glossary import (
     load_terms,
     whisper_prompt,
 )
+from yt_dlp_opts import youtube_media_args
 from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
 from silences import SILENCE_MIN_SECONDS, SilenceIndex, load_silences
 from transcription_pricing import get_transcription_rate
@@ -1095,19 +1096,34 @@ def write_video_info(
     return path
 
 
-def download_audio(url: str, tmp_dir: Path) -> Path:
+def download_audio(
+    url: str,
+    tmp_dir: Path,
+    *,
+    cookies: Path | None = None,
+    cookies_from_browser: str | None = None,
+) -> Path:
     """Download only the audio track of the video into tmp_dir."""
     result = run_tool(
         [
             sys.executable, "-m", "yt_dlp",
             "-f", "bestaudio/best",
             "--no-playlist",
+            *youtube_media_args(cookies, cookies_from_browser),
             "-o", str(tmp_dir / "audio.%(ext)s"),
             url,
         ]
     )
     if result.returncode != 0:
-        raise SystemExit(f"Audio download failed:\n{result.stderr.strip()}")
+        err = (result.stderr or result.stdout or "").strip()
+        hint = ""
+        if "403" in err or "Forbidden" in err:
+            hint = (
+                "\nYouTube refused the media URL. Retry with "
+                "--cookies-from-browser firefox (browser closed), "
+                "or --cookies path\\to\\cookies.txt."
+            )
+        raise SystemExit(f"Audio download failed:\n{err}{hint}")
     for path in tmp_dir.iterdir():
         if path.is_file() and path.stem == "audio":
             return path
@@ -1433,7 +1449,12 @@ def remote_session(
             else:
                 tmp_dir = Path(tempfile.mkdtemp(prefix="yt_audio_"))
                 print("  Downloading the audio track...", flush=True)
-                source = download_audio(entry["url"], tmp_dir)
+                source = download_audio(
+                    entry["url"],
+                    tmp_dir,
+                    cookies=args.cookies,
+                    cookies_from_browser=args.cookies_from_browser,
+                )
             total_minutes += transcribe_video(
                 source,
                 api_key=api_key,
@@ -1582,6 +1603,26 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "Course glossary handed to the recognizer, one term per line "
             f"(default: {GLOSSARY_FILENAME} of the playlist folder, then of "
             "the channel folder)"
+        ),
+    )
+    parser.add_argument(
+        "--cookies-from-browser",
+        default=None,
+        metavar="BROWSER",
+        help=(
+            "Take YouTube cookies from this browser (firefox / chrome / "
+            "edge) when remote audio download is refused; the browser "
+            "must be closed"
+        ),
+    )
+    parser.add_argument(
+        "--cookies",
+        type=Path,
+        default=None,
+        metavar="FILE",
+        help=(
+            "cookies.txt exported from a browser (Netscape format); takes "
+            "precedence over --cookies-from-browser"
         ),
     )
     parser.add_argument(

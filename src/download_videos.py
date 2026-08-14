@@ -47,7 +47,7 @@ _SRC_DIR = Path(__file__).resolve().parent
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from download_presentations import cookie_args, offer_presentation
+from download_presentations import offer_presentation
 from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
 from transcribe_videos import (
     PauseWatcher,
@@ -62,6 +62,7 @@ from transcribe_videos import (
     remote_stem,
     stem_budget,
 )
+from yt_dlp_opts import cookie_args, youtube_media_args
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -114,7 +115,7 @@ def download_video(
         "--progress-delta", PROGRESS_DELTA_SECONDS,
         "-o", template,
     ]
-    cmd += cookie_args(args.cookies, args.cookies_from_browser)
+    cmd += youtube_media_args(args.cookies, args.cookies_from_browser)
     cmd.append(job["url"])
 
     process = subprocess.Popen(
