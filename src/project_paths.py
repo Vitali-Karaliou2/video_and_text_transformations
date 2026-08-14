@@ -10,6 +10,9 @@ from pathlib import Path
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CHANNELS_DIRNAME = "_channels"
 PLAYLISTS_DIRNAME = "_playlists"
+# Hand-written lists of unlisted videos (one URL or id per line); the
+# file stem is the local playlist folder name under _playlists/.
+UNLISTED_PLAYLISTS_DIRNAME = "_playlists_unlisted"
 LEGACY_CACHE_DIRNAME = "cache"
 INVALID_PATH_CHARS = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
 
@@ -90,6 +93,10 @@ def channel_cache_dir(channel_root: Path) -> Path:
 
 def channel_playlists_dir(channel_root: Path) -> Path:
     return channel_root / PLAYLISTS_DIRNAME
+
+
+def unlisted_playlists_dir(channel_root: Path) -> Path:
+    return channel_root / UNLISTED_PLAYLISTS_DIRNAME
 
 
 def is_channel_root(path: Path) -> bool:

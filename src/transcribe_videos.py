@@ -913,6 +913,58 @@ def fetch_playlist_entries(playlist_id: str) -> list[dict]:
     return entries
 
 
+def duration_text_to_seconds(text: object) -> float | None:
+    raw = str(text or "").strip()
+    if not raw or "?" in raw:
+        return None
+    parts = raw.split(":")
+    try:
+        nums = [int(part) for part in parts]
+    except ValueError:
+        return None
+    if len(nums) == 3:
+        return float(nums[0] * 3600 + nums[1] * 60 + nums[2])
+    if len(nums) == 2:
+        return float(nums[0] * 60 + nums[1])
+    if len(nums) == 1:
+        return float(nums[0])
+    return None
+
+
+def load_unlisted_playlist_entries(
+    channel_dir: Path, playlist_folder: str
+) -> list[dict]:
+    """Entries of a hand-written series under _playlists_unlisted/<folder>.txt."""
+    from channel_playlists import (
+        load_unlisted_playlist_files,
+        load_video_playlist_details,
+    )
+
+    for entry in load_unlisted_playlist_files(channel_dir):
+        if entry["folder"] != playlist_folder:
+            continue
+        details = load_video_playlist_details(channel_dir) or {}
+        jobs: list[dict] = []
+        for index, video_id in enumerate(entry["video_ids"], start=1):
+            meta = details.get(video_id) or {}
+            jobs.append(
+                {
+                    "id": video_id,
+                    "title": str(meta.get("title") or "").strip(),
+                    "duration": duration_text_to_seconds(
+                        meta.get("duration_text")
+                    ),
+                    "index": index,
+                    "url": meta.get("url") or watch_url(video_id),
+                }
+            )
+        return jobs
+    raise SystemExit(
+        f"Unlisted playlist folder {playlist_folder!r} has no matching "
+        f"file under {channel_dir / '_playlists_unlisted'}"
+    )
+
+
 def fetch_video_info(url: str) -> dict:
     return yt_dlp_json(["--no-playlist", "-J", url])
 
@@ -1177,11 +1229,19 @@ def remote_session(
             f'({playlist_meta["id"]})',
             flush=True,
         )
-        print("Fetching the playlist entry list...", flush=True)
+        playlist_id = str(playlist_meta["id"] or "")
+        if playlist_id.startswith("unlisted:"):
+            print("Loading the hand-written unlisted series...", flush=True)
+            raw_entries = load_unlisted_playlist_entries(
+                channel_dir, args.playlist_folder
+            )
+        else:
+            print("Fetching the playlist entry list...", flush=True)
+            raw_entries = fetch_playlist_entries(playlist_id)
         jobs = [
             {**entry, "folder": args.playlist_folder,
              "playlist_meta": playlist_meta}
-            for entry in fetch_playlist_entries(playlist_meta["id"])
+            for entry in raw_entries
         ]
         scope_note = "in the playlist"
 

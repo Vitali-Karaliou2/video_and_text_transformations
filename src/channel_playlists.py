@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
@@ -12,6 +13,7 @@ from playlist_mapping import (
     channel_context,
     channel_playlists_json,
     former_folder_name,
+    seconds_to_duration_text,
     slugify_playlist_name,
     unique_folder_name,
 )
@@ -22,6 +24,7 @@ from project_paths import (
     iter_channel_roots,
     legacy_cache_path,
     playlists_cache_path,
+    unlisted_playlists_dir,
     video_playlists_cache_path,
 )
 
@@ -189,6 +192,200 @@ def is_misc_folder(folder_name: str, playlist_folders: set[str]) -> bool:
     return normalized == "misc"
 
 
+UNLISTED_SOURCE = "unlisted"
+VIDEO_ID_RE = re.compile(r"^[\w-]{11}$")
+VIDEO_URL_RE = re.compile(
+    r"(?:v=|youtu\.be/|/shorts/|/live/)([\w-]{11})"
+)
+
+
+def is_unlisted_playlist(playlist: dict) -> bool:
+    return playlist.get("source") == UNLISTED_SOURCE
+
+
+def youtube_playlists_only(playlists: list[dict]) -> list[dict]:
+    return [pl for pl in playlists if not is_unlisted_playlist(pl)]
+
+
+def title_from_unlisted_folder(folder: str) -> str:
+    """AI_Capabilities_and_Limitations -> AI Capabilities and Limitations."""
+    return folder.replace("_", " ").strip() or folder
+
+
+def unlisted_playlist_id(folder: str) -> str:
+    return f"{UNLISTED_SOURCE}:{folder}"
+
+
+def video_id_from_ref(text: str) -> str | None:
+    """A watch URL or a bare 11-character id; blank and comment lines skip."""
+    line = text.strip()
+    if not line or line.startswith("#"):
+        return None
+    if VIDEO_ID_RE.fullmatch(line):
+        return line
+    match = VIDEO_URL_RE.search(line)
+    return match.group(1) if match else None
+
+
+def read_unlisted_video_ids(path: Path) -> list[str]:
+    ids: list[str] = []
+    seen: set[str] = set()
+    for line in path.read_text(encoding="utf-8").splitlines():
+        vid = video_id_from_ref(line)
+        if not vid or vid in seen:
+            continue
+        seen.add(vid)
+        ids.append(vid)
+    return ids
+
+
+def load_unlisted_playlist_files(channel_root: Path) -> list[dict]:
+    """Playlists declared under _playlists_unlisted/<folder>.txt.
+
+    The file stem is the folder name under _playlists/; the title is that
+    name with underscores turned into spaces. Each non-empty line is a
+    watch URL or a bare video id, in the order they should appear.
+    """
+    root = unlisted_playlists_dir(channel_root)
+    if not root.is_dir():
+        return []
+    entries: list[dict] = []
+    for path in sorted(root.glob("*.txt")):
+        folder = path.stem.strip()
+        if not folder:
+            continue
+        video_ids = read_unlisted_video_ids(path)
+        if not video_ids:
+            print(
+                f"WARNING: unlisted playlist {path.name} has no video ids; "
+                "skipped.",
+                flush=True,
+            )
+            continue
+        entries.append(
+            {
+                "id": unlisted_playlist_id(folder),
+                "title": title_from_unlisted_folder(folder),
+                "folder": folder,
+                "source": UNLISTED_SOURCE,
+                "video_ids": video_ids,
+            }
+        )
+    return entries
+
+
+def merge_unlisted_playlists(
+    playlists: list[dict], channel_root: Path
+) -> tuple[list[dict], bool]:
+    """Keep YouTube playlists; replace hand-written unlisted ones from files."""
+    youtube = youtube_playlists_only(playlists)
+    used = {pl.get("folder") for pl in youtube if pl.get("folder")}
+    unlisted = load_unlisted_playlist_files(channel_root)
+    merged: list[dict] = list(youtube)
+    for entry in unlisted:
+        folder = entry["folder"]
+        if folder in used:
+            print(
+                f"WARNING: unlisted playlist folder {folder!r} collides "
+                "with a YouTube playlist; skipped.",
+                flush=True,
+            )
+            continue
+        used.add(folder)
+        merged.append(
+            {
+                "id": entry["id"],
+                "title": entry["title"],
+                "folder": folder,
+                "source": UNLISTED_SOURCE,
+            }
+        )
+    before = [
+        (pl.get("id"), pl.get("folder"), pl.get("title"), pl.get("source"))
+        for pl in playlists
+    ]
+    after = [
+        (pl.get("id"), pl.get("folder"), pl.get("title"), pl.get("source"))
+        for pl in merged
+    ]
+    return merged, before != after
+
+
+def fetch_unlisted_video_detail(
+    video_id: str,
+    run_yt_dlp: Callable[..., object],
+) -> dict:
+    """Title and duration for one unlisted video (by watch URL)."""
+    url = f"https://www.youtube.com/watch?v={video_id}"
+    proc = run_yt_dlp(
+        "--skip-download",
+        "--print",
+        "%(.{id,title,duration})j",
+        url,
+    )
+    if getattr(proc, "returncode", 1) != 0:
+        err = (getattr(proc, "stderr", "") or getattr(proc, "stdout", "") or "").strip()
+        raise RuntimeError(
+            f"yt-dlp failed for unlisted video {video_id}:\n{err[:2000]}"
+        )
+    line = (getattr(proc, "stdout", "") or "").strip().splitlines()
+    if not line:
+        raise RuntimeError(f"yt-dlp returned no metadata for {video_id}")
+    info = json.loads(line[0])
+    return {
+        "title": info.get("title") or video_id,
+        "duration_text": seconds_to_duration_text(info.get("duration")),
+        "url": url,
+    }
+
+
+def apply_unlisted_to_video_map(
+    channel_root: Path,
+    mapping: dict[str, str],
+    details: dict[str, dict],
+    run_yt_dlp: Callable[..., object] | None = None,
+) -> tuple[dict[str, str], dict[str, dict], int]:
+    """Map every video listed under _playlists_unlisted/ to its series.
+
+    Unlisted course videos never appear in the channel Videos feed, so the
+    hand-written list is the only place they show up; missing titles are
+    filled via yt-dlp when a runner is given.
+    """
+    added = 0
+    mapping = dict(mapping)
+    details = {vid: dict(meta) for vid, meta in details.items()}
+    for entry in load_unlisted_playlist_files(channel_root):
+        title = entry["title"]
+        for index, video_id in enumerate(entry["video_ids"], start=1):
+            if mapping.get(video_id) != title:
+                added += 1
+            mapping[video_id] = title
+            prev = details.get(video_id) or {}
+            meta = {
+                "title": prev.get("title") or video_id,
+                "duration_text": prev.get("duration_text"),
+                "url": prev.get("url")
+                or f"https://www.youtube.com/watch?v={video_id}",
+                "playlist_index": index,
+            }
+            if (
+                run_yt_dlp is not None
+                and (meta["title"] == video_id or not meta["duration_text"])
+            ):
+                try:
+                    fetched = fetch_unlisted_video_detail(video_id, run_yt_dlp)
+                except RuntimeError as exc:
+                    print(f"WARNING: {exc}", flush=True)
+                else:
+                    meta["title"] = fetched["title"] or meta["title"]
+                    meta["duration_text"] = (
+                        fetched["duration_text"] or meta["duration_text"]
+                    )
+                    meta["url"] = fetched["url"]
+            details[video_id] = meta
+    return mapping, details, added
+
+
 def rename_folder_of_an_older_rule(
     root: Path, pl: dict, wanted: set[str]
 ) -> bool:
@@ -300,10 +497,22 @@ def sync_channel_playlists(
 
     need_fetch = force_fetch or cached is None or is_first_access_today(cached)
     if not need_fetch and cached:
-        if ensure_playlist_aliases(cached):
+        playlists, unlisted_changed = merge_unlisted_playlists(
+            cached.get("playlists", []), channel_root
+        )
+        cached["playlists"] = playlists
+        alias_changed = ensure_playlist_aliases(cached)
+        if unlisted_changed or alias_changed:
             save_playlists_cache(cache_path, cached)
+            if unlisted_changed:
+                print(
+                    "Merged hand-written playlists from _playlists_unlisted/.",
+                    flush=True,
+                )
         if create_folders:
-            ensure_playlist_folders(channel_root, cached.get("playlists", []), create=True)
+            ensure_playlist_folders(
+                channel_root, cached.get("playlists", []), create=True
+            )
         return cached
 
     entries = fetch_channel_playlist_entries(channel_id, run_yt_dlp)
@@ -316,13 +525,17 @@ def sync_channel_playlists(
 
     if cached:
         added, removed = compare_playlist_lists(
-            cached.get("playlists", []),
-            payload["playlists"],
+            youtube_playlists_only(cached.get("playlists", [])),
+            youtube_playlists_only(payload["playlists"]),
         )
         if added or removed:
             report_playlist_changes(added, removed)
             check_removed_playlist_references(removed, referenced_folders)
         if not update_cache and not force_fetch:
+            playlists, _ = merge_unlisted_playlists(
+                cached.get("playlists", []), channel_root
+            )
+            cached["playlists"] = playlists
             return cached
     else:
         print(
@@ -330,9 +543,18 @@ def sync_channel_playlists(
             flush=True,
         )
 
+    playlists, unlisted_changed = merge_unlisted_playlists(
+        payload["playlists"], channel_root
+    )
+    payload["playlists"] = playlists
     if update_cache or cached is None or force_fetch:
         assign_playlist_aliases(payload["playlists"])
         save_playlists_cache(cache_path, payload)
+        if unlisted_changed:
+            print(
+                "Merged hand-written playlists from _playlists_unlisted/.",
+                flush=True,
+            )
     if create_folders:
         created = ensure_playlist_folders(
             channel_root, payload["playlists"], create=True
@@ -343,7 +565,9 @@ def sync_channel_playlists(
                 f"{', '.join(created)}.",
                 flush=True,
             )
-    if not payload["playlists"]:
+    if not youtube_playlists_only(payload["playlists"]) and not any(
+        is_unlisted_playlist(pl) for pl in payload["playlists"]
+    ):
         print(
             "This channel keeps no playlists; its videos go to "
             f"_playlists/{resolve_misc_folder_name(set())}/.",

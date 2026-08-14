@@ -40,6 +40,7 @@ from summary_helpers import (
 )
 from channel_browse import fetch_channel_name
 from channel_playlists import (
+    apply_unlisted_to_video_map,
     ensure_playlist_aliases,
     load_video_playlist_details,
     load_video_playlist_map,
@@ -431,6 +432,8 @@ def resolve_playlist_map(
     Detail fields are required when --include-playlist-only is set; an older
     cache that only has the map is rebuilt in that case.
     """
+    mapping: dict[str, str] | None = None
+    details: dict[str, dict] = {}
     if not force_refresh:
         cached_map = load_video_playlist_map(channel_root)
         cached_details = load_video_playlist_details(channel_root) or {}
@@ -439,22 +442,35 @@ def resolve_playlist_map(
                 f"Using cached video playlist map ({len(cached_map)} entries).",
                 flush=True,
             )
-            return cached_map, cached_details
-        if cached_map and need_details and not cached_details:
+            mapping, details = cached_map, cached_details
+        elif cached_map and need_details and not cached_details:
             print(
                 "Cached playlist map has no video details; rebuilding for "
                 "--include-playlist-only...",
                 flush=True,
             )
-    print("Fetching playlists via yt-dlp...", flush=True)
-    try:
-        mapping, details = build_video_playlist_catalog(
-            channel_id, lambda *a, **k: yt_dlp_run(args, *a, **k)
+    if mapping is None:
+        print("Fetching playlists via yt-dlp...", flush=True)
+        try:
+            mapping, details = build_video_playlist_catalog(
+                channel_id, lambda *a, **k: yt_dlp_run(args, *a, **k)
+            )
+        except RuntimeError as exc:
+            raise SystemExit(
+                f"Playlist lookup failed (playlist column is required):\n{exc}"
+            ) from exc
+
+    mapping, details, unlisted_added = apply_unlisted_to_video_map(
+        channel_root,
+        mapping,
+        details,
+        run_yt_dlp=lambda *a, **k: yt_dlp_run(args, *a, **k),
+    )
+    if unlisted_added:
+        print(
+            f"Mapped {unlisted_added} video(s) from _playlists_unlisted/.",
+            flush=True,
         )
-    except RuntimeError as exc:
-        raise SystemExit(
-            f"Playlist lookup failed (playlist column is required):\n{exc}"
-        ) from exc
     save_video_playlist_map(channel_root, mapping, details)
     return mapping, details
 

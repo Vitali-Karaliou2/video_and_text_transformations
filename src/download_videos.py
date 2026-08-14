@@ -55,6 +55,7 @@ from transcribe_videos import (
     fetch_playlist_entries,
     load_channel_flat_jobs,
     load_playlist_meta,
+    load_unlisted_playlist_entries,
     local_media_by_id,
     next_label,
     normalize_next_count,
@@ -152,10 +153,18 @@ def collect_jobs(
 
     meta = load_playlist_meta(channel_dir, args.playlist_folder)
     print(f'YouTube playlist: "{meta["title"]}" ({meta["id"]})', flush=True)
-    print("Fetching the playlist entry list...", flush=True)
+    playlist_id = str(meta["id"] or "")
+    if playlist_id.startswith("unlisted:"):
+        print("Loading the hand-written unlisted series...", flush=True)
+        raw_entries = load_unlisted_playlist_entries(
+            channel_dir, args.playlist_folder
+        )
+    else:
+        print("Fetching the playlist entry list...", flush=True)
+        raw_entries = fetch_playlist_entries(playlist_id)
     jobs = [
         {**entry, "folder": args.playlist_folder}
-        for entry in fetch_playlist_entries(meta["id"])
+        for entry in raw_entries
     ]
     return jobs, "in the playlist"
 
