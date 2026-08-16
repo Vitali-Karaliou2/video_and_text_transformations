@@ -590,8 +590,14 @@ def add_toc_entry(doc: Document, title: str, anchor: str) -> None:
 
 
 def write_docx(
-    path: Path, template: Path, h1: str, sections: list[Section]
+    path: Path,
+    template: Path,
+    h1: str,
+    sections: list[Section],
+    *,
+    toc_title: str | None = None,
 ) -> Path:
+    toc_name = toc_title or TOC_TITLE
     doc = Document(str(template)) if template.exists() else Document()
     clear_document_body(doc)
     add_page_numbers(doc)
@@ -601,7 +607,7 @@ def write_docx(
     bookmarks: dict[str, str] = {}
     bookmark_id = 1
     for sec in sections:
-        if sec.title == TOC_TITLE:
+        if sec.title == toc_name:
             continue
         name = bookmark_name(bookmark_id)
         bookmarks[sec.title] = name
@@ -609,7 +615,7 @@ def write_docx(
 
     next_id = 1
     for sec in sections:
-        if sec.title == TOC_TITLE:
+        if sec.title == toc_name:
             add_h2_with_bookmark(doc, sec.title, None, None)
             for title in sec.paragraphs:
                 anchor = bookmarks.get(title)

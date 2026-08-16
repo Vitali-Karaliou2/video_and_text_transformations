@@ -71,9 +71,20 @@ MIN_PORTION_CHARS = 5000
 MAX_REQUEST_CHARS = 12000
 MAX_TOKENS = 16384
 DEFAULT_WRAP_WIDTH = 63  # same as Book_PL.md (avg_full_line + 3)
-FRONT_TITLES = {"Przedmowa", "Spis treści", "Nota końcowa"}
-# Titles that are not counted in the "main content" portion meter.
-NON_MAIN_TITLES = {"Spis treści"}
+# Front/back matter: excluded from the main-story portion meter, but required
+# for the translation to match the source book structure.
+TOC_TITLE = "Spis treści"
+AFTERWORD_TITLE = "Nota końcowa"
+FRONT_TITLES = {"Przedmowa", TOC_TITLE, AFTERWORD_TITLE}
+# Canonical target-language headings for structural sections that may lack a
+# translated ## line in the working file (e.g. Przedmowa was stored as body only).
+STRUCTURAL_HEADINGS = {
+    "RU": {
+        "Przedmowa": "Предисловие",
+        TOC_TITLE: "Оглавление",
+        AFTERWORD_TITLE: "Заключительная заметка",
+    },
+}
 
 MODEL_ALIASES = {
     "sonnet": "claude-sonnet-5",
@@ -278,8 +289,15 @@ def parse_book_md(text: str) -> tuple[str, list[Section]]:
         paras: list[str] = []
         for block in re.split(r"\n\s*\n", body.strip("\n")):
             block = block.strip()
-            if not block or block.startswith("- ["):
-                continue  # skip TOC link lists
+            if not block:
+                continue
+            # Keep Spis treści link lines intact (one entry may be one "paragraph").
+            if block.startswith("- ["):
+                for line in block.splitlines():
+                    line = line.strip()
+                    if line:
+                        paras.append(line)
+                continue
             # collapse soft wraps / justify spaces into flowing paragraph
             line = re.sub(r"[ \t]+", " ", block.replace("\n", " ")).strip()
             if line:
@@ -287,6 +305,181 @@ def parse_book_md(text: str) -> tuple[str, list[Section]]:
         sections.append(Section(title=title, kind="h2", paragraphs=paras))
         i += 2
     return h1, sections
+
+
+def md_anchor(title: str) -> str:
+    """GitHub-style Markdown heading anchor (keeps letters of any script)."""
+    a = title.casefold()
+    for src, dst in (
+        ("ą", "a"), ("ć", "c"), ("ę", "e"), ("ł", "l"), ("ń", "n"),
+        ("ó", "o"), ("ś", "s"), ("ź", "z"), ("ż", "z"),
+    ):
+        a = a.replace(src, dst)
+    a = re.sub(r"[^\w]+", "-", a, flags=re.UNICODE).strip("-")
+    return a
+
+
+def heading_from_body(body: str) -> str | None:
+    m = re.search(r"(?m)^## (.+)$", body)
+    return m.group(1).strip() if m else None
+
+
+def ensure_h2_heading(body: str, heading: str) -> str:
+    """Prepend ## heading when the translated block has none (common for Przedmowa)."""
+    if heading_from_body(body):
+        return body
+    return f"## {heading}\n\n{body.lstrip()}"
+
+
+def structural_heading(tgt_lang: str, src_title: str) -> str:
+    return STRUCTURAL_HEADINGS.get(tgt_lang.upper(), {}).get(src_title, src_title)
+
+
+def build_toc_markdown(
+    sections: list[Section], display: dict[str, str], tgt_lang: str
+) -> str:
+    """Spis treści built from already-translated headings (not re-sent to the API)."""
+    toc_h = structural_heading(tgt_lang, TOC_TITLE)
+    lines = [f"## {toc_h}", ""]
+    for sec in sections:
+        if sec.kind != "h2" or sec.title == TOC_TITLE:
+            continue
+        title = display.get(sec.title) or structural_heading(tgt_lang, sec.title)
+        lines.append(f"- [{title}](#{md_anchor(title)})")
+    return "\n".join(lines) + "\n"
+
+
+def write_marked_blocks(
+    dest: Path, header: str, blocks: list[MarkedBlock], wrap_width: int
+) -> None:
+    """Rewrite the working file from header + marked blocks (insert/reorder safe)."""
+    parts: list[str] = []
+    head = header.strip("\n")
+    if not head:
+        head = (
+            f"<!-- translated by book_translate; wrap_width: {wrap_width}; "
+            f"incomplete until all stories done -->"
+        )
+    # Flip the "incomplete" note once every source H2 (incl. ToC / nota) is present.
+    parts.append(head)
+    out_blocks: list[str] = []
+    for b in blocks:
+        marker = H1_MARK if b.title is None else src_mark(b.title, b.done, b.total)
+        out_blocks.append(marker)
+        out_blocks.append(b.body.strip("\n"))
+    text = parts[0].rstrip() + "\n\n" + "\n\n".join(out_blocks) + "\n"
+    dest.write_text(text, encoding="utf-8")
+
+
+def mark_translation_complete(dest: Path, sections: list[Section]) -> None:
+    """When every source H2 is present, drop the 'incomplete' header note."""
+    progress = translated_progress(dest)
+    needed = [s.title for s in sections if s.kind == "h2"]
+    if any(t not in progress or progress[t] is not None for t in needed):
+        return
+    text = dest.read_text(encoding="utf-8")
+    text2 = re.sub(
+        r"(?m)^<!-- translated by book_translate; wrap_width: (\d+); "
+        r"incomplete until all stories done -->",
+        r"<!-- translated by book_translate; wrap_width: \1; complete -->",
+        text,
+        count=1,
+    )
+    if text2 != text:
+        dest.write_text(text2, encoding="utf-8")
+
+
+def main_stories_done(sections: list[Section], progress: dict[str, int | None]) -> bool:
+    for s in sections:
+        if not s.is_main_story:
+            continue
+        if s.title not in progress or progress[s.title] is not None:
+            return False
+    return True
+
+
+def ensure_structural_matter(
+    dest: Path,
+    sections: list[Section],
+    tgt_lang: str,
+    wrap_width: int,
+    *,
+    translate_afterword,
+) -> list[str]:
+    """Insert Spis treści (built) and Nota końcowa (translated) so structure matches source.
+
+    Returns a list of human-readable actions taken.
+    """
+    actions: list[str] = []
+    progress = translated_progress(dest)
+    if not main_stories_done(sections, progress):
+        return actions
+
+    header, blocks = split_marked_blocks(dest.read_text(encoding="utf-8"))
+    changed = False
+
+    # Przedmowa often lost its ## heading; restore a canonical one so ToC anchors work.
+    przed = structural_heading(tgt_lang, "Przedmowa")
+    for b in blocks:
+        if b.title == "Przedmowa" and b.done is None:
+            new_body = ensure_h2_heading(b.body, przed)
+            if new_body != b.body:
+                b.body = new_body
+                changed = True
+                actions.append(f"added heading ## {przed} to Przedmowa")
+            break
+
+    # Nota końcowa: translate via API if missing (short colophon).
+    if AFTERWORD_TITLE not in progress:
+        raw = translate_afterword()
+        body = format_translated_markdown(raw, wrap_width).strip("\n")
+        aw_h = structural_heading(tgt_lang, AFTERWORD_TITLE)
+        body = re.sub(r"(?m)^## .+$", f"## {aw_h}", body, count=1)
+        body = ensure_h2_heading(body, aw_h)
+        blocks.append(MarkedBlock(AFTERWORD_TITLE, body))
+        changed = True
+        actions.append(f"appended {AFTERWORD_TITLE} → {aw_h}")
+        progress[AFTERWORD_TITLE] = None
+
+    # Spis treści: rebuild from translated headings; place after Przedmowa.
+    # Prefer a complete block's ##; if a section was split across runs, the
+    # heading usually lives only on the first (partial) block.
+    display: dict[str, str] = {}
+    for b in blocks:
+        if not b.title or b.done is not None:
+            continue
+        h = heading_from_body(b.body)
+        if h:
+            display[b.title] = h
+    for b in blocks:
+        if not b.title or b.title in display:
+            continue
+        h = heading_from_body(b.body)
+        if h:
+            display[b.title] = h
+    for sec in sections:
+        if sec.kind == "h2" and sec.title != TOC_TITLE and sec.title not in display:
+            display[sec.title] = structural_heading(tgt_lang, sec.title)
+
+    toc_body = build_toc_markdown(sections, display, tgt_lang).strip("\n")
+    toc_block = MarkedBlock(TOC_TITLE, toc_body)
+    # Remove any previous ToC block(s), then insert after Przedmowa (or after H1).
+    blocks = [b for b in blocks if b.title != TOC_TITLE]
+    insert_at = 0
+    for i, b in enumerate(blocks):
+        if b.title is None:
+            insert_at = i + 1
+        elif b.title == "Przedmowa":
+            insert_at = i + 1
+            break
+    blocks.insert(insert_at, toc_block)
+    changed = True
+    actions.append(f"inserted {TOC_TITLE} → {structural_heading(tgt_lang, TOC_TITLE)} after Przedmowa")
+
+    if changed:
+        write_marked_blocks(dest, header, blocks, wrap_width)
+        mark_translation_complete(dest, sections)
+    return actions
 
 
 ### Progress tracking in the working translation file
@@ -1000,7 +1193,72 @@ def main() -> int:
         )
         return 2
     if not portion:
-        print("Nothing left to translate (all main stories present in target file).", flush=True)
+        # Main stories are done; still fill Spis treści / Nota końcowa if missing.
+        progress = translated_progress(dest)
+        need_toc = TOC_TITLE not in progress
+        need_nota = AFTERWORD_TITLE not in progress
+        if not need_toc and not need_nota and main_stories_done(sections, progress):
+            mark_translation_complete(dest, sections)
+            print("Nothing left to translate (book structure complete).", flush=True)
+            return 0
+        if not main_stories_done(sections, progress):
+            print("Nothing left in the current portion window.", flush=True)
+            return 0
+
+        print("=== structural matter (ToC / afterword) ===", flush=True)
+        print(f"Target:  {dest.name}  ({src_lang} -> {tgt_lang})", flush=True)
+        if need_toc:
+            print(f"  - {TOC_TITLE}: build from translated headings (no API)", flush=True)
+        if need_nota:
+            nota = next(s for s in sections if s.title == AFTERWORD_TITLE)
+            print(
+                f"  - {AFTERWORD_TITLE}: translate ({units_chars(section_units(nota))} chars)",
+                flush=True,
+            )
+        if args.estimate_only:
+            return 0
+        if not args.yes:
+            try:
+                ans = input("Proceed with structural fill-in? [y/N] ").strip().lower()
+            except EOFError:
+                ans = "n"
+            if ans not in {"y", "yes"}:
+                print("Aborted.", flush=True)
+                return 1
+
+        client, system = make_client_and_system(src_lang, tgt_lang)
+        if need_nota and client is None:
+            return 2
+
+        def translate_afterword() -> str:
+            assert client is not None
+            nota = next(s for s in sections if s.title == AFTERWORD_TITLE)
+            user = (
+                f"Translate this publisher's afterword / colophon. "
+                f"Keep the heading exactly as: ## {structural_heading(tgt_lang, AFTERWORD_TITLE)}\n\n"
+                + fragment_user_message(None, [nota])
+            )
+            print("  translating Nota końcowa (realtime)…", flush=True)
+            text, usage = call_realtime(client, model_id, system, user)
+            pin, pout = PRICE_IN_OUT[model_id]
+            actual = (usage["input_tokens"] / 1e6) * pin + (usage["output_tokens"] / 1e6) * pout
+            print(
+                f"  Nota tokens in={usage['input_tokens']} out={usage['output_tokens']} "
+                f"usd~=${actual:.4f}",
+                flush=True,
+            )
+            return text
+
+        actions = ensure_structural_matter(
+            dest,
+            sections,
+            tgt_lang,
+            wrap_width,
+            translate_afterword=translate_afterword if need_nota else (lambda: ""),
+        )
+        for a in actions:
+            print(f"  {a}", flush=True)
+        print(f"Saved {dest}", flush=True)
         return 0
 
     include_front = args.include_front or (not dest.exists())
