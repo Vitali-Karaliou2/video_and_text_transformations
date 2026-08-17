@@ -105,9 +105,9 @@ Costs and safety:
   attempt is killed automatically (the user's own Word is never touched).
 
 Examples:
-  python src/create_final_docs.py _Autotesting lectures
-  python src/create_final_docs.py _Autotesting lectures --next 3
-  python src/create_final_docs.py _Autotesting lectures --doc my_styles.docx
+  python src/docs/create_final_docs.py _Autotesting lectures
+  python src/docs/create_final_docs.py _Autotesting lectures --next 3
+  python src/docs/create_final_docs.py _Autotesting lectures --doc my_styles.docx
 """
 
 from __future__ import annotations
@@ -122,30 +122,33 @@ import time
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
-_SRC_DIR = Path(__file__).resolve().parent
+_SRC_DIR = Path(__file__).resolve().parents[1]
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from extract_slides import SLIDES_DIRNAME, short_slide_keys, slides_out_dir
-from glossary import GLOSSARY_FILENAME, find_glossary, load_terms
-from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
-from silences import SilenceIndex, load_silences
-from text_from_slides import (
-    LANGUAGE_NAMES,
+from shared.api_key import read_api_key
+from shared.glossary import GLOSSARY_FILENAME, find_glossary, load_terms
+from shared.media_files import INFO_DIRNAME, list_videos
+from shared.openai_chat import (
     MODEL,
-    RESULT_FILENAME,
     USD_PER_MTOKEN_COMPLETION,
     USD_PER_MTOKEN_PROMPT,
     chat_json,
 )
-from transcribe_videos import (
-    INFO_DIRNAME,
+from shared.project_paths import (
+    WORKSPACE_ROOT,
+    channels_dir,
+    require_channel_ref,
+)
+from shared.silences import SilenceIndex, load_silences
+from shared.transcripts import (
+    LANGUAGE_NAMES,
     Segment,
     ends_sentence,
     group_paragraphs,
-    list_videos,
-    read_api_key,
 )
+from slides.extract_slides import SLIDES_DIRNAME, short_slide_keys, slides_out_dir
+from slides.text_from_slides import RESULT_FILENAME
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")

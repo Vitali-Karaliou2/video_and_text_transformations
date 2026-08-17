@@ -28,9 +28,9 @@ here.
 Downloading costs nothing: no API key, no paid service.
 
 Usage:
-  python src/download_presentations.py Game_Design\\_makingitright9305 \
+  python src/download/download_presentations.py Game_Design\\_makingitright9305 \
       kurs_geym_dizayna_nri_making_it_right --next all
-  python src/download_presentations.py Game_Design\\_makingitright9305 \
+  python src/download/download_presentations.py Game_Design\\_makingitright9305 \
       kurs_geym_dizayna_nri_making_it_right --video "04_Making It Right..."
 
 The step is also chained from download_videos.py, which offers to fetch the
@@ -50,19 +50,23 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-_SRC_DIR = Path(__file__).resolve().parent
+_SRC_DIR = Path(__file__).resolve().parents[1]
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
-from transcribe_videos import (
+from shared.project_paths import (
+    WORKSPACE_ROOT,
+    channels_dir,
+    require_channel_ref,
+)
+from transcribe.transcribe_videos import (
     list_videos,
     next_label,
     normalize_next_count,
     run_tool,
     watch_url,
 )
-from yt_dlp_opts import cookie_args
+from shared.yt_dlp_opts import cookie_args
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")

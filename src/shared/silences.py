@@ -15,8 +15,8 @@ paid once:
 
 Run as a script it fills those sidecars for a whole playlist:
 
-  python src/silences.py _Autotesting lectures
-  python src/silences.py _Autotesting lectures --refresh
+  python src/shared/silences.py _Autotesting lectures
+  python src/shared/silences.py _Autotesting lectures --refresh
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ from bisect import bisect_left
 from dataclasses import dataclass
 from pathlib import Path
 
-_SRC_DIR = Path(__file__).resolve().parent
+_SRC_DIR = Path(__file__).resolve().parents[1]
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
@@ -248,8 +248,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def main(argv: list[str] | None = None) -> int:
-    from project_paths import channels_dir, require_channel_ref
-    from transcribe_videos import list_videos
+    from shared.project_paths import channels_dir, require_channel_ref
+    from transcribe.transcribe_videos import list_videos
 
     args = parse_args(argv)
     try:

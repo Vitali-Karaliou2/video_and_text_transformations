@@ -9,7 +9,7 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Callable
 
-from playlist_mapping import (
+from channels.playlist_mapping import (
     channel_context,
     channel_playlists_json,
     former_folder_name,
@@ -17,7 +17,7 @@ from playlist_mapping import (
     slugify_playlist_name,
     unique_folder_name,
 )
-from project_paths import (
+from shared.project_paths import (
     browse_cache_path,
     channel_cache_dir,
     channel_playlists_dir,

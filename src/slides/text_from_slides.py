@@ -36,9 +36,9 @@ the estimate is arithmetic - a "detail: high" frame costs what its size says
 - and the replies go by the averages of a course.
 
 Examples:
-  python src/text_from_slides.py _Autotesting lectures
-  python src/text_from_slides.py _Autotesting lectures --next 3
-  python src/text_from_slides.py _Autotesting lectures --video 01_Introduction
+  python src/slides/text_from_slides.py _Autotesting lectures
+  python src/slides/text_from_slides.py _Autotesting lectures --next 3
+  python src/slides/text_from_slides.py _Autotesting lectures --video 01_Introduction
 """
 
 from __future__ import annotations
@@ -48,27 +48,34 @@ import base64
 import csv
 import json
 import sys
-import time
-import urllib.error
-import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-_SRC_DIR = Path(__file__).resolve().parent
+_SRC_DIR = Path(__file__).resolve().parents[1]
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from extract_slides import SLIDES_DIRNAME, short_slide_keys, slides_out_dir
-from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
-from transcribe_videos import list_videos, read_api_key
+from shared.api_key import read_api_key
+from shared.media_files import list_videos
+from shared.openai_chat import (
+    MODEL,
+    USD_PER_MTOKEN_COMPLETION,
+    USD_PER_MTOKEN_PROMPT,
+    chat_json,
+)
+from shared.project_paths import (
+    WORKSPACE_ROOT,
+    channels_dir,
+    require_channel_ref,
+)
+from shared.transcripts import LANGUAGE_NAMES
+from slides.extract_slides import SLIDES_DIRNAME, short_slide_keys, slides_out_dir
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
-CHAT_URL = "https://api.openai.com/v1/chat/completions"
-MODEL = "gpt-4o"
 RESULT_FILENAME = "slides.json"
 SLIDE_IMAGE_SUFFIXES = (".png", ".jpg", ".jpeg", ".webp")
 MIME_TYPES = {
@@ -77,13 +84,6 @@ MIME_TYPES = {
     ".jpeg": "image/jpeg",
     ".webp": "image/webp",
 }
-REQUEST_ATTEMPTS = 3
-REQUEST_TIMEOUT = 300
-# gpt-4o API prices as of 2026-07, USD per 1M tokens (see
-# https://platform.openai.com/docs/pricing). create_final_docs.py reads them
-# from here: the model is named here too, and one place is enough.
-USD_PER_MTOKEN_PROMPT = 2.50
-USD_PER_MTOKEN_COMPLETION = 10.00
 # What a "detail: high" image costs: the frame is scaled to fit a 2048 square,
 # then its shortest side to 768, and every 512x512 tile of the result is
 # charged (https://platform.openai.com/docs/guides/vision). A 1920x1080 screen
@@ -107,10 +107,6 @@ SLIDE_REPLY_TOKENS = 110
 STRUCTURE_PROMPT_PER_SLIDE = 170
 STRUCTURE_REPLY_TOKENS = 650
 STRUCTURE_REPLY_PER_SLIDE = 40
-LANGUAGE_NAMES = {
-    "RU": "Russian", "EN": "English", "DE": "German", "FR": "French",
-    "ES": "Spanish", "IT": "Italian", "PL": "Polish", "UK": "Ukrainian",
-}
 
 OCR_SYSTEM_PROMPT = """\
 You extract text from one frame of a screen-shared lecture video. The frame
@@ -284,65 +280,6 @@ def estimate_cost(images: list[Path]) -> tuple[int, int, float]:
         prompt * USD_PER_MTOKEN_PROMPT + completion * USD_PER_MTOKEN_COMPLETION
     ) / 1_000_000
     return prompt, completion, cost
-
-
-def call_chat_api(api_key: str, payload: dict) -> dict:
-    body = json.dumps(payload).encode("utf-8")
-    last_error: Exception | None = None
-    for attempt in range(1, REQUEST_ATTEMPTS + 1):
-        request = urllib.request.Request(
-            CHAT_URL,
-            data=body,
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
-            method="POST",
-        )
-        try:
-            with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT) as resp:
-                return json.loads(resp.read().decode("utf-8"))
-        except urllib.error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", "replace")
-            if exc.code in (429, 500, 502, 503, 504) and attempt < REQUEST_ATTEMPTS:
-                last_error = RuntimeError(f"HTTP {exc.code}: {detail}")
-                time.sleep(10 * attempt)
-                continue
-            raise SystemExit(f"OpenAI API error (HTTP {exc.code}):\n{detail}")
-        except (urllib.error.URLError, TimeoutError) as exc:
-            last_error = exc
-            if attempt < REQUEST_ATTEMPTS:
-                time.sleep(10 * attempt)
-                continue
-    raise SystemExit(f"OpenAI API request failed after retries: {last_error}")
-
-
-def chat_json(
-    api_key: str,
-    messages: list[dict],
-    usage: dict[str, int],
-) -> dict:
-    """Chat completion that must return a JSON object; one retry on bad JSON."""
-    payload = {
-        "model": MODEL,
-        "messages": messages,
-        "response_format": {"type": "json_object"},
-        "temperature": 0,
-    }
-    for attempt in (1, 2):
-        data = call_chat_api(api_key, payload)
-        for key in ("prompt_tokens", "completion_tokens"):
-            usage[key] = usage.get(key, 0) + int(data.get("usage", {}).get(key, 0))
-        content = data["choices"][0]["message"]["content"]
-        try:
-            return json.loads(content)
-        except json.JSONDecodeError:
-            if attempt == 1:
-                continue
-            raise SystemExit(
-                f"Model did not return valid JSON:\n{content[:2000]}"
-            )
-    raise AssertionError("unreachable")
 
 
 def image_data_url(path: Path) -> str:

@@ -7,7 +7,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+# src/tools/build_exe.py -> the project root two folders up.
+ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "src"
 OUT = ROOT / "scripts"
 COMMON = [
@@ -41,13 +42,13 @@ def build(name: str, script: str) -> int:
 
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
-    rc = build("organize_by_playlists", "organize_by_playlists.py")
+    rc = build("organize_by_playlists", "channels/organize_by_playlists.py")
     if rc != 0:
         return rc
-    rc = build("get_summary_for_channel", "get_summary_for_channel.py")
+    rc = build("get_summary_for_channel", "channels/get_summary_for_channel.py")
     if rc != 0:
         return rc
-    return build("refresh_channel_cache", "refresh_channel_cache.py")
+    return build("refresh_channel_cache", "channels/refresh_channel_cache.py")
 
 
 if __name__ == "__main__":

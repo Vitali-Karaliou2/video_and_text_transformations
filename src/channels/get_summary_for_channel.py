@@ -2,12 +2,12 @@
 """Build channel video summaries to TXT and XLSX (pipeline step 1).
 
 Examples:
-  python src/get_summary_for_channel.py @Ekaterina_Schulmann
-  python src/get_summary_for_channel.py @VladilenMinin --plsonly
-  python src/get_summary_for_channel.py @VladilenMinin allpls --from 1 --to 50
-  python src/get_summary_for_channel.py @VladilenMinin allpls --new --from 401 --next 200
-  python src/get_summary_for_channel.py @VladilenMinin allpls --from "Some unique title prefix"
-  python src/get_summary_for_channel.py @VladilenMinin #A --from 1 --to 20
+  python src/channels/get_summary_for_channel.py @Ekaterina_Schulmann
+  python src/channels/get_summary_for_channel.py @VladilenMinin --plsonly
+  python src/channels/get_summary_for_channel.py @VladilenMinin allpls --from 1 --to 50
+  python src/channels/get_summary_for_channel.py @VladilenMinin allpls --new --from 401 --next 200
+  python src/channels/get_summary_for_channel.py @VladilenMinin allpls --from "Some unique title prefix"
+  python src/channels/get_summary_for_channel.py @VladilenMinin #A --from 1 --to 20
 """
 
 from __future__ import annotations
@@ -20,11 +20,11 @@ import urllib.request
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-_SRC_DIR = Path(__file__).resolve().parent
+_SRC_DIR = Path(__file__).resolve().parents[1]
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from summary_helpers import (
+from channels.summary_helpers import (
     SCOPE_BYPLS,
     SummarySection,
     VideoRecord,
@@ -38,8 +38,8 @@ from summary_helpers import (
     write_summary_txt,
     write_summary_xlsx,
 )
-from channel_browse import fetch_channel_name
-from channel_playlists import (
+from channels.channel_browse import fetch_channel_name
+from channels.channel_playlists import (
     apply_unlisted_to_video_map,
     ensure_playlist_aliases,
     load_video_playlist_details,
@@ -51,7 +51,7 @@ from channel_playlists import (
     save_playlists_cache,
     sync_channel_playlists,
 )
-from project_paths import (
+from shared.project_paths import (
     WORKSPACE_ROOT,
     channel_folder_name,
     channel_relative_ref,
@@ -63,17 +63,17 @@ from project_paths import (
     normalize_container_ref,
     spell_out_tech_names,
 )
-from range_args import (
+from channels.range_args import (
     apply_resolved_range,
     numeric_required_to,
     resolve_range_args,
 )
-from transcription_pricing import (
+from shared.transcription_pricing import (
     estimate_cost_usd,
     get_transcription_rate,
     transcription_passes,
 )
-from video_cache import (
+from channels.video_cache import (
     cache_is_complete,
     commit_length_old,
     ensure_video_cache,
@@ -112,7 +112,7 @@ RELATIVE_RE = re.compile(
     re.IGNORECASE,
 )
 
-from playlist_mapping import (
+from channels.playlist_mapping import (
     build_video_playlist_catalog,
     playlist_only_browse_entries,
 )
@@ -482,7 +482,7 @@ def append_playlist_only_videos(
     details: dict[str, dict],
 ) -> tuple[list[dict], list, int]:
     """Append playlist-only videos to the browse list and export slots."""
-    from summary_helpers import ExportSlot
+    from channels.summary_helpers import ExportSlot
 
     known = {entry["id"] for entry in browse_videos if entry.get("id")}
     extras = playlist_only_browse_entries(playlist_map, details, known)

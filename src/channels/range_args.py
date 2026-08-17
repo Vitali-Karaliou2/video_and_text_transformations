@@ -6,7 +6,7 @@ import argparse
 import re
 import sys
 
-from video_cache import list_pos_to_display_number
+from channels.video_cache import list_pos_to_display_number
 
 NUMERIC_RE = re.compile(r"^-?\d+$")
 

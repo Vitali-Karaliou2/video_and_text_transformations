@@ -21,7 +21,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-_SRC_DIR = Path(__file__).resolve().parent
+_SRC_DIR = Path(__file__).resolve().parents[1]
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
@@ -48,19 +48,19 @@ COURSE_HINTS = re.compile(
     re.I,
 )
 
-from channel_playlists import (
+from channels.channel_playlists import (
     known_playlist_folders,
     resolve_misc_folder_name,
     sync_channel_playlists,
 )
-from playlist_mapping import (
+from channels.playlist_mapping import (
     channel_context,
     no_playlists_tab,
     playlist_priority,
     slugify_playlist_name,
     unique_folder_name,
 )
-from project_paths import (
+from shared.project_paths import (
     WORKSPACE_ROOT,
     channel_playlists_dir,
     channels_dir,

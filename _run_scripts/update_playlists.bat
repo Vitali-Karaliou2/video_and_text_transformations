@@ -11,7 +11,7 @@ echo  Workspace: %CD%
 if not "%~1"=="" echo  Channel:   %~1
 echo.
 
-python src\check_playlists.py --update --create %*
+python src\channels\check_playlists.py --update --create %*
 set "EXITCODE=%ERRORLEVEL%"
 
 echo.

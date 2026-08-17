@@ -27,9 +27,9 @@ offered for download into PRESENTATIONS/ (see download_presentations.py).
 step existed there is extract_slides.py --presentations.
 
 Usage:
-  python src/download_videos.py Game_Design\\_makingitright9305 \
+  python src/download/download_videos.py Game_Design\\_makingitright9305 \
       kurs_geym_dizayna_nri_making_it_right --next 1
-  python src/download_videos.py Game_Design\\_makingitright9305 \
+  python src/download/download_videos.py Game_Design\\_makingitright9305 \
       kurs_geym_dizayna_nri_making_it_right --next all
 
 Automation: _channels/<channel>/_run_scripts/download_videos_next.bat and
@@ -43,13 +43,17 @@ import subprocess
 import sys
 from pathlib import Path
 
-_SRC_DIR = Path(__file__).resolve().parent
+_SRC_DIR = Path(__file__).resolve().parents[1]
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from download_presentations import offer_presentation
-from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
-from transcribe_videos import (
+from download.download_presentations import offer_presentation
+from shared.project_paths import (
+    WORKSPACE_ROOT,
+    channels_dir,
+    require_channel_ref,
+)
+from transcribe.transcribe_videos import (
     PauseWatcher,
     duration_to_text,
     fetch_playlist_entries,
@@ -62,7 +66,7 @@ from transcribe_videos import (
     remote_stem,
     stem_budget,
 )
-from yt_dlp_opts import cookie_args, youtube_media_args
+from shared.yt_dlp_opts import cookie_args, youtube_media_args
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")

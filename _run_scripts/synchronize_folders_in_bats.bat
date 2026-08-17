@@ -22,7 +22,7 @@ echo  Synchronize the folder paths in the bat files
 echo ============================================================
 echo.
 
-powershell -NoProfile -Command "[Console]::OutputEncoding = [Text.UTF8Encoding]::new(); & python -u src\synchronize_folders_in_bats.py %* 2>&1 | ForEach-Object { [Console]::WriteLine($_) }; exit $LASTEXITCODE"
+powershell -NoProfile -Command "[Console]::OutputEncoding = [Text.UTF8Encoding]::new(); & python -u src\tools\synchronize_folders_in_bats.py %* 2>&1 | ForEach-Object { [Console]::WriteLine($_) }; exit $LASTEXITCODE"
 set "EXITCODE=%ERRORLEVEL%"
 
 echo.

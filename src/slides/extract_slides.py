@@ -53,9 +53,9 @@ does this for videos it downloads; the flag is for the videos that came
 before that step existed.
 
 Examples:
-  python src/extract_slides.py _Autotesting lectures
-  python src/extract_slides.py _Autotesting lectures --next 3 --threshold 20
-  python src/extract_slides.py _Autotesting lectures --video 01_Introduction
+  python src/slides/extract_slides.py _Autotesting lectures
+  python src/slides/extract_slides.py _Autotesting lectures --next 3 --threshold 20
+  python src/slides/extract_slides.py _Autotesting lectures --video 01_Introduction
 """
 
 from __future__ import annotations
@@ -72,12 +72,16 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-_SRC_DIR = Path(__file__).resolve().parent
+_SRC_DIR = Path(__file__).resolve().parents[1]
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
-from transcribe_videos import list_videos
+from shared.project_paths import (
+    WORKSPACE_ROOT,
+    channels_dir,
+    require_channel_ref,
+)
+from transcribe.transcribe_videos import list_videos
 
 from scenedetect import ContentDetector, SceneManager, open_video
 from scenedetect.scene_manager import write_scene_list
@@ -1089,7 +1093,7 @@ def main(argv: list[str] | None = None) -> int:
             # Before the slides, not after: the presentation is what the
             # frames should have shown, and it is worth having in hand
             # while looking at what was extracted.
-            from download_presentations import cookie_args, offer_presentation
+            from download.download_presentations import cookie_args, offer_presentation
 
             _, refused = offer_presentation(
                 playlist_dir,

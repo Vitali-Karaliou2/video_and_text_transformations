@@ -7,7 +7,7 @@ import re
 import subprocess
 from typing import Callable
 
-from project_paths import spell_out_tech_names
+from shared.project_paths import spell_out_tech_names
 
 COURSE_HINTS = re.compile(
     r"курс|course|урок|lecture|tutorial|мастер.?класс|с\s*нул|"

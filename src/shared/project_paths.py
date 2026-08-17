@@ -7,7 +7,8 @@ import re
 from datetime import date
 from pathlib import Path
 
-WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
+# src/shared/project_paths.py -> the project root two folders up.
+WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CHANNELS_DIRNAME = "_channels"
 PLAYLISTS_DIRNAME = "_playlists"
 # Hand-written lists of unlisted videos (one URL or id per line); the

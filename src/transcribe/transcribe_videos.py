@@ -50,14 +50,14 @@ stage and goes straight to editing. --annotate adds the 200-250 word
 annotation .txt (see create_final_docs.py).
 
 Examples:
-  python src/transcribe_videos.py _Autotesting lectures --lang ru
-  python src/transcribe_videos.py _Autotesting lectures --lang ru --next 3
-  python src/transcribe_videos.py _Autotesting lectures --slides --edit
-  python src/transcribe_videos.py _VladilenMinin start_it_karery_s_nulya_v_2025 \
+  python src/transcribe/transcribe_videos.py _Autotesting lectures --lang ru
+  python src/transcribe/transcribe_videos.py _Autotesting lectures --lang ru --next 3
+  python src/transcribe/transcribe_videos.py _Autotesting lectures --slides --edit
+  python src/transcribe/transcribe_videos.py _VladilenMinin start_it_karery_s_nulya_v_2025 \
       --lang ru --orig-only --from-youtube --edit
-  python src/transcribe_videos.py _AbbasGallyamov \
+  python src/transcribe/transcribe_videos.py _AbbasGallyamov \
       --lang ru --orig-only --from-youtube --edit --annotate
-  python src/transcribe_videos.py AI_for_Game_Design\\_makingitright9305 \
+  python src/transcribe/transcribe_videos.py AI_for_Game_Design\\_makingitright9305 \
       --lang ru --orig-only --from-youtube --edit --annotate \
       --title-substr "Lecture 1.1." --next all
 """
@@ -66,37 +66,70 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import shutil
-import subprocess
 import sys
 import tempfile
-import textwrap
 import time
 import urllib.error
 import urllib.request
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FutureTimeoutError
-from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
-_SRC_DIR = Path(__file__).resolve().parent
+_SRC_DIR = Path(__file__).resolve().parents[1]
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from glossary import (
+from channels.playlist_jobs import (  # noqa: E402
+    duration_to_text,
+    fetch_playlist_entries,
+    fetch_video_info,
+    load_channel_flat_jobs,
+    load_playlist_meta,
+    load_unlisted_playlist_entries,
+    video_id_from_url,
+    watch_url,
+)
+from shared.api_key import read_api_key  # noqa: E402
+from shared.glossary import (  # noqa: E402
     GLOSSARY_FILENAME,
     WHISPER_PROMPT_TOKENS,
     find_glossary,
     load_terms,
     whisper_prompt,
 )
-from yt_dlp_opts import youtube_media_args
-from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
-from silences import SILENCE_MIN_SECONDS, SilenceIndex, load_silences
-from transcription_pricing import get_transcription_rate
+from shared.media_files import (  # noqa: E402
+    INFO_DIRNAME,
+    list_videos,
+    long_paths_enabled,
+    local_media_by_id,
+    remote_stem,
+    stem_budget,
+)
+from shared.project_paths import (  # noqa: E402
+    WORKSPACE_ROOT,
+    channels_dir,
+    require_channel_ref,
+)
+from shared.sessions import (  # noqa: E402
+    PauseWatcher,
+    next_label,
+    normalize_next_count,
+    run_tool,
+)
+from shared.silences import SilenceIndex, load_silences  # noqa: E402
+from shared.transcripts import (  # noqa: E402
+    Segment,
+    asr_meta_path,
+    format_txt,
+    normalize_lang,
+    optional_float,
+    segments_to_srt,
+)
+from shared.transcription_pricing import get_transcription_rate  # noqa: E402
+from shared.yt_dlp_opts import youtube_media_args  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -108,116 +141,9 @@ TRANSLATIONS_URL = "https://api.openai.com/v1/audio/translations"
 MODEL = "whisper-1"
 # whisper-1 accepts <=25 MB per request; 24 min of 64 kbps mono mp3 is ~11.5 MB.
 CHUNK_SECONDS = 1440
-MEDIA_EXTENSIONS = {
-    ".mp4", ".mkv", ".webm", ".avi", ".mov", ".m4v",
-    ".mp3", ".m4a", ".wav", ".opus", ".ogg", ".flac",
-}
 REQUEST_ATTEMPTS = 3
 REQUEST_TIMEOUT = 600
 PROGRESS_INTERVAL = 5.0
-TXT_WRAP_WIDTH = 80
-# A silence this long between segments starts a new paragraph in the .txt.
-# Only whisper writes almost no silence into an .srt (it butts the segments
-# against each other), so this fires at about 1% of the joins and the real
-# work is done by the pauses of silences.py wherever they are available.
-PARAGRAPH_GAP_SECONDS = 1.5
-PARAGRAPH_MAX_CHARS = 1000
-# Paragraphs built on the real pauses: shorter than this a paragraph is a
-# stub, longer than this it is a wall of text, and in between the length is
-# decided by how long the speaker stopped.
-PARAGRAPH_MIN_WORDS = 45
-PARAGRAPH_MAX_WORDS = 130
-# Whisper sometimes runs for five minutes on commas alone, without a single
-# full stop; past this many words a pause ends the paragraph even in the
-# middle of such a "sentence" (the editor repunctuates the text anyway).
-PARAGRAPH_HARD_WORDS = 200
-# ...and past this many the demand for a pause is dropped as well: the join
-# between two segments is taken as it comes. A stretch with neither a full
-# stop nor a silence of its own is rare (one or two per lecture), but it is
-# what was still handing the editor blocks of 300 words.
-PARAGRAPH_LAST_RESORT_WORDS = 260
-# The pause a sentence end must be followed by to break a paragraph: this
-# long right after the minimum, falling to SILENCE_MIN_SECONDS as the
-# paragraph approaches the maximum.
-PARAGRAPH_STRONG_PAUSE = 0.8
-# Video metadata (title, date, duration, chapters) saved in remote mode for
-# the final-editing stage (document title and timecode-based ToC).
-INFO_DIRNAME = "INFO"
-# Sidecar with the per-segment recognition quality (see write_asr_meta).
-ASR_META_SUFFIX = ".asr.json"
-WINDOWS_MAX_PATH = 260
-# With long paths switched on the OS allows 32767, but the .docx is still
-# handed to WPS Writer / Word for the PDF pass and those are not reliably
-# long-path aware, so stay roomy rather than unlimited.
-LONG_PATH_LIMIT = 400
-
-
-@dataclass
-class Segment:
-    start: float
-    end: float
-    text: str
-    # Recognition quality of the segment, as reported by the API in
-    # verbose_json; None for segments read back from an .srt file.
-    avg_logprob: float | None = None
-    no_speech_prob: float | None = None
-    compression_ratio: float | None = None
-
-
-def read_api_key(workspace: Path) -> str:
-    import os
-
-    key = os.environ.get("OPENAI_API_KEY", "").strip()
-    if key:
-        return key
-    env_path = workspace / ".env"
-    if env_path.is_file():
-        for line in env_path.read_text(encoding="utf-8-sig").splitlines():
-            line = line.strip()
-            if line.startswith("OPENAI_API_KEY="):
-                key = line.split("=", 1)[1].strip().strip('"').strip("'")
-                if key:
-                    return key
-    raise SystemExit(
-        "OPENAI_API_KEY not found: set the environment variable or add\n"
-        f"OPENAI_API_KEY=sk-... to {env_path}"
-    )
-
-
-def normalize_lang(value: str) -> str:
-    lang = value.strip().lower()
-    if len(lang) != 2 or not lang.isalpha():
-        raise SystemExit(f"--lang must be a two-letter language code, got: {value!r}")
-    return lang
-
-
-def normalize_next_count(value: str) -> int | None:
-    """Session size; None means "every pending video"."""
-    text = str(value).strip().lower()
-    if text == "all":
-        return None
-    try:
-        count = int(text)
-    except ValueError:
-        count = 0
-    if count < 1:
-        raise SystemExit(f"--next must be a positive number or 'all', got: {value!r}")
-    return count
-
-
-def next_label(count: int | None) -> str:
-    return "all" if count is None else str(count)
-
-
-def list_videos(playlist_dir: Path) -> list[Path]:
-    return sorted(
-        (
-            path
-            for path in playlist_dir.iterdir()
-            if path.is_file() and path.suffix.lower() in MEDIA_EXTENSIONS
-        ),
-        key=lambda path: path.name.lower(),
-    )
 
 
 def result_files(stem: str, orig_dir: Path, en_dir: Path, needs_en: bool) -> list[Path]:
@@ -242,12 +168,6 @@ def select_session_videos(
         if not is_transcribed(video, orig_dir, en_dir, needs_en)
     ]
     return pending[:count]
-
-
-def run_tool(cmd: list[str]) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        cmd, capture_output=True, text=True, encoding="utf-8", errors="replace"
-    )
 
 
 def probe_duration(path: Path, ffprobe: str) -> float:
@@ -448,13 +368,6 @@ def glossary_prompt(
     return prompt
 
 
-def optional_float(value: object) -> float | None:
-    try:
-        return float(value)  # type: ignore[arg-type]
-    except (TypeError, ValueError):
-        return None
-
-
 def transcribe_chunks(
     chunks: list[tuple[Path, float]],
     api_key: str,
@@ -493,154 +406,6 @@ def transcribe_chunks(
     return "\n".join(text for text in texts if text), segments
 
 
-def srt_timestamp(seconds: float) -> str:
-    millis = round(seconds * 1000)
-    hours, millis = divmod(millis, 3_600_000)
-    minutes, millis = divmod(millis, 60_000)
-    secs, millis = divmod(millis, 1000)
-    return f"{hours:02d}:{minutes:02d}:{secs:02d},{millis:03d}"
-
-
-def segments_to_srt(segments: list[Segment]) -> str:
-    blocks = [
-        f"{index}\n{srt_timestamp(seg.start)} --> {srt_timestamp(seg.end)}\n{seg.text}\n"
-        for index, seg in enumerate(segments, start=1)
-    ]
-    return "\n".join(blocks)
-
-
-def ends_sentence(text: str) -> bool:
-    return text.rstrip().rstrip("\"\u00bb)]").endswith((".", "!", "?", "\u2026"))
-
-
-def pause_wanted(
-    words: int,
-    min_words: int = PARAGRAPH_MIN_WORDS,
-    max_words: int = PARAGRAPH_MAX_WORDS,
-) -> float:
-    """How long a pause has to be to end a paragraph of that many words.
-
-    Right after the minimum only a clear stop will do; the closer the
-    paragraph comes to the maximum, the shorter a pause is enough.
-    """
-    if words < min_words:
-        return float("inf")
-    if words >= max_words:
-        return 0.0
-    share = (words - min_words) / (max_words - min_words)
-    return PARAGRAPH_STRONG_PAUSE - share * (
-        PARAGRAPH_STRONG_PAUSE - SILENCE_MIN_SECONDS
-    )
-
-
-def group_paragraphs_by_pauses(
-    segments: list[Segment],
-    pauses: SilenceIndex,
-    min_words: int = PARAGRAPH_MIN_WORDS,
-    max_words: int = PARAGRAPH_MAX_WORDS,
-) -> list[str]:
-    """Group segments into paragraphs where the speaker really stopped.
-
-    A paragraph may only end where a sentence does, and of the sentence ends
-    it takes the ones the speaker paused at - insisting on a long pause at
-    first and settling for any as the paragraph grows. Past the maximum the
-    next sentence end ends it whether or not there was a pause: some
-    stretches (a demo, a read-out list) are spoken without a single one.
-    Past PARAGRAPH_HARD_WORDS even a sentence end is no longer waited for -
-    a pause alone will do, because the recognizer can go for minutes on
-    commas and would otherwise hand over one paragraph of 600 words; and
-    past PARAGRAPH_LAST_RESORT_WORDS the pause is not waited for either.
-    """
-    paragraphs: list[str] = []
-    current: list[str] = []
-    words = 0
-    for segment, following in zip(segments, segments[1:] + [None]):
-        text = segment.text.strip()
-        if text:
-            current.append(text)
-            words += len(text.split())
-        if following is None or not current:
-            continue
-        pause = pauses.duration_at(following.start)
-        if ends_sentence(segment.text):
-            wanted = pause_wanted(words, min_words, max_words)
-        elif words >= PARAGRAPH_HARD_WORDS:
-            # The demand for a pause fades out the same way: a short one
-            # right past the cap, none at all by the last resort.
-            over = (words - PARAGRAPH_HARD_WORDS) / (
-                PARAGRAPH_LAST_RESORT_WORDS - PARAGRAPH_HARD_WORDS
-            )
-            wanted = SILENCE_MIN_SECONDS * max(0.0, 1.0 - over)
-        else:
-            continue
-        if pause >= wanted:
-            paragraphs.append(" ".join(current))
-            current = []
-            words = 0
-    if current:
-        paragraphs.append(" ".join(current))
-    return paragraphs
-
-
-def group_paragraphs(
-    segments: list[Segment],
-    gap_seconds: float = PARAGRAPH_GAP_SECONDS,
-    max_chars: int = PARAGRAPH_MAX_CHARS,
-    pauses: SilenceIndex | None = None,
-) -> list[str]:
-    """Group segments into paragraphs at silence gaps (or after ~max_chars
-    at a sentence end, so continuous speech does not become one huge block).
-
-    With the real pauses of the recording at hand the far better rule of
-    group_paragraphs_by_pauses is used instead.
-    """
-    if pauses:
-        return group_paragraphs_by_pauses(segments, pauses)
-    paragraphs: list[str] = []
-    current: list[str] = []
-    length = 0
-    prev_end: float | None = None
-    for seg in segments:
-        text = seg.text.strip()
-        if current:
-            long_pause = prev_end is not None and seg.start - prev_end >= gap_seconds
-            overlong = length >= max_chars and current[-1].endswith((".", "!", "?"))
-            if long_pause or overlong:
-                paragraphs.append(" ".join(current))
-                current = []
-                length = 0
-        if text:
-            current.append(text)
-            length += len(text) + 1
-        prev_end = seg.end
-    if current:
-        paragraphs.append(" ".join(current))
-    return paragraphs
-
-
-def format_txt(
-    text: str,
-    segments: list[Segment],
-    width: int = TXT_WRAP_WIDTH,
-    pauses: SilenceIndex | None = None,
-) -> str:
-    paragraphs = group_paragraphs(segments, pauses=pauses) if segments else [text]
-    blocks = [
-        "\n".join(
-            textwrap.wrap(
-                paragraph, width=width, break_long_words=False, break_on_hyphens=False
-            )
-        )
-        for paragraph in paragraphs
-        if paragraph.strip()
-    ]
-    return "\n\n".join(blocks)
-
-
-def asr_meta_path(out_dir: Path, stem: str) -> Path:
-    return out_dir / f"{stem}{ASR_META_SUFFIX}"
-
-
 def write_asr_meta(
     out_dir: Path, stem: str, segments: list[Segment], *, language: str
 ) -> Path | None:
@@ -676,28 +441,6 @@ def write_asr_meta(
     return path
 
 
-def read_asr_meta(out_dir: Path, stem: str) -> list[Segment]:
-    """Segments with their recognition quality; empty when there is no sidecar."""
-    path = asr_meta_path(out_dir, stem)
-    if not path.is_file():
-        return []
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return []
-    return [
-        Segment(
-            start=float(entry.get("start", 0.0)),
-            end=float(entry.get("end", 0.0)),
-            text=str(entry.get("text", "")),
-            avg_logprob=optional_float(entry.get("avg_logprob")),
-            no_speech_prob=optional_float(entry.get("no_speech_prob")),
-            compression_ratio=optional_float(entry.get("compression_ratio")),
-        )
-        for entry in data.get("segments", [])
-    ]
-
-
 def write_results(
     out_dir: Path,
     stem: str,
@@ -719,27 +462,6 @@ def write_results(
     if meta_path is not None:
         written.append(meta_path)
     return written
-
-
-class PauseWatcher:
-    """Soft pause: 'p' pressed in the console stops after the current video."""
-
-    def __init__(self) -> None:
-        try:
-            import msvcrt
-
-            self._msvcrt = msvcrt
-        except ImportError:
-            self._msvcrt = None
-
-    def pause_requested(self) -> bool:
-        if not self._msvcrt:
-            return False
-        requested = False
-        while self._msvcrt.kbhit():
-            if self._msvcrt.getwch().lower() == "p":
-                requested = True
-        return requested
 
 
 def confirm_video(
@@ -848,200 +570,6 @@ def transcribe_video(
 # Remote mode: transcribe straight from the YouTube playlist (no local video)
 
 
-def video_id_from_url(url: str) -> str:
-    match = re.search(r"(?:v=|youtu\.be/|/shorts/|/live/)([\w-]{11})", url)
-    if not match:
-        raise SystemExit(f"Cannot extract a video id from URL: {url}")
-    return match.group(1)
-
-
-def watch_url(video_id: str) -> str:
-    return f"https://www.youtube.com/watch?v={video_id}"
-
-
-def load_playlist_meta(channel_dir: Path, playlist_folder: str) -> dict:
-    """YouTube playlist (id, title) behind a local playlist folder, plus the
-    channel name - resolved via _cache/playlists.json (built by the summary
-    scripts)."""
-    cache_path = channel_dir / "_cache" / "playlists.json"
-    try:
-        data = json.loads(cache_path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        raise SystemExit(
-            f"Playlist cache not found or invalid: {cache_path}\n"
-            "Run the summary script for this channel first."
-        )
-    for playlist in data.get("playlists") or []:
-        if playlist.get("folder") == playlist_folder:
-            return {
-                "id": playlist.get("id") or "",
-                "title": playlist.get("title") or playlist_folder,
-                "channel_name": data.get("channel_name") or "",
-            }
-    raise SystemExit(
-        f"Playlist folder {playlist_folder!r} not found in {cache_path}"
-    )
-
-
-def yt_dlp_json(args_list: list[str]) -> dict:
-    result = run_tool([sys.executable, "-m", "yt_dlp", *args_list])
-    if result.returncode != 0:
-        raise SystemExit(f"yt-dlp failed:\n{result.stderr.strip()}")
-    try:
-        return json.loads(result.stdout)
-    except ValueError:
-        raise SystemExit("yt-dlp returned invalid JSON")
-
-
-def fetch_playlist_entries(playlist_id: str) -> list[dict]:
-    """(id, title, duration, index, url) per playlist entry, in playlist order."""
-    data = yt_dlp_json(
-        ["--flat-playlist", "-J",
-         f"https://www.youtube.com/playlist?list={playlist_id}"]
-    )
-    entries = []
-    for index, entry in enumerate(data.get("entries") or [], start=1):
-        if entry and entry.get("id"):
-            entries.append(
-                {
-                    "id": entry["id"],
-                    "title": str(entry.get("title") or "").strip(),
-                    "duration": entry.get("duration"),
-                    "index": index,
-                    "url": watch_url(entry["id"]),
-                }
-            )
-    return entries
-
-
-def duration_text_to_seconds(text: object) -> float | None:
-    raw = str(text or "").strip()
-    if not raw or "?" in raw:
-        return None
-    parts = raw.split(":")
-    try:
-        nums = [int(part) for part in parts]
-    except ValueError:
-        return None
-    if len(nums) == 3:
-        return float(nums[0] * 3600 + nums[1] * 60 + nums[2])
-    if len(nums) == 2:
-        return float(nums[0] * 60 + nums[1])
-    if len(nums) == 1:
-        return float(nums[0])
-    return None
-
-
-def load_unlisted_playlist_entries(
-    channel_dir: Path, playlist_folder: str
-) -> list[dict]:
-    """Entries of a hand-written series under _playlists_unlisted/<folder>.txt."""
-    from channel_playlists import (
-        load_unlisted_playlist_files,
-        load_video_playlist_details,
-    )
-
-    for entry in load_unlisted_playlist_files(channel_dir):
-        if entry["folder"] != playlist_folder:
-            continue
-        details = load_video_playlist_details(channel_dir) or {}
-        jobs: list[dict] = []
-        for index, video_id in enumerate(entry["video_ids"], start=1):
-            meta = details.get(video_id) or {}
-            jobs.append(
-                {
-                    "id": video_id,
-                    "title": str(meta.get("title") or "").strip(),
-                    "duration": duration_text_to_seconds(
-                        meta.get("duration_text")
-                    ),
-                    "index": index,
-                    "url": meta.get("url") or watch_url(video_id),
-                }
-            )
-        return jobs
-    raise SystemExit(
-        f"Unlisted playlist folder {playlist_folder!r} has no matching "
-        f"file under {channel_dir / '_playlists_unlisted'}"
-    )
-
-
-def fetch_video_info(url: str) -> dict:
-    return yt_dlp_json(["--no-playlist", "-J", url])
-
-
-def duration_to_text(seconds: float | None) -> str:
-    if not seconds:
-        return ""
-    total = int(round(seconds))
-    hours, remainder = divmod(total, 3600)
-    minutes, secs = divmod(remainder, 60)
-    return f"{hours}:{minutes:02d}:{secs:02d}" if hours else f"{minutes}:{secs:02d}"
-
-
-@lru_cache(maxsize=1)
-def long_paths_enabled() -> bool:
-    """Whether Windows is set to accept paths longer than MAX_PATH."""
-    if sys.platform != "win32":
-        return True
-    try:
-        import winreg
-
-        with winreg.OpenKey(
-            winreg.HKEY_LOCAL_MACHINE,
-            r"SYSTEM\CurrentControlSet\Control\FileSystem",
-        ) as key:
-            value, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
-    except OSError:
-        return False
-    return bool(value)
-
-
-def path_limit() -> int:
-    return LONG_PATH_LIMIT if long_paths_enabled() else WINDOWS_MAX_PATH
-
-
-def stem_budget(playlist_dir: Path) -> int:
-    """How long a file stem may be before Windows refuses the path.
-
-    Unless long paths are enabled system-wide, a full path may not exceed
-    MAX_PATH; the longest file built from a stem is the edited document,
-    <playlist>/<LANG>/OUTPUT/<stem>.docx (see create_final_docs.py).
-    """
-    longest_suffix = len("\\RU\\OUTPUT\\") + len(".docx")
-    return path_limit() - 1 - len(str(playlist_dir)) - longest_suffix
-
-
-def remote_stem(
-    index: int, title: str, video_id: str, max_len: int | None = None
-) -> str:
-    """Result-file stem in the local naming convention:
-    NN_<sanitized title> [<id>], with the title cut to fit `max_len`."""
-    try:
-        from yt_dlp.utils import sanitize_filename
-
-        clean = sanitize_filename(title) if title else video_id
-    except ImportError:
-        clean = re.sub(r'[\\/:*?"<>|]', "_", title) if title else video_id
-    prefix = f"{index:02d}_" if index else ""
-    marker = f" [{video_id}]"
-    if max_len is not None:
-        room = max_len - len(prefix) - len(marker)
-        if room < len(clean):
-            clean = clean[: max(1, room)].rstrip(" .,;-")
-    return f"{prefix}{clean}{marker}"
-
-
-def local_media_by_id(playlist_dir: Path) -> dict[str, Path]:
-    """Local media files keyed by the [video id] marker in their names."""
-    by_id: dict[str, Path] = {}
-    for video in list_videos(playlist_dir):
-        match = re.search(r"\[([\w-]{11})\]$", video.stem)
-        if match:
-            by_id[match.group(1)] = video
-    return by_id
-
-
 def remote_transcribed(
     video_id: str, orig_dir: Path, en_dir: Path, needs_en: bool
 ) -> bool:
@@ -1130,13 +658,6 @@ def download_audio(
     raise SystemExit("Audio download produced no file")
 
 
-def read_json_file(path: Path) -> dict | None:
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return None
-
-
 def find_transcribed_stem(video_id: str, orig_dir: Path) -> str | None:
     """Stem of an existing transcript with the [video id] marker, if any."""
     marker = f"[{video_id}]"
@@ -1151,66 +672,12 @@ def remote_edited(
     playlist_dir: Path, stem: str, *, lang: str, needs_en: bool, annotate: bool
 ) -> bool:
     """Final documents (per create_final_docs rules) exist for this stem."""
-    import create_final_docs as cfd
-
+    from docs import create_final_docs as cfd
     orig_code = lang.upper()
     lang_codes = [orig_code] + (["EN"] if needs_en else [])
     return cfd.is_processed(
         playlist_dir, stem, lang_codes, annotate=annotate, orig_code=orig_code
     )
-
-
-def load_channel_flat_jobs(channel_dir: Path) -> tuple[list[dict], str]:
-    """Channel-wide flat job list (newest first) from the summary caches:
-    _cache/videos.json (video order), _cache/video_playlists.json (video ->
-    playlist title) and _cache/playlists.json (playlist title -> folder).
-    Videos outside any playlist go to the misc/ folder."""
-    cache = read_json_file(channel_dir / "_cache" / "videos.json")
-    if not cache or not cache.get("videos"):
-        raise SystemExit(
-            f"Video cache not found or empty: {channel_dir / '_cache' / 'videos.json'}\n"
-            "Run the summary script for this channel first."
-        )
-    channel_name = str(cache.get("channel_name") or "")
-
-    playlists_data = read_json_file(channel_dir / "_cache" / "playlists.json") or {}
-    folder_by_title: dict[str, str] = {}
-    id_by_title: dict[str, str] = {}
-    for playlist in playlists_data.get("playlists") or []:
-        title = playlist.get("title") or ""
-        folder_by_title[title] = playlist.get("folder") or ""
-        id_by_title[title] = playlist.get("id") or ""
-    misc_folder = "misc"
-    while misc_folder in set(folder_by_title.values()):
-        misc_folder = f"_{misc_folder}"
-
-    vp_data = read_json_file(channel_dir / "_cache" / "video_playlists.json") or {}
-    video_map = vp_data.get("map") or {}
-    details = vp_data.get("details") or {}
-
-    jobs: list[dict] = []
-    for video in cache["videos"]:
-        video_id = video.get("id")
-        if not video_id:
-            continue
-        pl_title = str(video_map.get(video_id) or "")
-        detail = details.get(video_id) or {}
-        jobs.append(
-            {
-                "id": video_id,
-                "title": str(video.get("title") or "").strip(),
-                "duration": None,
-                "index": int(detail.get("playlist_index") or 0),
-                "url": watch_url(video_id),
-                "folder": folder_by_title.get(pl_title) or misc_folder,
-                "playlist_meta": {
-                    "id": id_by_title.get(pl_title, ""),
-                    "title": pl_title,
-                    "channel_name": channel_name,
-                },
-            }
-        )
-    return jobs, channel_name
 
 
 def remote_session(
@@ -1730,16 +1197,16 @@ def run_slide_stages(
     stem) pair (--slides). With --edit after them the document takes its
     structure from the slides instead of the video timecodes; without --edit
     the run stops here, with slides.json ready for a later editing pass."""
-    import extract_slides
-    import text_from_slides
-
+    from slides import extract_slides
+    from slides import text_from_slides
     for folder, stem in jobs:
         if not local_video_named(channel_dir, folder, stem):
             print("", flush=True)
             print(
                 f"  WARNING: {stem} is not on disk, so its slides cannot be "
-                "extracted; download the video (download_videos.py) and run "
-                "the slide stages again.",
+                "extracted; download the video "
+                "(src\\download\\download_videos.py) and run the slide "
+                "stages again.",
                 flush=True,
             )
             continue
@@ -1760,8 +1227,7 @@ def run_slide_stages(
 def run_final_editing(args: argparse.Namespace, count: int) -> int:
     """Chain create_final_docs.py for the just-transcribed videos (--edit,
     local mode: same playlist folder, next N pending videos)."""
-    import create_final_docs
-
+    from docs import create_final_docs
     argv = [
         args.channel_folder,
         args.playlist_folder,
@@ -1786,8 +1252,7 @@ def run_final_editing_jobs(
 ) -> int:
     """Chain create_final_docs.py per (playlist folder, stem) pair (--edit,
     remote mode: each video is targeted explicitly via --video)."""
-    import create_final_docs
-
+    from docs import create_final_docs
     for folder, stem in edit_jobs:
         argv = [
             args.channel_folder,
@@ -1853,7 +1318,7 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit(
             "--slides needs the video files themselves, and remote mode "
             "downloads only the audio track. Download the videos first "
-            "(download_videos.py) or drop --slides."
+            "(src\\download\\download_videos.py) or drop --slides."
         )
 
     api_key = read_api_key(args.workspace)

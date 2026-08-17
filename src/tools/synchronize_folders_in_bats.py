@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check, and if needed repair, the folder paths hardcoded in the bat files.
 
-Three things in a bat go stale when folders move:
+Four things in a bat go stale when folders move:
 
 - `cd /d <project root>` - the absolute path of the project, which changes
   when the whole project is moved to another folder or drive;
@@ -9,7 +9,9 @@ Three things in a bat go stale when folders move:
   _channels/, which changes when a channel is regrouped into another
   container (or into no container at all);
 - `set "PLAYLIST=<folder>"` - the playlist folder under the channel's
-  _playlists/, which changes when a playlist folder is renamed.
+  _playlists/, which changes when a playlist folder is renamed;
+- `python src\\<script>.py` - the script itself, which changes when the
+  scripts of src/ are regrouped into other packages.
 
 The script walks every *.bat in the project, compares those values with the
 folders that exist now and rewrites the stale ones in place; the encoding of
@@ -19,8 +21,8 @@ the target can be identified without guessing - otherwise they are only
 reported, together with anything else that needs a human decision.
 
 Usage:
-  python src/synchronize_folders_in_bats.py           # check and repair
-  python src/synchronize_folders_in_bats.py --check   # report only
+  python src/tools/synchronize_folders_in_bats.py           # check and repair
+  python src/tools/synchronize_folders_in_bats.py --check   # report only
 
 Exit code 1 means something is still out of sync: in --check mode anything
 that would be rewritten, otherwise only what could not be repaired.
@@ -38,11 +40,11 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path, PureWindowsPath
 
-_SRC_DIR = Path(__file__).resolve().parent
+_SRC_DIR = Path(__file__).resolve().parents[1]
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from project_paths import (
+from shared.project_paths import (
     WORKSPACE_ROOT,
     channel_playlists_dir,
     channel_relative_ref,
@@ -69,6 +71,9 @@ CHANNEL_RE = re.compile(
 PLAYLIST_RE = re.compile(
     r'^(?P<head>\s*set\s+"PLAYLIST=)(?P<value>[^"]*)(?P<tail>".*)$',
     re.IGNORECASE,
+)
+SCRIPT_RE = re.compile(
+    r"src(?P<slash>[\\/])(?P<ref>[\w\\/]+)\.py", re.IGNORECASE
 )
 
 
@@ -138,6 +143,48 @@ def rebase(old: str) -> tuple[Path | None, str]:
     if len(matches) > 1:
         return None, f"{len(matches)} folders share that name"
     return None, "no such folder in the project"
+
+
+@lru_cache(maxsize=1)
+def script_index() -> dict[str, str]:
+    """Where each script of src/ lives now, keyed by its file name.
+
+    Read off the disk rather than written down, so a script regrouped into
+    yet another package is followed without touching this file. A name that
+    two packages both use is left out: there would be no way to tell which
+    of them a bat meant.
+    """
+    src = WORKSPACE_ROOT / "src"
+    found: dict[str, str | None] = {}
+    for path in sorted(src.rglob("*.py")):
+        if path.name == "__init__.py" or path.parent == src:
+            continue
+        ref = str(path.relative_to(src).with_suffix(""))
+        found[path.stem] = None if path.stem in found else ref
+    return {stem: ref for stem, ref in found.items() if ref}
+
+
+def fix_script(body: str, result: FileResult) -> str:
+    """Point "python src\\x.py" at the package the script now lives in."""
+    def repaired(match: re.Match) -> str:
+        ref = match.group("ref")
+        if (WORKSPACE_ROOT / "src" / f"{ref}.py").is_file():
+            return match.group(0)
+        wanted = script_index().get(PureWindowsPath(ref).name)
+        if not wanted:
+            result.warnings.append(
+                f"src\\{ref}.py is not in the project any more and no script "
+                "of that name was found; fix this line by hand"
+            )
+            return match.group(0)
+        slash = match.group("slash")
+        moved = wanted.replace("\\", slash)
+        result.notes.append(
+            f"script: src{slash}{ref}.py -> src{slash}{moved}.py"
+        )
+        return f"src{slash}{moved}.py"
+
+    return SCRIPT_RE.sub(repaired, body)
 
 
 def owning_channel_root(path: Path) -> Path | None:
@@ -259,6 +306,7 @@ def sync_bat(path: Path, *, apply: bool) -> FileResult:
         body = fix_cd(body, result)
         body = fix_channel(body, channel_root, result)
         body = fix_playlist(body, channel_root, result)
+        body = fix_script(body, result)
         lines.append(body + ending)
 
     new_text = "".join(lines)

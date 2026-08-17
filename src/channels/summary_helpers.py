@@ -7,12 +7,12 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
 
-from channel_playlists import (
+from channels.channel_playlists import (
     playlist_order,
     resolve_playlist_selection,
 )
 from openpyxl import Workbook
-from video_cache import (
+from channels.video_cache import (
     display_number_to_list_pos,
     is_new_display_number,
     list_pos_to_display_number,

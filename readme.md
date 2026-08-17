@@ -28,14 +28,36 @@ yt-dlp/
                          логи запусков — в _run_scripts/_logs/ (не в git)
   prompts/             ← расшифровки чатов с агентом и их читаемые копии
                          (не в git)
-  src/                 ← исходники Python: пайплайн YouTube-каналов лежит
-                         плоско (его пути зашиты в сгенерированные bat-файлы
-                         каналов и в exe), новые функциональные модули
-                         добавляются подпапками
+  src/                 ← исходники Python, по пакету на функциональность
+    shared/            ← то, что нужно всем шагам: пути проекта, файлы видео,
+                         транскрипт как данные, паузы, ключ API, вызов модели
+    channels/          ← сам канал: поиск, summaries, плейлисты, кэши,
+                         раскладка файлов, список заданий
+    download/          ← скачивание видео и презентаций
+    transcribe/        ← распознавание речи и проверка транскриптов
+    slides/            ← кадры слайдов и текст, снятый с них
+    docs/              ← финальный отредактированный документ
+    tools/             ← обслуживание проекта: пути в bat-файлах, чтение
+                         расшифровок чатов, сборка exe
     book_ocr/          ← модуль сканирования и OCR книг (см. раздел «Книги»)
+    book_translate/    ← перевод собранной книги
   scripts/             ← готовые exe для запуска
   readme.md
 ```
+
+Пакеты выстроены по порядку пайплайна: `shared` не знает ни о ком,
+`channels` — только о `shared`, и так далее до `docs`. Обратных связей нет:
+`transcribe_videos.py` подтягивает `slides` и `docs` внутри функций, когда
+дошёл до флагов `--slides` / `--edit`, а не при импорте.
+
+Скрипт по-прежнему запускается по пути к файлу
+(`python src\transcribe\transcribe_videos.py ...`), а не через `-m`: так его
+вызывают bat-файлы каналов. В начале каждого такого файла в `sys.path`
+добавляется папка `src`, после чего импорты пишутся с именем пакета —
+`from shared.project_paths import ...`. Если скрипт переедет в другой пакет,
+пути в уже созданных bat-файлах починит
+`_run_scripts\synchronize_folders_in_bats.bat`: он ищет скрипт по имени
+файла и переписывает `src\<имя>.py` на его новое место.
 
 ## Пайплайн
 
@@ -101,7 +123,7 @@ yt-dlp/
 `advanced_c_sharp`) — с сообщением в логе и не трогая чужую папку, если
 на прежнее имя есть свой плейлист.
 
-Просмотр дерева: `python src/check_playlists.py --layout`.
+Просмотр дерева: `python src/channels/check_playlists.py --layout`.
 
 ## Кто что решает
 
@@ -185,8 +207,8 @@ book_ocr_next_batch.bat page_016        BATCH_SIZE разворотов начи
 | `refresh_channel_cache.exe` | Обновление кэша видео канала (_cache/videos.json) |
 | `organize_by_playlists.exe` | Раскладка видео по плейлистам и нумерация файлов |
 
-Исходники: `src/get_summary_for_channel.py`, `src/refresh_channel_cache.py`, `src/organize_by_playlists.py`.  
-Сборка exe: `python src/build_exe.py` (нужен `pyinstaller`).
+Исходники: `src/channels/get_summary_for_channel.py`, `src/channels/refresh_channel_cache.py`, `src/channels/organize_by_playlists.py`.  
+Сборка exe: `python src/tools/build_exe.py` (нужен `pyinstaller`).
 
 Требование: в `PATH` должен быть доступен `yt-dlp` (для столбца плейлиста).  
 Разрешение `@handle` → `UC…` — через страницу канала (без yt-dlp).
@@ -204,7 +226,7 @@ scripts\get_summary_for_channel.exe @Ekaterina_Schulmann
 или:
 
 ```bat
-python src\get_summary_for_channel.py @Ekaterina_Schulmann
+python src\channels\get_summary_for_channel.py @Ekaterina_Schulmann
 ```
 
 **Первый параметр (обязательный):** `UC…`, `@handle` или URL канала.  
@@ -299,9 +321,9 @@ $0.006/мин ≈ $0.36/час на июль 2026). Тариф кэширует�
 Пример поэтапной загрузки (шаг 2 пайплайна, 900+ видео, ~200/день):
 
 ```bat
-python src\get_summary_for_channel.py @Channel allpls --from 1 --to 200
-python src\get_summary_for_channel.py @Channel allpls --new --from 201 --next 200
-python src\get_summary_for_channel.py @Channel allpls --new --from 401 --next 200
+python src\channels\get_summary_for_channel.py @Channel allpls --from 1 --to 200
+python src\channels\get_summary_for_channel.py @Channel allpls --new --from 201 --next 200
+python src\channels\get_summary_for_channel.py @Channel allpls --new --from 401 --next 200
 ```
 
 `--next N` — альтернатива `--to`: экспорт N видео начиная с `--from`
@@ -352,8 +374,8 @@ summary — то же имя с пробелами вместо подчёрки
 - `length_curr` не изменилась → если кэш старше 24 ч, сверка 4 видео; иначе кэш без изменений
 - `length_curr` выросла → сверка со сдвигом (новые в начале); при успехе — подкачка без полного refresh
 
-Полный refresh вручную: `python src/refresh_channel_cache.py @Channel --force`  
-Инкрементальный (по умолчанию): `python src/refresh_channel_cache.py @Channel`
+Полный refresh вручную: `python src/channels/refresh_channel_cache.py @Channel --force`  
+Инкрементальный (по умолчанию): `python src/channels/refresh_channel_cache.py @Channel`
 
 Флаг `--refresh` **убран**. Флаг `--new` — см. выше.
 
@@ -361,16 +383,16 @@ summary — то же имя с пробелами вместо подчёрки
 
 ```bat
 :: Summary по плейлистам (default bypls)
-python src\get_summary_for_channel.py @Ekaterina_Schulmann
+python src\channels\get_summary_for_channel.py @Ekaterina_Schulmann
 
 :: Общий список канала
-python src\get_summary_for_channel.py @Ekaterina_Schulmann allpls --from 1 --to 50
+python src\channels\get_summary_for_channel.py @Ekaterina_Schulmann allpls --from 1 --to 50
 
 :: Один плейлист по алиасу
-python src\get_summary_for_channel.py @VladilenMinin "#A" --from 1 --to 20
+python src\channels\get_summary_for_channel.py @VladilenMinin "#A" --from 1 --to 20
 
 :: Только список плейлистов
-python src\get_summary_for_channel.py @Ekaterina_Schulmann --plsonly
+python src\channels\get_summary_for_channel.py @Ekaterina_Schulmann --plsonly
 ```
 
 ---
@@ -414,15 +436,15 @@ _run_scripts\update_playlists.bat
 
 Сервисный скрипт: сверяет пути, зашитые в `*.bat`-файлы проекта, с тем, как
 папки лежат на диске сейчас, и правит устаревшие. Запускать после переноса
-проекта в другую папку или на другой диск и после перекладывания папок
-каналов по контейнерам.
+проекта в другую папку или на другой диск, после перекладывания папок
+каналов по контейнерам и после перегруппировки скриптов в `src/`.
 
 ### Запуск
 
 ```bat
 _run_scripts\synchronize_folders_in_bats.bat
 _run_scripts\synchronize_folders_in_bats.bat --check
-python src\synchronize_folders_in_bats.py
+python src\tools\synchronize_folders_in_bats.py
 ```
 
 Сам bat-файл находит проект по собственному расположению (`cd /d "%~dp0.."`),
@@ -437,6 +459,7 @@ python src\synchronize_folders_in_bats.py
 | `cd /d <путь>` | Совпадает ли с текущим корнем проекта |
 | `set "CHANNEL=..."` | Совпадает ли с реальным путём папки канала относительно `_channels/` |
 | `set "PLAYLIST=..."` | Есть ли такая папка в `_playlists/` этого канала |
+| `python src\<путь>.py` | Лежит ли скрипт по этому пути; если нет — ищется по имени файла |
 | прочие абсолютные пути | Существуют ли они внутри проекта |
 
 Канал определяется по расположению самого bat-файла: скрипт поднимается от
@@ -444,6 +467,12 @@ python src\synchronize_folders_in_bats.py
 а её путь относительно `_channels/` подставляется в `CHANNEL`. Значение
 `PLAYLIST` чинится, если папка нашлась по последнему сегменту пути (частый
 случай — в значение случайно попал контейнер: `IT\lectures` → `lectures`).
+
+Путь к скрипту чинится по имени файла: `src\transcribe_videos.py` →
+`src\transcribe\transcribe_videos.py`. Список пакетов нигде не записан —
+скрипт читает `src/` с диска, поэтому следующий переезд поправится сам.
+Имя, встречающееся в двух пакетах сразу, пропускается: угадывать, какой из
+них имелся в виду, не по чему.
 
 Абсолютный путь, ведущий не в корень проекта, переносится на новое место,
 если цель определяется однозначно: сначала по самому длинному «хвосту»
@@ -472,9 +501,9 @@ python src\synchronize_folders_in_bats.py
 ### Запуск
 
 ```bat
-python src\read_chat_transcript.py prompts\2026_07_30_Chat.jsonl
-python src\read_chat_transcript.py prompts\2026_07_30_Chat.jsonl --split
-python src\read_chat_transcript.py chat.jsonl --width 100 --out chat.txt
+python src\tools\read_chat_transcript.py prompts\2026_07_30_Chat.jsonl
+python src\tools\read_chat_transcript.py prompts\2026_07_30_Chat.jsonl --split
+python src\tools\read_chat_transcript.py chat.jsonl --width 100 --out chat.txt
 ```
 
 | Параметр | Значение |
@@ -526,7 +555,7 @@ python src\read_chat_transcript.py chat.jsonl --width 100 --out chat.txt
 
 ```bat
 _run_scripts\add_youtube_channel_by_descr.bat
-python src\find_youtube_channel_by_descr.py "Политолог Аббас Галлямов YouTube"
+python src\channels\find_youtube_channel_by_descr.py "Политолог Аббас Галлямов YouTube"
 ```
 
 В bat-файле редактируются две выделенные строки:
@@ -619,11 +648,11 @@ cmd.exe читает bat в кодовой странице консоли (cp43
 ### Запуск
 
 ```bat
-python src\download_videos.py Game_Design\_makingitright9305 ^
+python src\download\download_videos.py Game_Design\_makingitright9305 ^
     kurs_geym_dizayna_nri_making_it_right --next 1
-python src\download_videos.py Game_Design\_makingitright9305 ^
+python src\download\download_videos.py Game_Design\_makingitright9305 ^
     kurs_geym_dizayna_nri_making_it_right --next all
-python src\download_videos.py _Autotesting --next all
+python src\download\download_videos.py _Autotesting --next all
 ```
 
 **Параметр 1:** имя папки канала в `_channels/`.  
@@ -713,9 +742,9 @@ YouTube периодически отвечает `Sign in to confirm you're not
 ### Запуск
 
 ```bat
-python src\download_presentations.py Game_Design\_makingitright9305 ^
+python src\download\download_presentations.py Game_Design\_makingitright9305 ^
     kurs_geym_dizayna_nri_making_it_right --next all
-python src\download_presentations.py Game_Design\_makingitright9305 ^
+python src\download\download_presentations.py Game_Design\_makingitright9305 ^
     kurs_geym_dizayna_nri_making_it_right --video "04_Making It Right..."
 ```
 
@@ -791,9 +820,9 @@ python src\download_presentations.py Game_Design\_makingitright9305 ^
 ### Запуск
 
 ```bat
-python src\transcribe_videos.py _Autotesting lectures --lang ru
-python src\transcribe_videos.py _Autotesting lectures --lang ru --next 3
-python src\transcribe_videos.py AI_for_Game_Design\_makingitright9305 ^
+python src\transcribe\transcribe_videos.py _Autotesting lectures --lang ru
+python src\transcribe\transcribe_videos.py _Autotesting lectures --lang ru --next 3
+python src\transcribe\transcribe_videos.py AI_for_Game_Design\_makingitright9305 ^
     --lang ru --orig-only --from-youtube --edit --annotate ^
     --title-substr "Лекция №1.1." --next all
 ```
@@ -985,8 +1014,8 @@ OPENAI_API_KEY=sk-...
 ### Запуск
 
 ```bat
-python src\silences.py _Autotesting lectures
-python src\silences.py _Autotesting lectures --refresh
+python src\shared\silences.py _Autotesting lectures
+python src\shared\silences.py _Autotesting lectures --refresh
 ```
 
 | Параметр | Назначение |
@@ -1021,8 +1050,8 @@ python src\silences.py _Autotesting lectures --refresh
 ### Запуск
 
 ```bat
-python src\check_transcripts.py IT\_Autotesting lectures
-python src\check_transcripts.py IT\_Autotesting lectures --video 01_Introduction
+python src\transcribe\check_transcripts.py IT\_Autotesting lectures
+python src\transcribe\check_transcripts.py IT\_Autotesting lectures --video 01_Introduction
 ```
 
 | Параметр | Описание |
@@ -1089,9 +1118,9 @@ python src\check_transcripts.py IT\_Autotesting lectures --video 01_Introduction
 ### Запуск
 
 ```bat
-python src\extract_slides.py _Autotesting lectures
-python src\extract_slides.py _Autotesting lectures --next 3 --threshold 20
-python src\extract_slides.py _Autotesting lectures --video 01_Introduction
+python src\slides\extract_slides.py _Autotesting lectures
+python src\slides\extract_slides.py _Autotesting lectures --next 3 --threshold 20
+python src\slides\extract_slides.py _Autotesting lectures --video 01_Introduction
 ```
 
 Параметры 1 и 2 — как у `transcribe_videos.py` (папка канала, папка плейлиста).
@@ -1200,7 +1229,7 @@ python src\extract_slides.py _Autotesting lectures --video 01_Introduction
 Переименовать уже созданные папки со старыми полными именами:
 
 ```bat
-python src\extract_slides.py _Autotesting lectures --rename-existing
+python src\slides\extract_slides.py _Autotesting lectures --rename-existing
 ```
 
 ---
@@ -1215,9 +1244,9 @@ python src\extract_slides.py _Autotesting lectures --rename-existing
 ### Запуск
 
 ```bat
-python src\text_from_slides.py _Autotesting lectures
-python src\text_from_slides.py _Autotesting lectures --next 3
-python src\text_from_slides.py _Autotesting lectures --video 01_Introduction
+python src\slides\text_from_slides.py _Autotesting lectures
+python src\slides\text_from_slides.py _Autotesting lectures --next 3
+python src\slides\text_from_slides.py _Autotesting lectures --video 01_Introduction
 ```
 
 Параметры 1 и 2 — как у предыдущих скриптов (папка канала, папка плейлиста).
@@ -1321,9 +1350,9 @@ python src\text_from_slides.py _Autotesting lectures --video 01_Introduction
 ### Запуск
 
 ```bat
-python src\create_final_docs.py _Autotesting lectures
-python src\create_final_docs.py _Autotesting lectures --next 3
-python src\create_final_docs.py _Autotesting lectures --doc styles.docx
+python src\docs\create_final_docs.py _Autotesting lectures
+python src\docs\create_final_docs.py _Autotesting lectures --next 3
+python src\docs\create_final_docs.py _Autotesting lectures --doc styles.docx
 ```
 
 Параметры 1 и 2 — как у предыдущих скриптов. Видео попадает в сессию, если
@@ -1811,7 +1840,7 @@ $1.09 за все оплаченные прогоны):
 документ можно починить, не оплачивая видео целиком:
 
 ```bat
-python src\create_final_docs.py IT\_Autotesting lectures --video 01_Introduction --force
+python src\docs\create_final_docs.py IT\_Autotesting lectures --video 01_Introduction --force
 ```
 
 ### Результаты

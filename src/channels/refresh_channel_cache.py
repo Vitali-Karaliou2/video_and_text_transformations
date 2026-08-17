@@ -5,8 +5,8 @@ Default: smart incremental refresh (prepend new videos when possible).
 Use --force for a full re-fetch from YouTube.
 
 Examples:
-  python src/refresh_channel_cache.py @Ekaterina_Schulmann
-  python src/refresh_channel_cache.py @Ekaterina_Schulmann --force
+  python src/channels/refresh_channel_cache.py @Ekaterina_Schulmann
+  python src/channels/refresh_channel_cache.py @Ekaterina_Schulmann --force
 """
 
 from __future__ import annotations
@@ -15,20 +15,20 @@ import argparse
 import sys
 from pathlib import Path
 
-_SRC_DIR = Path(__file__).resolve().parent
+_SRC_DIR = Path(__file__).resolve().parents[1]
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from channel_playlists import load_video_playlist_map, migrate_legacy_browse_cache
-from channel_browse import fetch_channel_name
-from get_summary_for_channel import (
+from channels.channel_playlists import load_video_playlist_map, migrate_legacy_browse_cache
+from channels.channel_browse import fetch_channel_name
+from channels.get_summary_for_channel import (
     resolve_channel_handle,
     resolve_channel_id,
     resolve_output_folder,
     resolve_playlist_map,
 )
-from project_paths import WORKSPACE_ROOT, channels_dir
-from video_cache import ensure_video_cache, full_cache_refresh, load_videos_cache
+from shared.project_paths import WORKSPACE_ROOT, channels_dir
+from channels.video_cache import ensure_video_cache, full_cache_refresh, load_videos_cache
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")

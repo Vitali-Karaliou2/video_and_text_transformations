@@ -22,9 +22,9 @@ The report goes to <playlist>/<LANG>/CHECKS/<stem>.txt and its frequency list
 doubles as the raw material for the terms.txt glossary.
 
 Examples:
-  python src/check_transcripts.py IT\\_Autotesting lectures
-  python src/check_transcripts.py IT\\_Autotesting lectures --video 01_Introduction
-  python src/check_transcripts.py IT\\_Autotesting lectures --min-logprob -0.5
+  python src/transcribe/check_transcripts.py IT\\_Autotesting lectures
+  python src/transcribe/check_transcripts.py IT\\_Autotesting lectures --video 01_Introduction
+  python src/transcribe/check_transcripts.py IT\\_Autotesting lectures --min-logprob -0.5
 """
 
 from __future__ import annotations
@@ -37,13 +37,17 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 
-_SRC_DIR = Path(__file__).resolve().parent
+_SRC_DIR = Path(__file__).resolve().parents[1]
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from glossary import GLOSSARY_FILENAME, find_glossary, load_terms, term_words
-from project_paths import WORKSPACE_ROOT, channels_dir, require_channel_ref
-from transcribe_videos import Segment, normalize_lang, read_asr_meta
+from shared.glossary import GLOSSARY_FILENAME, find_glossary, load_terms, term_words
+from shared.project_paths import (
+    WORKSPACE_ROOT,
+    channels_dir,
+    require_channel_ref,
+)
+from shared.transcripts import Segment, normalize_lang, read_asr_meta
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")

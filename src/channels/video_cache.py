@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from channel_browse import (
+from channels.channel_browse import (
     browse_api_header,
     fetch_all_browse_videos,
     fetch_browse_up_to_count,
@@ -15,8 +15,8 @@ from channel_browse import (
     fetch_first_browse_page,
     new_videos_at_head,
 )
-from channel_playlists import read_json, write_json
-from project_paths import browse_cache_path, videos_cache_path
+from channels.channel_playlists import read_json, write_json
+from shared.project_paths import browse_cache_path, videos_cache_path
 
 MISC_PLAYLIST = "misc"
 CACHE_STALE_HOURS = 24
@@ -442,7 +442,10 @@ def ensure_video_cache(
                     length_old=length_old,
                     channel_name=channel_name,
                 )
-            raise SystemExit("Channel video count decreased; run refresh_channel_cache.py.")
+            raise SystemExit(
+                "Channel video count decreased; run "
+                "src\\channels\\refresh_channel_cache.py."
+            )
         if not validate_cache_samples(live_videos, cached_videos):
             print("Cache validation failed.", flush=True)
             if allow_emergency_refresh:
@@ -455,7 +458,10 @@ def ensure_video_cache(
                     length_old=length_old,
                     channel_name=channel_name,
                 )
-            raise SystemExit("Cache validation failed; run refresh_channel_cache.py.")
+            raise SystemExit(
+                "Cache validation failed; run "
+                "src\\channels\\refresh_channel_cache.py."
+            )
         touch_cache_validation(cache, channel_root)
         return VideoCacheResult(
             videos=cached_videos,
@@ -501,7 +507,10 @@ def ensure_video_cache(
                     length_old=length_old,
                     channel_name=channel_name,
                 )
-            raise SystemExit("Cache validation failed; run refresh_channel_cache.py.")
+            raise SystemExit(
+                "Cache validation failed; run "
+                "src\\channels\\refresh_channel_cache.py."
+            )
         new_videos = live_videos[:n_new]
         videos = merge_new_with_cache(new_videos, cached_videos)
         cache["videos"] = videos

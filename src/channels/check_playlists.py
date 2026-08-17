@@ -9,11 +9,11 @@ import subprocess
 import sys
 from pathlib import Path
 
-_SRC_DIR = Path(__file__).resolve().parent
+_SRC_DIR = Path(__file__).resolve().parents[1]
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from channel_playlists import (  # noqa: E402
+from channels.channel_playlists import (  # noqa: E402
     ensure_playlist_folders,
     is_misc_folder,
     iter_channel_roots,
@@ -24,7 +24,7 @@ from channel_playlists import (  # noqa: E402
     sync_channel_playlists,
     validate_playlist_folders,
 )
-from project_paths import (  # noqa: E402
+from shared.project_paths import (  # noqa: E402
     WORKSPACE_ROOT,
     channel_playlists_dir,
     channel_relative_ref,

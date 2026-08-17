@@ -37,7 +37,7 @@ only, with 200-250 word annotations (Russian original -> Russian
 annotation; other originals -> English + Russian annotations).
 
 Usage:
-  python src/find_youtube_channel_by_descr.py "Политолог Аббас Галлямов YouTube"
+  python src/channels/find_youtube_channel_by_descr.py "Политолог Аббас Галлямов YouTube"
 
 Automation: _run_scripts/find_youtube_channel_by_descr.bat (project root);
 the search description is set in a clearly marked line of the bat file.
@@ -55,17 +55,17 @@ import urllib.parse
 from collections.abc import Collection
 from pathlib import Path
 
-_SRC_DIR = Path(__file__).resolve().parent
+_SRC_DIR = Path(__file__).resolve().parents[1]
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
-from channel_browse import (
+from channels.channel_browse import (
     client_context,
     extract_lockups,
     find_continuations,
     post_innertube,
 )
-from project_paths import (
+from shared.project_paths import (
     WORKSPACE_ROOT,
     channel_folder_name,
     channel_relative_ref,
@@ -303,7 +303,7 @@ def translate_playlists(
     titles = [pl["title"] for pl in playlists]
     if api_key is None:
         return None, [None] * len(titles)
-    from text_from_slides import chat_json
+    from slides.text_from_slides import chat_json
 
     payload = {
         "channel_title": candidate["title"],
@@ -393,7 +393,7 @@ rem YouTube (only the audio is downloaded). Already transcribed but
 rem unedited videos skip transcription and go straight to editing.
 rem --orig-only: original language only; --annotate: 200-250 word
 rem annotation .txt (RU original -> RU; otherwise EN + RU translation).
-set "RUNCMD=python -u src\transcribe_videos.py %CHANNEL% {playlist_arg}--lang %LANG% --orig-only --from-youtube --edit --annotate {select_args}"
+set "RUNCMD=python -u src\transcribe\transcribe_videos.py %CHANNEL% {playlist_arg}--lang %LANG% --orig-only --from-youtube --edit --annotate {select_args}"
 
 call :logecho === transcribe + final edit: {scope_note} ===
 call :logecho Log file: %LOGFILE%
@@ -666,8 +666,7 @@ def ask_choice(prompt: str, options: set[str]) -> str:
 def run_summary_for(
     cand: dict, scope: str, lang: str, container: str | None
 ) -> int:
-    import get_summary_for_channel
-
+    from channels import get_summary_for_channel
     ref = cand.get("handle") or cand["id"]
     argv = [ref, scope, "--lang", lang]
     if container:
@@ -717,7 +716,7 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("The channel description must not be empty.")
 
     try:
-        from transcribe_videos import read_api_key
+        from transcribe.transcribe_videos import read_api_key
 
         api_key: str | None = read_api_key(WORKSPACE_ROOT)
     except SystemExit:
