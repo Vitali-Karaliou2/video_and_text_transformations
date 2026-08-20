@@ -1,0 +1,17 @@
+# Settings of add_youtube_channel_by_descr.bat - edit them here and run the
+# bat. Save this file as UTF-8; a line opening with '#' is a comment, and of
+# a repeated setting the first line is the one that counts, so an earlier
+# value can be parked under the current one instead of being deleted.
+
+# The channel to search for on YouTube: an @handle or any free text.
+DESCR=@gilkeanzhela
+# DESCR=@KevinStratvert
+# DESCR=Политолог Аббас Галлямов YouTube
+# DESCR=YouTube Using Modern AI for Game Design
+
+# The folder under _channels\ to create the channel folder in; leave it empty
+# for _channels\ itself. The folder is created if it is not there. A channel
+# that already has a folder somewhere keeps it - move the folder by hand and
+# run synchronize_folders_in_bats.bat to regroup it.
+CHANNEL_PATH=Politics\История_и_современность
+# CHANNEL_PATH=IT\LLMs

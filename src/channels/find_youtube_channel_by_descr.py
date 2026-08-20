@@ -40,9 +40,13 @@ original language only, with 200-250 word annotations (Russian original
 
 Usage:
   python src/channels/find_youtube_channel_by_descr.py "Политолог Аббас Галлямов YouTube"
+  python src/channels/find_youtube_channel_by_descr.py --settings <file>
 
-Automation: _run_scripts/find_youtube_channel_by_descr.bat (project root);
-the search description is set in a clearly marked line of the bat file.
+Automation: _run_scripts/add_youtube_channel_by_descr.bat (project root). The
+description to search for and the folder to create the channel in are edited
+in add_youtube_channel_by_descr.settings.txt next to that bat, which the bat
+passes here as --settings; see shared/settings_file.py for why they are not
+kept in the bat itself.
 """
 
 from __future__ import annotations
@@ -74,6 +78,7 @@ from shared.project_paths import (
     channels_dir,
     find_channel_folder,
 )
+from shared.settings_file import read_settings
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -81,6 +86,9 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 MAX_CANDIDATES = 3
+# What the settings file of the root bat may hold (see shared/settings_file.py
+# for why the bat keeps its editable values in a file of their own).
+SETTINGS_KEYS = ("DESCR", "CHANNEL_PATH")
 # YouTube search filter "Type: Channel" (sp parameter, already URL-encoded).
 CHANNEL_FILTER_SP = "EgIQAg%253D%253D"
 PLAYLISTS_TAB_PARAMS = "EglwbGF5bGlzdHPyBgQKAkIA"
@@ -805,7 +813,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "description",
-        help='Free-text channel description, e.g. "Политолог Аббас Галлямов YouTube"',
+        nargs="?",
+        default=None,
+        help=(
+            "Free-text channel description, e.g. "
+            '"Политолог Аббас Галлямов YouTube"; may come from --settings '
+            "instead, and overrides it when both are given"
+        ),
     )
     parser.add_argument(
         "--lang",
@@ -822,18 +836,55 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         metavar="FOLDER",
         help=(
             "Folder under _channels/ to create the channel folder in, e.g. "
-            'IT\\Dot.Net (the bat passes its CHANNEL_PATH line here). A '
-            "channel that already has a folder keeps it"
+            'IT\\Dot.Net (the CHANNEL_PATH setting of the bat). A channel '
+            "that already has a folder keeps it"
+        ),
+    )
+    parser.add_argument(
+        "--settings",
+        default=None,
+        metavar="FILE",
+        type=Path,
+        help=(
+            "Text file with the DESCR and CHANNEL_PATH lines to run with; "
+            "this is how the bat passes a description that cmd.exe cannot "
+            "carry itself. Command-line values win over it"
         ),
     )
     return parser.parse_args(argv)
 
 
+def what_to_search_for(args: argparse.Namespace) -> tuple[str, str | None]:
+    """The description and the container folder of this run.
+
+    Both may come from the command line or from the settings file the bat
+    points at; a value given on the command line wins.
+    """
+    description = (args.description or "").strip()
+    container = (args.container or "").strip().strip("\\/") or None
+    if args.settings:
+        settings = read_settings(args.settings, SETTINGS_KEYS)
+        print(f"Settings: {args.settings}", flush=True)
+        if not description:
+            description = settings.get("DESCR", "")
+        if container is None:
+            container = settings.get("CHANNEL_PATH", "").strip("\\/") or None
+    if not description:
+        where = (
+            f"Set DESCR in {args.settings}"
+            if args.settings
+            else "Pass it as the first argument"
+        )
+        raise SystemExit(f"The channel description is empty. {where}.")
+    print(f"Description: {description}", flush=True)
+    goes_into = f"_channels\\{container}" if container else "_channels\\ itself"
+    print(f"Channel folder goes into: {goes_into}", flush=True)
+    return description, container
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    description = args.description.strip()
-    if not description:
-        raise SystemExit("The channel description must not be empty.")
+    description, container = what_to_search_for(args)
 
     try:
         from transcribe.transcribe_videos import read_api_key
@@ -929,7 +980,7 @@ def main(argv: list[str] | None = None) -> int:
             scope = "allpls"
         lang = (args.lang or cand.get("language") or "ru").lower()
 
-        code = run_summary_for(cand, scope, lang, args.container)
+        code = run_summary_for(cand, scope, lang, container)
         if code:
             print(f"Summary script exited with code {code}.", flush=True)
             return code
