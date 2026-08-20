@@ -119,6 +119,7 @@ from shared.sessions import (  # noqa: E402
     normalize_next_count,
     run_tool,
 )
+from shared.settings_file import read_settings  # noqa: E402
 from shared.silences import SilenceIndex, load_silences  # noqa: E402
 from shared.transcripts import (  # noqa: E402
     Segment,
@@ -960,8 +961,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "channel_folder",
+        nargs="?",
+        default=None,
         help="Channel ref under _channels/ (e.g. _Autotesting or "
-        "AI_for_Game_Design\\_BuildingAeon)",
+        "AI_for_Game_Design\\_BuildingAeon); may come from --settings "
+        "instead, and overrides it when both are given",
     )
     parser.add_argument(
         "playlist_folder",
@@ -970,7 +974,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help=(
             "Playlist folder name under <channel>/_playlists (e.g. "
             "lectures). May be omitted in remote mode (--from-youtube / "
-            "--url): the flat channel-wide video list is used then"
+            "--url): the flat channel-wide video list is used then. May "
+            "also come from --settings"
         ),
     )
     parser.add_argument(
@@ -1109,7 +1114,50 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--ffprobe", default="ffprobe", help="ffprobe executable (default: ffprobe)"
     )
+    parser.add_argument(
+        "--settings",
+        default=None,
+        metavar="FILE",
+        type=Path,
+        help=(
+            "Text file with CHANNEL / PLAYLIST / TITLE_SUBSTR; this is how "
+            "the channel bats pass values that cmd.exe cannot carry itself. "
+            "Command-line values win over it"
+        ),
+    )
     return parser.parse_args(argv)
+
+
+SETTINGS_KEYS = ("CHANNEL", "PLAYLIST", "TITLE_SUBSTR")
+
+
+def apply_run_settings(args: argparse.Namespace) -> None:
+    """Fill channel / playlist / title filter from the bat's settings file."""
+    if not args.settings:
+        if not (args.channel_folder or "").strip():
+            raise SystemExit(
+                "channel_folder is required (pass it or --settings)."
+            )
+        return
+    settings = read_settings(args.settings, SETTINGS_KEYS)
+    print(f"Settings: {args.settings}", flush=True)
+    if not (args.channel_folder or "").strip():
+        args.channel_folder = settings.get("CHANNEL", "")
+    if args.playlist_folder is None:
+        playlist = settings.get("PLAYLIST", "").strip()
+        args.playlist_folder = playlist or None
+    if not args.title_substr:
+        substr = settings.get("TITLE_SUBSTR", "")
+        args.title_substr = substr or None
+    if not (args.channel_folder or "").strip():
+        raise SystemExit(
+            f"CHANNEL is empty. Set it in {args.settings}."
+        )
+    print(f"Channel: {args.channel_folder}", flush=True)
+    if args.playlist_folder:
+        print(f"Playlist: {args.playlist_folder}", flush=True)
+    if args.title_substr:
+        print(f"Title substring: {args.title_substr}", flush=True)
 
 
 def local_session(
@@ -1278,6 +1326,7 @@ def run_final_editing_jobs(
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    apply_run_settings(args)
     lang = normalize_lang(args.lang)
     needs_en = lang != "en" and not args.orig_only
     args.next_count = normalize_next_count(args.next_count)

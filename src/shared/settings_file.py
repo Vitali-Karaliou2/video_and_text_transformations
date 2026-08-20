@@ -48,3 +48,13 @@ def read_settings(path: Path, allowed: Collection[str]) -> dict[str, str]:
             )
         settings.setdefault(key, value.strip())
     return settings
+
+
+def settings_beside(bat_path: Path) -> Path:
+    """The settings file that belongs next to a bat: <stem>.settings.txt."""
+    return bat_path.with_name(bat_path.stem + ".settings.txt")
+
+
+def write_settings(path: Path, lines: str) -> None:
+    """Write a settings file as UTF-8 without a BOM, with Windows newlines."""
+    path.write_bytes(lines.replace("\n", "\r\n").encode("utf-8"))

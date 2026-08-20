@@ -5,11 +5,13 @@ Four things in a bat go stale when folders move:
 
 - `cd /d <project root>` - the absolute path of the project, which changes
   when the whole project is moved to another folder or drive;
-- `set "CHANNEL=<container>\\<channel>"` - the channel folder relative to
-  _channels/, which changes when a channel is regrouped into another
-  container (or into no container at all);
-- `set "PLAYLIST=<folder>"` - the playlist folder under the channel's
-  _playlists/, which changes when a playlist folder is renamed;
+- `set "CHANNEL=<container>\\<channel>"` and the `CHANNEL=` line of a
+  sibling `.settings.txt` - the channel folder relative to _channels/,
+  which changes when a channel is regrouped into another container (or
+  into no container at all);
+- `set "PLAYLIST=<folder>"` and the `PLAYLIST=` line of a sibling
+  `.settings.txt` - the playlist folder under the channel's _playlists/,
+  which changes when a playlist folder is renamed;
 - `python src\\<script>.py` - the script itself, which changes when the
   scripts of src/ are regrouped into other packages.
 
@@ -72,6 +74,15 @@ PLAYLIST_RE = re.compile(
     r'^(?P<head>\s*set\s+"PLAYLIST=)(?P<value>[^"]*)(?P<tail>".*)$',
     re.IGNORECASE,
 )
+# Sibling settings files of the channel bats (see shared/settings_file.py).
+SETTINGS_CHANNEL_RE = re.compile(
+    r"^(?P<head>\s*CHANNEL=)(?P<value>.*?)(?P<tail>\s*)$",
+    re.IGNORECASE,
+)
+SETTINGS_PLAYLIST_RE = re.compile(
+    r"^(?P<head>\s*PLAYLIST=)(?P<value>.*?)(?P<tail>\s*)$",
+    re.IGNORECASE,
+)
 SCRIPT_RE = re.compile(
     r"src(?P<slash>[\\/])(?P<ref>[\w\\/]+)\.py", re.IGNORECASE
 )
@@ -107,7 +118,8 @@ def iter_bat_files(root: Path) -> list[Path]:
     for current, dirnames, filenames in os.walk(root):
         dirnames[:] = sorted(d for d in dirnames if d not in SKIP_DIRS)
         for name in sorted(filenames):
-            if name.casefold().endswith(".bat"):
+            lowered = name.casefold()
+            if lowered.endswith(".bat") or lowered.endswith(".settings.txt"):
                 found.append(Path(current) / name)
     return found
 
@@ -257,8 +269,11 @@ def fix_cd(body: str, result: FileResult) -> str:
 def fix_channel(body: str, channel_root: Path | None, result: FileResult) -> str:
     if channel_root is None:
         return body
-    match = CHANNEL_RE.match(body)
+    match = CHANNEL_RE.match(body) or SETTINGS_CHANNEL_RE.match(body)
     if not match:
+        return body
+    # A commented-out settings line is a parked earlier value - leave it.
+    if body.lstrip().startswith(("#", ";")):
         return body
     current = match.group("value")
     expected = channel_relative_ref(channel_root, channels_dir(WORKSPACE_ROOT))
@@ -271,8 +286,10 @@ def fix_channel(body: str, channel_root: Path | None, result: FileResult) -> str
 def fix_playlist(body: str, channel_root: Path | None, result: FileResult) -> str:
     if channel_root is None:
         return body
-    match = PLAYLIST_RE.match(body)
+    match = PLAYLIST_RE.match(body) or SETTINGS_PLAYLIST_RE.match(body)
     if not match:
+        return body
+    if body.lstrip().startswith(("#", ";")):
         return body
     current = match.group("value").strip()
     playlists = channel_playlists_dir(channel_root)
@@ -299,14 +316,16 @@ def sync_bat(path: Path, *, apply: bool) -> FileResult:
         return result
     text, encoding = decode_bat(raw)
     channel_root = owning_channel_root(path)
+    is_settings = path.name.casefold().endswith(".settings.txt")
 
     lines: list[str] = []
     for line in text.splitlines(keepends=True):
         body, ending = split_ending(line)
-        body = fix_cd(body, result)
+        if not is_settings:
+            body = fix_cd(body, result)
+            body = fix_script(body, result)
         body = fix_channel(body, channel_root, result)
         body = fix_playlist(body, channel_root, result)
-        body = fix_script(body, result)
         lines.append(body + ending)
 
     new_text = "".join(lines)
@@ -339,7 +358,7 @@ def main(argv: list[str] | None = None) -> int:
     bats = iter_bat_files(WORKSPACE_ROOT)
     print(f"Project root: {WORKSPACE_ROOT}", flush=True)
     mode = " (check only, nothing is written)" if args.check else ""
-    print(f"Bat files found: {len(bats)}{mode}", flush=True)
+    print(f"Bat / settings files found: {len(bats)}{mode}", flush=True)
     print("", flush=True)
 
     stale = 0

@@ -28,10 +28,13 @@ from channels.get_summary_for_channel import (
     resolve_playlist_map,
 )
 from shared.project_paths import WORKSPACE_ROOT, channels_dir
+from shared.settings_file import read_settings
 from channels.video_cache import ensure_video_cache, full_cache_refresh, load_videos_cache
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
+REFRESH_SETTINGS_KEYS = ("CHANNEL", "HANDLE")
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -40,7 +43,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "channel",
-        help="YouTube channel id (UC…), @handle, or channel URL",
+        nargs="?",
+        default=None,
+        help=(
+            "YouTube channel id (UC…), @handle, or channel URL; may come "
+            "from --settings instead"
+        ),
     )
     parser.add_argument(
         "--force",
@@ -69,7 +77,31 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="yt-dlp",
         help="yt-dlp executable (default: yt-dlp)",
     )
+    parser.add_argument(
+        "--settings",
+        default=None,
+        metavar="FILE",
+        type=Path,
+        help=(
+            "Text file with HANDLE (and CHANNEL); how the refresh bat passes "
+            "a handle that need not live in the bat itself"
+        ),
+    )
     return parser.parse_args(argv)
+
+
+def apply_run_settings(args: argparse.Namespace) -> None:
+    if args.settings:
+        settings = read_settings(args.settings, REFRESH_SETTINGS_KEYS)
+        print(f"Settings: {args.settings}", flush=True)
+        if not (args.channel or "").strip():
+            args.channel = (
+                settings.get("HANDLE") or settings.get("CHANNEL") or ""
+            )
+    if not (args.channel or "").strip():
+        raise SystemExit(
+            "channel is required (pass it or HANDLE in --settings)."
+        )
 
 
 def setup_channel_root(args: argparse.Namespace) -> tuple[str, str | None, str, Path]:
@@ -92,6 +124,7 @@ def setup_channel_root(args: argparse.Namespace) -> tuple[str, str | None, str, 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    apply_run_settings(args)
     channel_id, handle, channel_name, channel_root = setup_channel_root(args)
 
     playlist_map, _details = resolve_playlist_map(

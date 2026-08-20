@@ -63,6 +63,7 @@ from shared.project_paths import (
     normalize_container_ref,
     spell_out_tech_names,
 )
+from shared.settings_file import read_settings
 from channels.range_args import (
     apply_resolved_range,
     numeric_required_to,
@@ -604,7 +605,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "channel",
-        help="YouTube channel id (UC…), @handle, or channel URL",
+        nargs="?",
+        default=None,
+        help=(
+            "YouTube channel id (UC…), @handle, or channel URL; may come "
+            "from --settings instead"
+        ),
     )
     parser.add_argument(
         "scope",
@@ -703,6 +709,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="yt-dlp",
         help="yt-dlp executable (default: yt-dlp)",
     )
+    parser.add_argument(
+        "--settings",
+        default=None,
+        metavar="FILE",
+        type=Path,
+        help=(
+            "Text file with HANDLE (and CHANNEL); how the refresh bat passes "
+            "a handle that need not live in the bat itself"
+        ),
+    )
     args = parser.parse_args(argv)
     args.from_index = DEFAULT_FROM
     args.to_index = DEFAULT_TO
@@ -712,8 +728,26 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return args
 
 
+SUMMARY_SETTINGS_KEYS = ("CHANNEL", "HANDLE")
+
+
+def apply_run_settings(args: argparse.Namespace) -> None:
+    if args.settings:
+        settings = read_settings(args.settings, SUMMARY_SETTINGS_KEYS)
+        print(f"Settings: {args.settings}", flush=True)
+        if not (args.channel or "").strip():
+            args.channel = (
+                settings.get("HANDLE") or settings.get("CHANNEL") or ""
+            )
+    if not (args.channel or "").strip():
+        raise SystemExit(
+            "channel is required (pass it or HANDLE in --settings)."
+        )
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    apply_run_settings(args)
     args.container = resolved_container(args)
     now = datetime.now()
     today = date.today()
