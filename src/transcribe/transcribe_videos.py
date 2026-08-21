@@ -849,7 +849,14 @@ def remote_session(
         title = str(info.get("title") or entry["title"] or entry["id"])
         seconds = float(info.get("duration") or entry.get("duration") or 0.0)
         if entry["folder"] not in local_media_cache:
+            created = not pdir.is_dir()
             pdir.mkdir(parents=True, exist_ok=True)
+            if created:
+                print(
+                    f"  Created playlist folder: "
+                    f"{pdir.relative_to(channel_dir)}",
+                    flush=True,
+                )
             local_media_cache[entry["folder"]] = local_media_by_id(pdir)
         local = local_media_cache[entry["folder"]].get(entry["id"])
         budget = stem_budget(pdir)
@@ -1351,7 +1358,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.playlist_folder is not None:
         playlist_dir = channel_dir / "_playlists" / args.playlist_folder
         if not playlist_dir.is_dir():
-            raise SystemExit(f"Playlist folder not found: {playlist_dir}")
+            playlist_dir.mkdir(parents=True, exist_ok=True)
+            print(
+                f"Created playlist folder: "
+                f"{playlist_dir.relative_to(channel_dir)}",
+                flush=True,
+            )
     elif not remote:
         raise SystemExit(
             "playlist_folder may be omitted only in remote mode "

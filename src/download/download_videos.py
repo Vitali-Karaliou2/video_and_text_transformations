@@ -291,8 +291,10 @@ def main(argv: list[str] | None = None) -> int:
     for job in jobs:
         folder = job["folder"]
         if folder not in downloaded_cache:
-            (playlists_root / folder).mkdir(parents=True, exist_ok=True)
-            downloaded_cache[folder] = local_media_by_id(playlists_root / folder)
+            pdir = playlists_root / folder
+            downloaded_cache[folder] = (
+                local_media_by_id(pdir) if pdir.is_dir() else {}
+            )
         if job["id"] not in downloaded_cache[folder]:
             pending.append(job)
 
@@ -337,6 +339,13 @@ def main(argv: list[str] | None = None) -> int:
     looking_for_presentations = not args.no_presentations
     for position, job in enumerate(session, start=1):
         playlist_dir = playlists_root / job["folder"]
+        if not playlist_dir.is_dir():
+            playlist_dir.mkdir(parents=True, exist_ok=True)
+            print(
+                f"  Created playlist folder: "
+                f"{playlist_dir.relative_to(channel_dir)}",
+                flush=True,
+            )
         print(
             f"[{position}/{len(session)}] {job['title']}  "
             f"[{job['folder']}]",

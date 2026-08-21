@@ -488,7 +488,7 @@ def sync_channel_playlists(
     run_yt_dlp: Callable[..., object],
     force_fetch: bool = False,
     update_cache: bool = True,
-    create_folders: bool = True,
+    create_folders: bool = False,
     referenced_folders: set[str] | None = None,
 ) -> dict:
     cache_path = playlists_cache_path(channel_root)
@@ -513,6 +513,14 @@ def sync_channel_playlists(
             ensure_playlist_folders(
                 channel_root, cached.get("playlists", []), create=True
             )
+        else:
+            unlisted = [
+                pl
+                for pl in cached.get("playlists", [])
+                if is_unlisted_playlist(pl)
+            ]
+            if unlisted:
+                ensure_playlist_folders(channel_root, unlisted, create=True)
         return cached
 
     entries = fetch_channel_playlist_entries(channel_id, run_yt_dlp)
@@ -565,12 +573,43 @@ def sync_channel_playlists(
                 f"{', '.join(created)}.",
                 flush=True,
             )
+    else:
+        # Hand-written unlisted series are few and intentional - make their
+        # folders now. YouTube playlists stay deferred (there may be hundreds).
+        unlisted = [
+            pl for pl in payload["playlists"] if is_unlisted_playlist(pl)
+        ]
+        if unlisted:
+            created = ensure_playlist_folders(
+                channel_root, unlisted, create=True
+            )
+            if created:
+                print(
+                    f"Created {len(created)} unlisted playlist folder(s): "
+                    f"{', '.join(created)}.",
+                    flush=True,
+                )
+        missing = [
+            pl["folder"]
+            for pl in youtube_playlists_only(payload["playlists"])
+            if pl.get("folder")
+            and not (channel_playlists_dir(channel_root) / pl["folder"]).is_dir()
+        ]
+        if missing:
+            print(
+                f"Playlist folders not created ({len(missing)} pending under "
+                "_playlists/). They appear when a video of that playlist is "
+                "transcribed or downloaded; pass --create-playlist-folders "
+                "to make them all now.",
+                flush=True,
+            )
     if not youtube_playlists_only(payload["playlists"]) and not any(
         is_unlisted_playlist(pl) for pl in payload["playlists"]
     ):
         print(
             "This channel keeps no playlists; its videos go to "
-            f"_playlists/{resolve_misc_folder_name(set())}/.",
+            f"_playlists/{resolve_misc_folder_name(set())}/ "
+            "(created when the first video is transcribed).",
             flush=True,
         )
     return payload

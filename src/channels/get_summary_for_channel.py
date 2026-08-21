@@ -544,7 +544,7 @@ def ensure_playlists_cache(
         channel_name=channel_name,
         run_yt_dlp=lambda *a, **k: yt_dlp_run(args, *a, **k),
         force_fetch=force_fetch,
-        create_folders=True,
+        create_folders=bool(args.create_playlist_folders),
     )
 
 
@@ -676,6 +676,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help=(
             "Also export videos that appear in channel playlists but not in the "
             "Videos/uploads feed (typical for some live VODs)"
+        ),
+    )
+    parser.add_argument(
+        "--create-playlist-folders",
+        action="store_true",
+        help=(
+            "Create an empty folder under _playlists/ for every playlist in "
+            "the cache. Off by default: folders appear later, when a video "
+            "of that playlist is transcribed or downloaded (a channel may "
+            "have hundreds of playlists)"
         ),
     )
     parser.add_argument(

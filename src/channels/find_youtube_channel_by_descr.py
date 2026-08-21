@@ -16,10 +16,12 @@ shown in decreasing relevance order. For every candidate the script prints:
 Then, for each candidate in turn, the script asks for a confirmation
 (y = build the summary, n = next candidate, q = quit). On "y" it asks how
 to group the summary (by playlists / flat), runs get_summary_for_channel
-(which creates _cache, _playlists and _summaries and fills them), makes
-sure the channel folder has the standard subfolders (_cache, _playlists,
-_run_scripts, _summaries) and generates the automation bat files in the
-channel's _run_scripts:
+(which creates _cache and _summaries and fills them; empty playlist
+folders under _playlists/ are deferred until a video of that playlist is
+transcribed or downloaded - pass --create-playlist-folders to make them
+all at once), makes sure the channel folder has the standard subfolders
+(_cache, _playlists, _run_scripts, _summaries) and generates the
+automation bat files in the channel's _run_scripts:
 
 - transcribe_and_edit_next.bat      - transcribe + edit the next
   untranscribed (or transcribed-but-unedited) video from the flat
@@ -96,13 +98,13 @@ CHANNEL_FILTER_SP = "EgIQAg%253D%253D"
 PLAYLISTS_TAB_PARAMS = "EglwbGF5bGlzdHPyBgQKAkIA"
 
 TRANSLATE_SYSTEM_PROMPT = """\
-You are given YouTube channel metadata: the channel title, its description
-and the list of playlist titles.
+You are given YouTube channel metadata: the channel title and a batch of
+playlist titles that still need a Russian gloss.
 
 1. Guess the dominant content language of the channel (the language its
    videos are most likely spoken in) as a two-letter lower-case code.
-2. Translate every playlist title into Russian, in the given order.
-   Return null ONLY for titles that are already in Russian or are a
+2. Translate every playlist title in the batch into Russian, in the given
+   order. Return null ONLY when a title is already Russian or a
    transliteration of Russian; every other title (including titles with
    emojis, hashtags or brand names) must get a Russian translation.
 
@@ -301,49 +303,115 @@ def fetch_playlists_with_counts(channel_id: str) -> list[dict]:
     return playlists
 
 
-def looks_russian_or_translit(text: str) -> bool:
-    """Cheap local check to skip the API when every title is Russian."""
-    return bool(re.search(r"[а-яё]", text, re.IGNORECASE))
+def looks_cyrillic(text: str) -> bool:
+    """Cheap local check: title already in a Cyrillic script (RU/BE/UK/...)."""
+    return bool(re.search(r"[а-яёіўїєґ]", text, re.IGNORECASE))
+
+
+# How many playlist titles go into one translation call. A news channel can
+# have hundreds of playlists; one giant JSON reply then gets cut mid-array
+# and chat_json raises SystemExit - which used to kill the whole search.
+TRANSLATE_CHUNK = 40
+# Titles shown to the model when it only has to guess the content language.
+LANGUAGE_GUESS_TITLES = 20
 
 
 def translate_playlists(
     api_key: str | None,
     candidate: dict,
     playlists: list[dict],
+    *,
+    translate_titles: bool = True,
 ) -> tuple[str | None, list[str | None]]:
-    """(guessed content language, Russian translation per playlist title)."""
+    """(guessed content language, Russian translation per playlist title).
+
+    `translate_titles=False` skips the glosses and only guesses the language
+    - enough when every title is already Cyrillic and the caller only needs
+    a LANG for the generated bats.
+    """
     titles = [pl["title"] for pl in playlists]
     if api_key is None:
         return None, [None] * len(titles)
-    from slides.text_from_slides import chat_json
+    from shared.openai_chat import chat_json
 
-    payload = {
+    def ask(messages: list[dict]) -> dict | None:
+        try:
+            return chat_json(api_key, messages, {})
+        except SystemExit as exc:
+            # Best-effort display aid: a truncated reply must not abort the
+            # channel search (Radio Liberty-scale playlist lists do that).
+            print(f"  WARNING: translation call failed: {exc}", flush=True)
+            return None
+        except Exception as exc:  # noqa: BLE001
+            print(f"  WARNING: translation call failed: {exc}", flush=True)
+            return None
+
+    language: str | None = None
+    guess_payload = {
         "channel_title": candidate["title"],
         "channel_description": candidate["description"][:1000],
-        "playlist_titles": titles,
+        "playlist_titles": titles[:LANGUAGE_GUESS_TITLES],
     }
-    try:
-        result = chat_json(
-            api_key,
+    guess = ask(
+        [
+            {
+                "role": "system",
+                "content": (
+                    "Guess the dominant content language of this YouTube "
+                    "channel (the language its videos are most likely "
+                    "spoken in) as a two-letter lower-case code. Reply with "
+                    'JSON only: {"language": "xx"}'
+                ),
+            },
+            {
+                "role": "user",
+                "content": json.dumps(guess_payload, ensure_ascii=False),
+            },
+        ]
+    )
+    if guess:
+        language = str(guess.get("language") or "").strip().lower() or None
+
+    translations: list[str | None] = [None] * len(titles)
+    if not translate_titles:
+        return language, translations
+
+    todo = [
+        index
+        for index, title in enumerate(titles)
+        if not looks_cyrillic(title)
+    ]
+    for start in range(0, len(todo), TRANSLATE_CHUNK):
+        batch_indexes = todo[start : start + TRANSLATE_CHUNK]
+        batch_titles = [titles[index] for index in batch_indexes]
+        result = ask(
             [
                 {"role": "system", "content": TRANSLATE_SYSTEM_PROMPT},
                 {
                     "role": "user",
-                    "content": json.dumps(payload, ensure_ascii=False),
+                    "content": json.dumps(
+                        {
+                            "channel_title": candidate["title"],
+                            "playlist_titles": batch_titles,
+                        },
+                        ensure_ascii=False,
+                    ),
                 },
-            ],
-            {},
+            ]
         )
-    except Exception as exc:  # noqa: BLE001 - display info is best-effort
-        print(f"  WARNING: translation call failed: {exc}", flush=True)
-        return None, [None] * len(titles)
-    language = str(result.get("language") or "").strip().lower() or None
-    raw = result.get("translations")
-    translations: list[str | None] = []
-    for index in range(len(titles)):
-        value = raw[index] if isinstance(raw, list) and index < len(raw) else None
-        text = str(value).strip() if value else ""
-        translations.append(text or None)
+        if not result:
+            continue
+        if language is None:
+            language = (
+                str(result.get("language") or "").strip().lower() or None
+            )
+        raw = result.get("translations")
+        if not isinstance(raw, list):
+            continue
+        for offset, index in enumerate(batch_indexes):
+            value = raw[offset] if offset < len(raw) else None
+            text = str(value).strip() if value else ""
+            translations[index] = text or None
     return language, translations
 
 
@@ -925,13 +993,20 @@ def ask_choice(prompt: str, options: set[str]) -> str:
 
 
 def run_summary_for(
-    cand: dict, scope: str, lang: str, container: str | None
+    cand: dict,
+    scope: str,
+    lang: str,
+    container: str | None,
+    *,
+    create_playlist_folders: bool = False,
 ) -> int:
     from channels import get_summary_for_channel
     ref = cand.get("handle") or cand["id"]
     argv = [ref, scope, "--lang", lang]
     if container:
         argv += ["--container", container]
+    if create_playlist_folders:
+        argv.append("--create-playlist-folders")
     print("", flush=True)
     print(
         f"=== Summary: {cand['title']} ({ref}, {scope}, lang={lang}) ===",
@@ -982,6 +1057,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "Text file with the DESCR and CHANNEL_PATH lines to run with; "
             "this is how the bat passes a description that cmd.exe cannot "
             "carry itself. Command-line values win over it"
+        ),
+    )
+    parser.add_argument(
+        "--create-playlist-folders",
+        action="store_true",
+        help=(
+            "When building the summary, create an empty folder under "
+            "_playlists/ for every playlist. Off by default: folders appear "
+            "when a video of that playlist is transcribed or downloaded"
         ),
     )
     return parser.parse_args(argv)
@@ -1051,12 +1135,14 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  WARNING: could not fetch playlists: {exc}", flush=True)
             cand["playlists"] = []
         needs_translation = any(
-            not looks_russian_or_translit(pl["title"])
-            for pl in cand["playlists"]
+            not looks_cyrillic(pl["title"]) for pl in cand["playlists"]
         )
         if cand["playlists"] and (needs_translation or args.lang is None):
             cand["language"], cand["translations"] = translate_playlists(
-                api_key, cand, cand["playlists"]
+                api_key,
+                cand,
+                cand["playlists"],
+                translate_titles=needs_translation,
             )
         else:
             cand["language"], cand["translations"] = (
@@ -1113,7 +1199,13 @@ def main(argv: list[str] | None = None) -> int:
             scope = "allpls"
         lang = (args.lang or cand.get("language") or "ru").lower()
 
-        code = run_summary_for(cand, scope, lang, container)
+        code = run_summary_for(
+            cand,
+            scope,
+            lang,
+            container,
+            create_playlist_folders=args.create_playlist_folders,
+        )
         if code:
             print(f"Summary script exited with code {code}.", flush=True)
             return code

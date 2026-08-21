@@ -170,7 +170,18 @@ def check_channel(channel_root: Path, args: argparse.Namespace) -> int:
         print(f"  Misc folders:       {', '.join(misc_dirs)}")
     if missing:
         print(f"  Missing folders:    {', '.join(missing)}")
-        issues += len(missing)
+        # Empty playlist folders are deferred by default (created when a
+        # video of that playlist is first transcribed or downloaded), so
+        # a missing folder is not an error unless the user asked to create
+        # them with --create.
+        if args.create:
+            issues += len(missing)
+        else:
+            print(
+                "  Note:     missing folders are normal until a video of "
+                "that playlist is transcribed/downloaded "
+                "(--create makes them all now)"
+            )
 
     folder_errors = validate_playlist_folders(channel_root, cached)
     for message in folder_errors:
@@ -183,7 +194,7 @@ def check_channel(channel_root: Path, args: argparse.Namespace) -> int:
         )
         if created:
             print(f"  Created folders:    {', '.join(created)}")
-            issues -= len(created)
+            issues = max(0, issues - len(created))
 
     if issues == 0:
         print(f"  Result:   OK")
