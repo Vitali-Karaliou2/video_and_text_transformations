@@ -514,6 +514,10 @@ def setup_channel(
     )
     channel_root = (args.output_dir or channels_dir(args.workspace)) / folder_name
     channel_root.mkdir(parents=True, exist_ok=True)
+    # Empty _playlists/ marks this as a channel folder (see is_channel_root).
+    # Per-playlist subfolders are created later, on first use.
+    (channel_root / "_playlists").mkdir(exist_ok=True)
+    (channel_root / "_cache").mkdir(exist_ok=True)
     migrate_legacy_browse_cache(channel_id, channel_root, args.workspace)
 
     videos_cache = load_videos_cache(channel_root)

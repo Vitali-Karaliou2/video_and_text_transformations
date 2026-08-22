@@ -493,6 +493,9 @@ def sync_channel_playlists(
 ) -> dict:
     cache_path = playlists_cache_path(channel_root)
     channel_cache_dir(channel_root).mkdir(parents=True, exist_ok=True)
+    # The empty _playlists/ directory marks the channel root (containers do
+    # not have it). Per-playlist subfolders stay deferred unless asked for.
+    channel_playlists_dir(channel_root).mkdir(parents=True, exist_ok=True)
     cached = load_playlists_cache(cache_path)
 
     need_fetch = force_fetch or cached is None or is_first_access_today(cached)

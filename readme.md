@@ -17,8 +17,9 @@ yt-dlp/
   _channels/           ← папки отдельных YouTube-каналов (не в git)
     _Handle/
       _cache/          ← кэш канала: videos.json, playlists.json, video_playlists.json
-      _playlists/      ← папки плейлистов (создаются по мере надобности;
-                         имена без ведущего _)
+      _playlists/      ← пустая папка-маркер канала; подпапки плейлистов
+                         создаются по мере надобности (имена без ведущего _)
+      _run_scripts/    ← канальные *.bat и соседние *.settings.txt
       _summaries/      ← summaries по датам: YYYY-MM-DD/_hh_mm_*.txt/xlsx
       ...
   misc/                ← прочие коллекции, не привязанные к каналу (не в git)

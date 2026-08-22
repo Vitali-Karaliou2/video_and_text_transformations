@@ -101,8 +101,22 @@ def unlisted_playlists_dir(channel_root: Path) -> Path:
 
 
 def is_channel_root(path: Path) -> bool:
-    """True when path is a YouTube channel folder (has _playlists/)."""
-    return path.is_dir() and channel_playlists_dir(path).is_dir()
+    """True when path is a YouTube channel folder.
+
+    The marker is normally an (possibly empty) `_playlists/` directory.
+    `_cache/videos.json` or `_cache/playlists.json` also count: playlist
+    *sub*folders may be deferred, and older runs briefly left channels
+    without `_playlists/` at all.
+    """
+    if not path.is_dir():
+        return False
+    if channel_playlists_dir(path).is_dir():
+        return True
+    cache = channel_cache_dir(path)
+    return cache.is_dir() and (
+        (cache / "videos.json").is_file()
+        or (cache / "playlists.json").is_file()
+    )
 
 
 def is_channel_container(path: Path) -> bool:

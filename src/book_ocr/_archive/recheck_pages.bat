@@ -1,0 +1,1 @@
+python src\book_ocr\scan_pages.py --slugs page_036 page_044 page_046 page_054 page_072 page_100 page_106 page_112 page_120 page_136 page_144 page_150 page_158 page_172 page_210 page_216 page_222 page_226 page_228 page_230
