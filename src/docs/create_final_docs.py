@@ -140,6 +140,7 @@ from shared.project_paths import (
     channels_dir,
     require_channel_ref,
 )
+from shared.settings_file import read_settings
 from shared.silences import SilenceIndex, load_silences
 from shared.transcripts import (
     LANGUAGE_NAMES,
@@ -255,6 +256,11 @@ Editing rules:
    words, and never leave a paragraph of more than 200 words standing -
    split it at the best sentence end you can find, and if the recognizer
    left none, at the place your own punctuation ends a sentence.
+1d. Order. The document follows the recording. The paragraphs come in the
+   order the speaker said them, and a passage is never carried to where it
+   would read better, however tempting - a reader watching the video has to
+   find the two side by side. Joining and splitting paragraphs (see 1a) is
+   the only rearranging there is.
 2. English text: edit the same way; its punctuation usually needs little
    work, but polish awkward constructions - the speaker is not a native
    English speaker.
@@ -1607,6 +1613,121 @@ def split_paragraph(text: str, limit: int) -> list[str]:
     )
 
 
+def transcript_anchor(source_words: list[str], paragraph: str) -> int:
+    """Where in the transcript the paragraph's longest verbatim run starts."""
+    words = coverage_words(paragraph)
+    if not words:
+        return -1
+    match = difflib.SequenceMatcher(
+        None, source_words, words, autojunk=False
+    ).find_longest_match(0, len(source_words), 0, len(words))
+    return match.a if match.size >= COVERAGE_MIN_RUN_WORDS else -1
+
+
+def out_of_order(anchors: list[int]) -> list[int]:
+    """Which of the anchors have to move for the rest to run forwards.
+
+    What stays is the longest run of anchors that never goes backwards;
+    everything outside it is what the editor carried out of place, and
+    moving exactly that is the smallest repair there is.
+    """
+    if not anchors:
+        return []
+    longest = [1] * len(anchors)
+    after = [-1] * len(anchors)
+    for index, anchor in enumerate(anchors):
+        for earlier in range(index):
+            if anchors[earlier] <= anchor and longest[earlier] >= longest[index]:
+                longest[index] = longest[earlier] + 1
+                after[index] = earlier
+    stays: set[int] = set()
+    index = max(range(len(anchors)), key=lambda at: longest[at])
+    while index >= 0:
+        stays.add(index)
+        index = after[index]
+    return [index for index in range(len(anchors)) if index not in stays]
+
+
+# Anchoring a sentence can be a word or two out, so a handful of words
+# apparently out of place is noise rather than a passage the editor moved.
+ORDER_MIN_MOVED_WORDS = 30
+# Carrying a passage out of the paragraph it was hung on can leave a
+# sentence or two behind. Rule 1a has them join their neighbour rather than
+# stand alone, and here the neighbour is the text they follow in the speech.
+ORDER_MIN_PARAGRAPH_WORDS = 30
+
+
+def in_spoken_order(source: str, paragraphs: list[str]) -> tuple[list[str], int]:
+    """The paragraphs with any moved passage carried back, and its size.
+
+    The editor moves a passage without moving a whole paragraph: here it
+    took the hundred words that open a transcript paragraph and hung them
+    on the end of the paragraph after it. So the work is done a sentence at
+    a time, and the sentences that stay put keep the paragraph they were
+    given; only the moved run has to become a paragraph of its own, which
+    is what it is in the transcript anyway.
+    """
+    source_words = coverage_words(source)
+    if not source_words or len(paragraphs) < 2:
+        return paragraphs, 0
+    numbers: list[int] = []
+    sentences: list[str] = []
+    anchors: list[int] = []
+    last = 0
+    for number, paragraph in enumerate(paragraphs):
+        for sentence in SENTENCE_SPLIT_RE.split(paragraph):
+            if not sentence.strip():
+                continue
+            found = transcript_anchor(source_words, sentence)
+            last = last if found < 0 else found
+            numbers.append(number)
+            sentences.append(sentence)
+            anchors.append(last)
+    displaced = out_of_order(anchors)
+    moved_words = sum(len(sentences[index].split()) for index in displaced)
+    if moved_words < ORDER_MIN_MOVED_WORDS:
+        return paragraphs, 0
+    order = sorted(range(len(sentences)), key=lambda at: (anchors[at], at))
+    rebuilt: list[str] = []
+    previous: int | None = None
+    for index in order:
+        short = (
+            rebuilt
+            and len(rebuilt[-1].split()) < ORDER_MIN_PARAGRAPH_WORDS
+        )
+        if numbers[index] == previous or short:
+            rebuilt[-1] = f"{rebuilt[-1]} {sentences[index]}"
+        else:
+            rebuilt.append(sentences[index])
+        previous = numbers[index]
+    return rebuilt, moved_words
+
+
+def paragraphs_in_spoken_order(section: Section, sources: dict[str, str]) -> int:
+    """Undo the passages the editor moved; return how many words came back.
+
+    Rule 1d asks for the order of the recording and is mostly obeyed, but a
+    passage placed after the one that used to follow it costs twice over:
+    the document no longer runs alongside the video, and the coverage diff -
+    which can align in one order only - reports the passage missing from the
+    place it left. Putting it back is arithmetic, so it is done here rather
+    than paid for. Each language is straightened against its own transcript
+    and each container on its own, so no subsection takes in the text of its
+    neighbour.
+    """
+    moved = 0
+    for container in [section.intro, *section.subsections]:
+        for code, paragraphs in list(container.items()):
+            source = sources.get(code) or ""
+            if not source or not isinstance(paragraphs, list):
+                continue
+            rebuilt, words = in_spoken_order(source, paragraphs)
+            if words:
+                container[code] = rebuilt
+                moved += words
+    return moved
+
+
 def polish_section(section: Section, code: str) -> None:
     """Put the finished section through what needs no model: paragraphs of
     a readable length, the letter «ё» where only «ё» can stand, and the few
@@ -1657,6 +1778,40 @@ def section_language_text(section: Section, code: str) -> str:
     return "\n\n".join(paragraphs)
 
 
+def section_word_count(section: Section, code: str) -> int:
+    return len(coverage_words(section_language_text(section, code)))
+
+
+def cache_incomplete(entry: dict) -> bool:
+    """Cached edit still recorded dropped or duplicated transcript text."""
+    recorded = entry.get("coverage") or {}
+    return bool(recorded.get("dropped") or recorded.get("repeated"))
+
+
+# How much of a run has to be found elsewhere in the edited text before it
+# counts as moved rather than lost. Below this the run really is missing and
+# what was found are the few words any two sentences share.
+COVERAGE_MOVED_SHARE = 0.8
+
+
+def carried_elsewhere(run: list[str], edited: list[str]) -> bool:
+    """The run is in the edited text, only not where the diff looked.
+
+    A diff aligns in one order, so a passage the model moved - here a
+    paragraph placed after the one that used to follow it - can match in
+    only one of its two places and is reported missing from the other.
+    Restoring it then puts a second copy into the document, which is how a
+    reordered paragraph turns into a repeated one.
+    """
+    matcher = difflib.SequenceMatcher(None, run, edited, autojunk=False)
+    carried = sum(
+        block.size
+        for block in matcher.get_matching_blocks()
+        if block.size >= COVERAGE_MIN_RUN_WORDS
+    )
+    return carried >= COVERAGE_MOVED_SHARE * len(run)
+
+
 def dropped_fragments(source: str, edited: str) -> list[Gap]:
     """Runs of source words that the edited text does not carry at all.
 
@@ -1673,14 +1828,17 @@ def dropped_fragments(source: str, edited: str) -> list[Gap]:
         # The mark that opens the next sentence came along with the rest.
         return " ".join(text.split()).rstrip("«\"([-–— ")
 
+    source_words = coverage_words(source)
+    edited_words = coverage_words(edited)
     matcher = difflib.SequenceMatcher(
-        None, coverage_words(source), coverage_words(edited), autojunk=False
+        None, source_words, edited_words, autojunk=False
     )
     return [
         Gap(cut(start, stop), offset)
         for tag, start, stop, offset, _ in matcher.get_opcodes()
         if tag in ("delete", "replace")
         and stop - start >= COVERAGE_MIN_RUN_WORDS
+        and not carried_elsewhere(source_words[start:stop], edited_words)
     ]
 
 
@@ -1870,6 +2028,33 @@ def drop_repeats(
         section.intro["EN"] = [str(p) for p in result.get("intro_en") or []]
 
 
+# The restore prompt asks for the gap back as one paragraph, so a gap the
+# size of half a section is condensed exactly the way the edit that lost it
+# condensed it. Above this many words the gap is restored piece by piece,
+# each piece a paragraph of the size rule 1a asks for.
+FRAGMENT_RESTORE_WORDS = 120
+
+
+def split_gap(gap: Gap, limit: int = FRAGMENT_RESTORE_WORDS) -> list[Gap]:
+    """The gap cut into pieces of about `limit` words at sentence ends."""
+    words = gap.text.split()
+    if len(words) <= limit:
+        return [gap]
+    pieces: list[str] = []
+    current: list[str] = []
+    for word in words:
+        current.append(word)
+        if len(current) >= limit and ends_sentence(word):
+            pieces.append(" ".join(current))
+            current = []
+    if current:
+        if pieces and len(current) < COVERAGE_MIN_RUN_WORDS:
+            pieces[-1] = f"{pieces[-1]} {' '.join(current)}"
+        else:
+            pieces.append(" ".join(current))
+    return [Gap(text, gap.offset) for text in pieces]
+
+
 def repair_section(
     api_key: str,
     section: Section,
@@ -1881,11 +2066,27 @@ def repair_section(
     usage: dict[str, int],
 ) -> None:
     """Fix what is still wrong after the re-edit, one problem per call."""
+    code = coverage_code(orig_code)
     for gap in sorted(issues.dropped, key=lambda item: -item.offset):
-        restore_fragment(
-            api_key, section, gap, orig_code=orig_code, en_text=en_text,
-            terms=terms, usage=usage,
-        )
+        pieces = split_gap(gap)
+        if len(pieces) > 1:
+            print(
+                f"      {len(gap.text.split())} words in one gap; restoring "
+                f"them in {len(pieces)} pieces...",
+                flush=True,
+            )
+        # Every piece is inserted at the same paragraph index, so they go in
+        # back to front to come out in the order the speaker said them. A
+        # piece the section turns out to carry after all is left alone: the
+        # gap was cut out of a passage the model only moved.
+        for piece in reversed(pieces):
+            here = coverage_words(section_language_text(section, code))
+            if carried_elsewhere(coverage_words(piece.text), here):
+                continue
+            restore_fragment(
+                api_key, section, piece, orig_code=orig_code, en_text=en_text,
+                terms=terms, usage=usage,
+            )
     if issues.repeated:
         drop_repeats(
             api_key, section, issues.repeated, orig_code=orig_code,
@@ -1928,6 +2129,11 @@ def section_coverage(section: Section, source: str, code: str) -> Coverage:
 # minutes: splitting them costs the subsection structure (parts are always
 # flat) and, as the coverage check showed, loses text at the seams.
 EDIT_CHUNK_TOKENS = 7000
+# A single flat section (no slides, no chapters) longer than this is edited
+# in parts up front. Whole-section calls still compress the middle even when
+# the text is far below EDIT_CHUNK_TOKENS (a 7-minute monologue here lost
+# subtitles 83-130 that way).
+PROACTIVE_FLAT_SPLIT_WORDS = 700
 
 
 def chunk_count(orig_text: str, en_text: str, orig_code: str) -> int:
@@ -2093,7 +2299,9 @@ def edit_section_again_in_parts(
         f"{parts} parts...",
         flush=True,
     )
+    check_code = coverage_code(orig_code)
     snapshot = section_snapshot(section)
+    before_words = section_word_count(section, check_code)
     again = edit_section_in_chunks(
         api_key,
         section,
@@ -2106,10 +2314,16 @@ def edit_section_again_in_parts(
         usage=usage,
         pauses=pauses,
     )
-    if again.weight() < issues.weight():
+    after_words = section_word_count(section, check_code)
+    if (
+        again.weight() < issues.weight()
+        or after_words > before_words
+    ):
         return again
-    print("    the parts came back no better; keeping the whole-section "
-          "edit.", flush=True)
+    print(
+        "    the parts came back no better; keeping the whole-section edit.",
+        flush=True,
+    )
     restore_snapshot(section, snapshot)
     return issues
 
@@ -3356,6 +3570,15 @@ def process_video(
             del cache[key]
             stale += 1
             continue
+        if cache_incomplete(entry):
+            print(
+                f"  Re-editing '{section.heading}': the cached version still "
+                "has dropped or duplicated transcript text.",
+                flush=True,
+            )
+            del cache[key]
+            stale += 1
+            continue
         source = texts[key][0] if orig_code != "EN" else texts[key][1]
         lost = cached_lost_share(entry, source)
         if lost >= COVERAGE_SPLIT_SHARE and not entry.get("split_tried"):
@@ -3445,6 +3668,19 @@ def process_video(
 
     usage: dict[str, int] = {}
     incomplete: list[str] = []
+
+    def keep_the_spoken_order(section: Section, key: str) -> None:
+        section_orig, section_en = texts[key]
+        moved = paragraphs_in_spoken_order(
+            section, {orig_code: section_orig or section_en, "EN": section_en}
+        )
+        if moved:
+            print(
+                f"    Order: {moved} word(s) the editor moved were put back "
+                f"where they were said.",
+                flush=True,
+            )
+
     for index, section in enumerate(sections, start=1):
         key = section_cache_key(section)
         minutes = (section.end - section.start) / 60.0
@@ -3455,6 +3691,7 @@ def process_video(
                 flush=True,
             )
             section_from_cache(section, cache[key])
+            keep_the_spoken_order(section, key)
             polish_section(section, check_code)
             continue
         print(
@@ -3464,6 +3701,11 @@ def process_video(
         )
         orig_text, en_text = texts[key]
         parts = chunk_count(orig_text, en_text, orig_code)
+        source_text = en_text if orig_code == "EN" else orig_text
+        if parts == 1 and section.slide is None:
+            words = len(coverage_words(source_text))
+            if words >= PROACTIVE_FLAT_SPLIT_WORDS:
+                parts = max(2, words // PROACTIVE_FLAT_SPLIT_WORDS)
         split_tried = parts > 1
         if parts > 1:
             issues = edit_section_in_chunks(
@@ -3512,6 +3754,7 @@ def process_video(
                 )
         if not issues.clean:
             incomplete.append(f"{section.heading}: {issues.summary()}")
+        keep_the_spoken_order(section, key)
         polish_section(section, check_code)
         # Persist after every section: a crash later in the run (e.g. during
         # the PDF stage) must not lose paid editing results.
@@ -3624,18 +3867,62 @@ def process_video(
     return True
 
 
+SETTINGS_KEYS = ("CHANNEL", "PLAYLIST", "NEXT", "VIDEO")
+
+
+def apply_run_settings(args: argparse.Namespace) -> None:
+    """Fill channel / playlist / session size from the bat's settings file."""
+    if not args.settings:
+        if not (args.channel_folder or "").strip():
+            raise SystemExit(
+                "channel_folder is required (pass it or --settings)."
+            )
+        if not (args.playlist_folder or "").strip():
+            raise SystemExit(
+                "playlist_folder is required (pass it or --settings)."
+            )
+        return
+    settings = read_settings(args.settings, SETTINGS_KEYS)
+    print(f"Settings: {args.settings}", flush=True)
+    if not (args.channel_folder or "").strip():
+        args.channel_folder = settings.get("CHANNEL", "")
+    if not (args.playlist_folder or "").strip():
+        args.playlist_folder = settings.get("PLAYLIST", "")
+    if not args.video:
+        video = settings.get("VIDEO", "").strip()
+        if video:
+            args.video = video
+    if args.video is None:
+        next_raw = settings.get("NEXT", "").strip()
+        if next_raw:
+            args.next_count = int(next_raw)
+    if not (args.channel_folder or "").strip():
+        raise SystemExit(f"CHANNEL is empty. Set it in {args.settings}.")
+    if not (args.playlist_folder or "").strip():
+        raise SystemExit(f"PLAYLIST is empty. Set it in {args.settings}.")
+    print(f"Channel: {args.channel_folder}", flush=True)
+    print(f"Playlist: {args.playlist_folder}", flush=True)
+    if args.video:
+        print(f"Video: {args.video}", flush=True)
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Create final edited documents from transcripts + slides."
     )
     parser.add_argument(
         "channel_folder",
+        nargs="?",
+        default=None,
         help="Channel ref under _channels/ (e.g. _Autotesting or "
-        "AI_for_Game_Design\\_BuildingAeon)",
+        "AI_for_Game_Design\\_BuildingAeon); may come from --settings",
     )
     parser.add_argument(
         "playlist_folder",
-        help="Playlist folder name under <channel>/_playlists (e.g. lectures)",
+        nargs="?",
+        default=None,
+        help="Playlist folder name under <channel>/_playlists (e.g. lectures); "
+        "may come from --settings",
     )
     parser.add_argument(
         "--next",
@@ -3733,11 +4020,22 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=WORKSPACE_ROOT,
         help="Workspace root (default: parent of src/)",
     )
+    parser.add_argument(
+        "--settings",
+        type=Path,
+        default=None,
+        metavar="FILE",
+        help=(
+            "Settings file next to a channel bat (CHANNEL, PLAYLIST; optional "
+            "NEXT, VIDEO); see shared/settings_file.py"
+        ),
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    apply_run_settings(args)
     if args.next_count < 1:
         raise SystemExit("--next must be a positive number")
     for flag, path in (("--doc", args.doc), ("--pdf", args.pdf)):
