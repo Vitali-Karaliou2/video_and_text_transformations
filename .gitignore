@@ -45,6 +45,12 @@ Desktop.ini
 # Run logs of the per-book automation bats
 _books/*/_run_scripts/_logs/
 
+# Source files of books that arrived whole (scans of hundreds of MB)
+_books/*/input/
+
+# Spreads rendered from such a source PDF: reproducible from input/
+_books/_tutorial_spanish/pages_extracted/
+
 # Superseded versions of the assembled/translated book, kept by hand
 _books/*/OUTPUT/Archived/
 

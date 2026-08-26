@@ -1,0 +1,36 @@
+# Settings of ocr_next_portion.bat - edit them here and run the bat. Save this
+# file as UTF-8; a line opening with '#' is a comment, and of a repeated
+# setting the first line is the one that counts, so an earlier value can be
+# parked under the current one instead of being deleted.
+
+# The book folder under _books\. Its input\ holds the source PDF; the spreads
+# are rendered into pages_extracted\ and the text lands in pages_text\.
+BOOK = _tutorial_spanish
+
+# How much of the book one run takes, in percent of its spreads, rounded up.
+# 263 spreads, so 5% is 14 spreads (~28 requests, ~$0.6 on Sonnet).
+PERCENT = 5
+# PERCENT = 10
+
+# textbook: exercises, word lists, transcriptions and diagrams, layout kept as
+#           printed. prose: flowing book text, wrapped and justified afterwards.
+PROFILE = textbook
+
+# sonnet | opus. Sonnet reads this scan well; opus is worth a try only on pages
+# that come back visibly wrong.
+MODEL = sonnet
+
+# Send each book page of a spread as its own request. Keep this on: it doubles
+# the pixels the model gets per page at the same total cost, and the cover, a
+# single page, is passed whole anyway.
+SPLIT = yes
+
+# Pixels along the long side of one rendered book page. The scan itself is
+# ~150 dpi, and the vision API downsizes anything past ~1568 px, so there is
+# nothing to gain above 1500.
+PAGE_LONG_SIDE = 1500
+
+# Target width of a full line in the Markdown after wrap/justify. Headings,
+# list items and short dialogue turns stay as returned; only flowing prose and
+# overlong lists are reflowed.
+WRAP_WIDTH = 80
