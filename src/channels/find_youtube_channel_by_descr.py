@@ -16,10 +16,13 @@ shown in decreasing relevance order. For every candidate the script prints:
 Then, for each candidate in turn, the script asks for a confirmation
 (y = build the summary, n = next candidate, q = quit). On "y" it asks how
 to group the summary (by playlists / flat), runs get_summary_for_channel
-(which creates _cache and _summaries and fills them; empty playlist
-folders under _playlists/ are deferred until a video of that playlist is
-transcribed or downloaded - pass --create-playlist-folders to make them
-all at once), makes sure the channel folder has the standard subfolders
+with --include-playlist-only (same as refresh_summary.bat: videos that are
+in channel playlists but not on the Videos tab are included; unlisted
+course series still need a file under _playlists_unlisted/), which creates
+_cache and _summaries and fills them; empty playlist folders under
+_playlists/ are deferred until a video of that playlist is transcribed or
+downloaded - pass --create-playlist-folders to make them all at once),
+makes sure the channel folder has the standard subfolders
 (_cache, _playlists, _run_scripts, _summaries) and generates the
 automation bat files in the channel's _run_scripts:
 
@@ -1078,6 +1081,11 @@ def print_candidate(index: int, cand: dict) -> None:
     total = cand.get("total_videos")
     print(f"  Videos:      {total if total is not None else '?'} total",
           flush=True)
+    print(
+        "  Summary:     includes playlist-only videos (not only the "
+        "Videos tab); unlisted course series need _playlists_unlisted/.",
+        flush=True,
+    )
     if cand.get("language"):
         print(f"  Content language (guess): {cand['language']}", flush=True)
     playlists = cand.get("playlists") or []
@@ -1134,6 +1142,9 @@ def run_summary_for(
         argv += ["--container", container]
     if create_playlist_folders:
         argv.append("--create-playlist-folders")
+    # Same flag as refresh_summary.bat: many channels (course VODs, live
+    # replays) keep videos in playlists that never appear on the Videos tab.
+    argv.append("--include-playlist-only")
     print("", flush=True)
     print(
         f"=== Summary: {cand['title']} ({ref}, {scope}, lang={lang}) ===",
