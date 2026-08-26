@@ -50,8 +50,8 @@ from shared.project_paths import (
     WORKSPACE_ROOT,
     channel_playlists_dir,
     channel_relative_ref,
+    channel_root_containing,
     channels_dir,
-    is_channel_root,
 )
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -201,18 +201,7 @@ def fix_script(body: str, result: FileResult) -> str:
 
 def owning_channel_root(path: Path) -> Path | None:
     """The channel folder a bat belongs to, if it lies inside one."""
-    root = channels_dir(WORKSPACE_ROOT)
-    if not inside_workspace(path):
-        return None
-    current = path.resolve().parent
-    while inside_workspace(current) and normalized(current) != normalized(root):
-        if is_channel_root(current):
-            return current
-        parent = current.parent
-        if parent == current:
-            break
-        current = parent
-    return None
+    return channel_root_containing(path, channels_dir(WORKSPACE_ROOT))
 
 
 def decode_bat(raw: bytes) -> tuple[str, str]:

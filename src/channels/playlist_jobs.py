@@ -16,6 +16,8 @@ from pathlib import Path
 
 from shared.sessions import run_tool
 
+from channels.playlist_mapping import playlist_only_browse_entries
+
 
 def video_id_from_url(url: str) -> str:
     match = re.search(r"(?:v=|youtu\.be/|/shorts/|/live/)([\w-]{11})", url)
@@ -160,7 +162,12 @@ def load_channel_flat_jobs(channel_dir: Path) -> tuple[list[dict], str]:
     """Channel-wide flat job list (newest first) from the summary caches:
     _cache/videos.json (video order), _cache/video_playlists.json (video ->
     playlist title) and _cache/playlists.json (playlist title -> folder).
-    Videos outside any playlist go to the misc/ folder."""
+    Videos outside any playlist go to the misc/ folder.
+
+    Playlist-only videos (in _cache/video_playlists.json but not in the
+    Videos-tab cache) are appended too, so flat transcription and
+    transcribe_and_edit_next_by_substr see the same set as a summary built
+    with --include-playlist-only."""
     cache = read_json_file(channel_dir / "_cache" / "videos.json")
     if not cache or not cache.get("videos"):
         raise SystemExit(
@@ -210,5 +217,34 @@ def load_channel_flat_jobs(channel_dir: Path) -> tuple[list[dict], str]:
                     "channel_name": channel_name,
                 },
             }
+        )
+    known_ids = {job["id"] for job in jobs}
+    extras = playlist_only_browse_entries(video_map, details, known_ids)
+    for video in extras:
+        video_id = video["id"]
+        pl_title = str(video_map.get(video_id) or "")
+        detail = details.get(video_id) or {}
+        jobs.append(
+            {
+                "id": video_id,
+                "title": str(video.get("title") or "").strip(),
+                "duration": duration_text_to_seconds(
+                    video.get("duration_text")
+                ),
+                "index": int(detail.get("playlist_index") or 0),
+                "url": video.get("url") or watch_url(video_id),
+                "folder": folder_by_title.get(pl_title) or misc_folder,
+                "playlist_meta": {
+                    "id": id_by_title.get(pl_title, ""),
+                    "title": pl_title,
+                    "channel_name": channel_name,
+                },
+            }
+        )
+    if extras:
+        print(
+            f"Included {len(extras)} playlist-only video(s) from the cache "
+            f"(not in the channel Videos feed).",
+            flush=True,
         )
     return jobs, channel_name

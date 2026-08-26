@@ -482,6 +482,12 @@ python src\tools\synchronize_folders_in_bats.py
 `PLAYLIST` чинится, если папка нашлась по последнему сегменту пути (частый
 случай — в значение случайно попал контейнер: `IT\lectures` → `lectures`).
 
+Скрипты с `--settings` при старте из канального `_run_scripts/` используют
+ту же логику: если `CHANNEL=` в settings указывает на путь, который уже не
+существует, берётся папка канала с диска и строка `CHANNEL=` в settings
+обновляется. После временного переименования папки и возврата прежнего
+имени bats с `CHANNEL=` работают без ручного synchronize.
+
 Путь к скрипту чинится по имени файла: `src\transcribe_videos.py` →
 `src\transcribe\transcribe_videos.py`. Список пакетов нигде не записан —
 скрипт читает `src/` с диска, поэтому следующий переезд поправится сам.
@@ -608,8 +614,15 @@ ASCII-запускалкой, а BOM в settings-файле безвреден. 
 `CHANNEL_PATH`, о чём выводится сообщение. Папка канала ищется по всему
 дереву `_channels/` (по имени и по `channel_id` в `_cache`), так что
 перенести её в другую группу можно вручную; после переноса — запустить
-`_run_scripts\synchronize_folders_in_bats.bat`, который поправит пути,
-зашитые в bat-файлах.
+`_run_scripts\synchronize_folders_in_bats.bat`, который поправит пути в
+bat- и settings-файлах. Скрипты с `--settings` (транскрибирование,
+`create_final_docs` и др.) при запуске из канального `_run_scripts/`
+сами находят папку канала по расположению settings-файла, если `CHANNEL=`
+в нём указывает на несуществующий путь (типично после временного
+переименования и `synchronize_folders_in_bats`), и обновляют `CHANNEL=`
+в settings. `refresh_summary.bat` и повторный `add_youtube_channel_by_descr`
+ищут папку по `channel_id` в `_cache/` — поэтому после переименования они
+находят канал, даже когда `CHANNEL=` в settings ещё старое.
 
 ### Как работает
 
@@ -642,13 +655,17 @@ ASCII-запускалкой, а BOM в settings-файле безвреден. 
    Досоздаётся `_run_scripts`, и в нём генерируются пять bat-файлов:
    - `transcribe_and_edit_next.bat` — транскрибировать + отредактировать
      очередное необработанное видео из **плоского списка всех видео
-     канала**;
+     канала** (вкладка Videos + playlist-only из `_cache/video_playlists.json`,
+     как в summary с `--include-playlist-only`);
    - `transcribe_and_edit_next_by_substr.bat` — то же по всему каналу, но
      только для видео, в названии которых есть заданная подстрока
      (без учёта регистра и плейлистов). Подстрока задаётся в соседнем
      `transcribe_and_edit_next_by_substr.settings.txt` (`TITLE_SUBSTR=...`);
      подходящих видео может быть несколько, и на каждое по очереди
-     спрашивается подтверждение (`n` — перейти к следующему совпадению);
+     спрашивается подтверждение (`n` — перейти к следующему совпадению).
+     Плоский список для поиска включает **playlist-only** видео из
+     `_cache/video_playlists.json` (как summary с `--include-playlist-only`),
+     а не только вкладку Videos канала;
    - `transcribe_and_edit_next_bypl.bat` — то же для **одного плейлиста**:
      имя локальной папки плейлиста задаётся в соседнем
      `transcribe_and_edit_next_bypl.settings.txt` (`PLAYLIST=...`; по

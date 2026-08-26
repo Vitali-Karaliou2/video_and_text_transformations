@@ -140,7 +140,7 @@ from shared.project_paths import (
     channels_dir,
     require_channel_ref,
 )
-from shared.settings_file import read_settings
+from shared.settings_file import read_settings, reconcile_channel_ref
 from shared.silences import SilenceIndex, load_silences
 from shared.transcripts import (
     LANGUAGE_NAMES,
@@ -3885,7 +3885,11 @@ def apply_run_settings(args: argparse.Namespace) -> None:
     settings = read_settings(args.settings, SETTINGS_KEYS)
     print(f"Settings: {args.settings}", flush=True)
     if not (args.channel_folder or "").strip():
-        args.channel_folder = settings.get("CHANNEL", "")
+        args.channel_folder = reconcile_channel_ref(
+            channels_dir(args.workspace),
+            args.settings,
+            settings.get("CHANNEL", ""),
+        )
     if not (args.playlist_folder or "").strip():
         args.playlist_folder = settings.get("PLAYLIST", "")
     if not args.video:

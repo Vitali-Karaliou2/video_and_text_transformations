@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from datetime import date
 from pathlib import Path
@@ -151,6 +152,35 @@ def channel_relative_ref(channel_root: Path, channels_root: Path) -> str:
     """Path of the channel folder relative to _channels/, using backslashes."""
     rel = channel_root.resolve().relative_to(channels_root.resolve())
     return rel.as_posix().replace("/", "\\")
+
+
+def channel_refs_match(left: str, right: str) -> bool:
+    """Compare two channel refs the way Windows path comparison would."""
+    def clean(value: str) -> str:
+        return os.path.normcase(
+            value.strip().strip("\\/").replace("/", "\\")
+        )
+
+    return clean(left) == clean(right)
+
+
+def channel_root_containing(
+    path: Path,
+    channels_root: Path | None = None,
+) -> Path | None:
+    """The channel folder that owns this path, if it lies inside one."""
+    root = (channels_root or channels_dir(WORKSPACE_ROOT)).resolve()
+    current = path.resolve()
+    try:
+        current.relative_to(root)
+    except ValueError:
+        return None
+    while True:
+        if is_channel_root(current):
+            return current
+        if current == root or current.parent == current:
+            return None
+        current = current.parent
 
 
 def _split_channel_ref(ref: str) -> list[str]:

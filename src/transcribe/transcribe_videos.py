@@ -119,7 +119,7 @@ from shared.sessions import (  # noqa: E402
     normalize_next_count,
     run_tool,
 )
-from shared.settings_file import read_settings  # noqa: E402
+from shared.settings_file import read_settings, reconcile_channel_ref  # noqa: E402
 from shared.silences import SilenceIndex, load_silences  # noqa: E402
 from shared.transcripts import (  # noqa: E402
     Segment,
@@ -1149,7 +1149,11 @@ def apply_run_settings(args: argparse.Namespace) -> None:
     settings = read_settings(args.settings, SETTINGS_KEYS)
     print(f"Settings: {args.settings}", flush=True)
     if not (args.channel_folder or "").strip():
-        args.channel_folder = settings.get("CHANNEL", "")
+        args.channel_folder = reconcile_channel_ref(
+            channels_dir(args.workspace),
+            args.settings,
+            settings.get("CHANNEL", ""),
+        )
     if args.playlist_folder is None:
         playlist = settings.get("PLAYLIST", "").strip()
         args.playlist_folder = playlist or None
