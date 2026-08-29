@@ -787,6 +787,10 @@ def flat_settings_text(channel: str) -> str:
         "\n"
         "# Channel folder relative to _channels\\.\n"
         f"CHANNEL={channel}\n"
+        "\n"
+        "# Browser whose authorized YouTube cookies yt-dlp should use.\n"
+        "# Close it completely before running the bat.\n"
+        "COOKIES_FROM_BROWSER=firefox\n"
     )
 
 
@@ -805,6 +809,10 @@ def by_substr_settings_text(channel: str, substr: str) -> str:
         "# ignored). There may be several matches; each one asks for its\n"
         "# own confirmation, and 'n' moves on to the next match.\n"
         f"TITLE_SUBSTR={substr}\n"
+        "\n"
+        "# Browser whose authorized YouTube cookies yt-dlp should use.\n"
+        "# Close it completely before running the bat.\n"
+        "COOKIES_FROM_BROWSER=firefox\n"
     )
 
 
