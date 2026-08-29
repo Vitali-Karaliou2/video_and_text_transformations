@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 
 from shared.sessions import run_tool
+from shared.yt_dlp_opts import YOUTUBE_REMOTE_COMPONENTS, cookie_args
 
 from channels.playlist_mapping import playlist_only_browse_entries
 
@@ -66,8 +67,20 @@ def read_json_file(path: Path) -> dict | None:
         return None
 
 
-def yt_dlp_json(args_list: list[str]) -> dict:
-    result = run_tool([sys.executable, "-m", "yt_dlp", *args_list])
+def yt_dlp_json(
+    args_list: list[str],
+    *,
+    cookies: Path | None = None,
+    cookies_from_browser: str | None = None,
+) -> dict:
+    result = run_tool([
+        sys.executable,
+        "-m",
+        "yt_dlp",
+        *YOUTUBE_REMOTE_COMPONENTS,
+        *cookie_args(cookies, cookies_from_browser),
+        *args_list,
+    ])
     if result.returncode != 0:
         raise SystemExit(f"yt-dlp failed:\n{result.stderr.strip()}")
     try:
@@ -76,15 +89,31 @@ def yt_dlp_json(args_list: list[str]) -> dict:
         raise SystemExit("yt-dlp returned invalid JSON")
 
 
-def fetch_video_info(url: str) -> dict:
-    return yt_dlp_json(["--no-playlist", "-J", url])
+def fetch_video_info(
+    url: str,
+    *,
+    cookies: Path | None = None,
+    cookies_from_browser: str | None = None,
+) -> dict:
+    return yt_dlp_json(
+        ["--no-playlist", "-J", url],
+        cookies=cookies,
+        cookies_from_browser=cookies_from_browser,
+    )
 
 
-def fetch_playlist_entries(playlist_id: str) -> list[dict]:
+def fetch_playlist_entries(
+    playlist_id: str,
+    *,
+    cookies: Path | None = None,
+    cookies_from_browser: str | None = None,
+) -> list[dict]:
     """(id, title, duration, index, url) per entry, in playlist order."""
     data = yt_dlp_json(
         ["--flat-playlist", "-J",
-         f"https://www.youtube.com/playlist?list={playlist_id}"]
+         f"https://www.youtube.com/playlist?list={playlist_id}"],
+        cookies=cookies,
+        cookies_from_browser=cookies_from_browser,
     )
     entries = []
     for index, entry in enumerate(data.get("entries") or [], start=1):

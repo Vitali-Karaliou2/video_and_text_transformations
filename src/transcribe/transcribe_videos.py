@@ -721,7 +721,11 @@ def remote_session(
             )
         else:
             print("Fetching the playlist entry list...", flush=True)
-            raw_entries = fetch_playlist_entries(playlist_id)
+            raw_entries = fetch_playlist_entries(
+                playlist_id,
+                cookies=args.cookies,
+                cookies_from_browser=args.cookies_from_browser,
+            )
         jobs = [
             {**entry, "folder": args.playlist_folder,
              "playlist_meta": playlist_meta}
@@ -836,7 +840,11 @@ def remote_session(
             if not (pdir / INFO_DIRNAME / f"{stem}.json").is_file():
                 print("  Fetching video metadata (INFO was missing)...",
                       flush=True)
-                info = fetch_video_info(entry["url"])
+                info = fetch_video_info(
+                    entry["url"],
+                    cookies=args.cookies,
+                    cookies_from_browser=args.cookies_from_browser,
+                )
                 info_path = write_video_info(
                     pdir, stem, info, entry["playlist_meta"], entry["index"]
                 )
@@ -845,7 +853,11 @@ def remote_session(
             continue
 
         print("  Fetching video metadata...", flush=True)
-        info = fetch_video_info(entry["url"])
+        info = fetch_video_info(
+            entry["url"],
+            cookies=args.cookies,
+            cookies_from_browser=args.cookies_from_browser,
+        )
         title = str(info.get("title") or entry["title"] or entry["id"])
         seconds = float(info.get("duration") or entry.get("duration") or 0.0)
         if entry["folder"] not in local_media_cache:
@@ -1127,15 +1139,20 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         metavar="FILE",
         type=Path,
         help=(
-            "Text file with CHANNEL / PLAYLIST / TITLE_SUBSTR; this is how "
-            "the channel bats pass values that cmd.exe cannot carry itself. "
-            "Command-line values win over it"
+            "Text file with CHANNEL / PLAYLIST / TITLE_SUBSTR / "
+            "COOKIES_FROM_BROWSER; this is how the channel bats pass values "
+            "that cmd.exe cannot carry itself. Command-line values win over it"
         ),
     )
     return parser.parse_args(argv)
 
 
-SETTINGS_KEYS = ("CHANNEL", "PLAYLIST", "TITLE_SUBSTR")
+SETTINGS_KEYS = (
+    "CHANNEL",
+    "PLAYLIST",
+    "TITLE_SUBSTR",
+    "COOKIES_FROM_BROWSER",
+)
 
 
 def apply_run_settings(args: argparse.Namespace) -> None:
@@ -1160,6 +1177,9 @@ def apply_run_settings(args: argparse.Namespace) -> None:
     if not args.title_substr:
         substr = settings.get("TITLE_SUBSTR", "")
         args.title_substr = substr or None
+    if not args.cookies_from_browser:
+        browser = settings.get("COOKIES_FROM_BROWSER", "").strip()
+        args.cookies_from_browser = browser or None
     if not (args.channel_folder or "").strip():
         raise SystemExit(
             f"CHANNEL is empty. Set it in {args.settings}."
@@ -1169,6 +1189,8 @@ def apply_run_settings(args: argparse.Namespace) -> None:
         print(f"Playlist: {args.playlist_folder}", flush=True)
     if args.title_substr:
         print(f"Title substring: {args.title_substr}", flush=True)
+    if args.cookies_from_browser:
+        print(f"Cookies from browser: {args.cookies_from_browser}", flush=True)
 
 
 def local_session(

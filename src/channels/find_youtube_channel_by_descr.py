@@ -821,6 +821,10 @@ def bypl_settings_text(channel: str, playlist: str) -> str:
         "# Local folder under _playlists/; default is the playlist with the\n"
         "# most videos. Edit before a run to switch playlist.\n"
         f"PLAYLIST={playlist}\n"
+        "\n"
+        "# Browser whose authorized YouTube cookies yt-dlp should use.\n"
+        "# Close it completely before running the bat.\n"
+        "COOKIES_FROM_BROWSER=firefox\n"
     )
 
 
