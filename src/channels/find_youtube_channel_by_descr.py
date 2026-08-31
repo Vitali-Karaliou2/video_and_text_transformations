@@ -789,8 +789,9 @@ def flat_settings_text(channel: str) -> str:
         f"CHANNEL={channel}\n"
         "\n"
         "# Browser whose authorized YouTube cookies yt-dlp should use.\n"
-        "# Close it completely before running the bat.\n"
-        "COOKIES_FROM_BROWSER=firefox\n"
+        "# Close it completely before running the bat (Chrome locks its\n"
+        "# cookie DB while open).\n"
+        "COOKIES_FROM_BROWSER=chrome\n"
     )
 
 
@@ -811,8 +812,9 @@ def by_substr_settings_text(channel: str, substr: str) -> str:
         f"TITLE_SUBSTR={substr}\n"
         "\n"
         "# Browser whose authorized YouTube cookies yt-dlp should use.\n"
-        "# Close it completely before running the bat.\n"
-        "COOKIES_FROM_BROWSER=firefox\n"
+        "# Close it completely before running the bat (Chrome locks its\n"
+        "# cookie DB while open).\n"
+        "COOKIES_FROM_BROWSER=chrome\n"
     )
 
 
@@ -831,8 +833,9 @@ def bypl_settings_text(channel: str, playlist: str) -> str:
         f"PLAYLIST={playlist}\n"
         "\n"
         "# Browser whose authorized YouTube cookies yt-dlp should use.\n"
-        "# Close it completely before running the bat.\n"
-        "COOKIES_FROM_BROWSER=firefox\n"
+        "# Close it completely before running the bat (Chrome locks its\n"
+        "# cookie DB while open).\n"
+        "COOKIES_FROM_BROWSER=chrome\n"
     )
 
 

@@ -1275,6 +1275,15 @@ def edit_section(
             issues = repaired
         else:
             restore_snapshot(section, snapshot)
+    if issues.dropped:
+        restored = restore_dropped_verbatim(section, issues, code)
+        if restored:
+            print(
+                f"    Safety fallback: restored {restored} dropped word(s) "
+                "verbatim from the transcript.",
+                flush=True,
+            )
+            issues = section_coverage(section, source, code)
     if not issues.clean:
         print(f"    WARNING: {issues.summary()} left:", flush=True)
         for gap in issues.dropped:
@@ -1924,6 +1933,26 @@ def insert_paragraph(
             return
         position -= len(container)
     containers[-1].append(paragraph)
+
+
+def restore_dropped_verbatim(
+    section: Section, issues: Coverage, code: str
+) -> int:
+    """Put still-missing source fragments back without another model call.
+
+    A lightly edited paragraph is preferable, but verbatim transcript text is
+    always preferable to silently losing content. Reverse offset order keeps
+    later insertions from shifting the positions of earlier ones.
+    """
+    restored = 0
+    for gap in sorted(issues.dropped, key=lambda item: -item.offset):
+        here = coverage_words(section_language_text(section, code))
+        if carried_elsewhere(coverage_words(gap.text), here):
+            continue
+        index = paragraph_index_for_offset(section, code, gap.offset)
+        insert_paragraph(section, code, index, gap.text)
+        restored += len(coverage_words(gap.text))
+    return restored
 
 
 def restore_fragment(
@@ -3571,6 +3600,31 @@ def process_video(
             stale += 1
             continue
         if cache_incomplete(entry):
+            source = texts[key][0] if orig_code != "EN" else texts[key][1]
+            probe = Section(
+                section.heading,
+                section.number,
+                section.slide,
+                section.start,
+                section.end,
+            )
+            section_from_cache(probe, entry)
+            issues = section_coverage(probe, source, check_code)
+            restored = restore_dropped_verbatim(probe, issues, check_code)
+            repaired = section_coverage(probe, source, check_code)
+            if restored and repaired.clean:
+                print(
+                    f"  Restored {restored} dropped word(s) in "
+                    f"'{section.heading}' verbatim from the transcript.",
+                    flush=True,
+                )
+                cache[key] = section_to_cache(
+                    probe,
+                    repaired,
+                    split_tried=bool(entry.get("split_tried")),
+                )
+                save_edit_cache(cache_path, video.stem, cache)
+                continue
             print(
                 f"  Re-editing '{section.heading}': the cached version still "
                 "has dropped or duplicated transcript text.",

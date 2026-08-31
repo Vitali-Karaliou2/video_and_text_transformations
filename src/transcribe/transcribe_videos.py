@@ -1140,8 +1140,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=Path,
         help=(
             "Text file with CHANNEL / PLAYLIST / TITLE_SUBSTR / "
-            "COOKIES_FROM_BROWSER; this is how the channel bats pass values "
-            "that cmd.exe cannot carry itself. Command-line values win over it"
+            "COOKIES_FROM_BROWSER / COOKIES; this is how the channel bats "
+            "pass values that cmd.exe cannot carry itself. Command-line "
+            "values win over it"
         ),
     )
     return parser.parse_args(argv)
@@ -1152,6 +1153,7 @@ SETTINGS_KEYS = (
     "PLAYLIST",
     "TITLE_SUBSTR",
     "COOKIES_FROM_BROWSER",
+    "COOKIES",
 )
 
 
@@ -1177,6 +1179,13 @@ def apply_run_settings(args: argparse.Namespace) -> None:
     if not args.title_substr:
         substr = settings.get("TITLE_SUBSTR", "")
         args.title_substr = substr or None
+    if args.cookies is None:
+        cookies = settings.get("COOKIES", "").strip()
+        if cookies:
+            path = Path(cookies)
+            if not path.is_absolute():
+                path = (args.settings.parent / path).resolve()
+            args.cookies = path
     if not args.cookies_from_browser:
         browser = settings.get("COOKIES_FROM_BROWSER", "").strip()
         args.cookies_from_browser = browser or None
@@ -1184,12 +1193,16 @@ def apply_run_settings(args: argparse.Namespace) -> None:
         raise SystemExit(
             f"CHANNEL is empty. Set it in {args.settings}."
         )
+    if args.cookies is not None and not args.cookies.is_file():
+        raise SystemExit(f"COOKIES file not found: {args.cookies}")
     print(f"Channel: {args.channel_folder}", flush=True)
     if args.playlist_folder:
         print(f"Playlist: {args.playlist_folder}", flush=True)
     if args.title_substr:
         print(f"Title substring: {args.title_substr}", flush=True)
-    if args.cookies_from_browser:
+    if args.cookies is not None:
+        print(f"Cookies file: {args.cookies}", flush=True)
+    elif args.cookies_from_browser:
         print(f"Cookies from browser: {args.cookies_from_browser}", flush=True)
 
 
