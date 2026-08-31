@@ -15,7 +15,11 @@ import sys
 from pathlib import Path
 
 from shared.sessions import run_tool
-from shared.yt_dlp_opts import YOUTUBE_REMOTE_COMPONENTS, cookie_args
+from shared.yt_dlp_opts import (
+    YOUTUBE_REMOTE_COMPONENTS,
+    YOUTUBE_SYSTEM_CERTS,
+    cookie_args,
+)
 
 from channels.playlist_mapping import playlist_only_browse_entries
 
@@ -77,6 +81,7 @@ def yt_dlp_json(
         sys.executable,
         "-m",
         "yt_dlp",
+        *YOUTUBE_SYSTEM_CERTS,
         *YOUTUBE_REMOTE_COMPONENTS,
         *cookie_args(cookies, cookies_from_browser),
         *args_list,

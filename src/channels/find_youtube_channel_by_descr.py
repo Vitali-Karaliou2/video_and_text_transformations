@@ -89,6 +89,7 @@ from shared.project_paths import (
     find_channel_folder,
 )
 from shared.settings_file import read_settings, settings_beside, write_settings
+from shared.yt_dlp_opts import YOUTUBE_SYSTEM_CERTS
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -121,7 +122,7 @@ Reply with JSON only:
 
 def run_yt_dlp_json(args_list: list[str]) -> dict:
     result = subprocess.run(
-        [sys.executable, "-m", "yt_dlp", *args_list],
+        [sys.executable, "-m", "yt_dlp", *YOUTUBE_SYSTEM_CERTS, *args_list],
         capture_output=True,
         text=True,
         encoding="utf-8",
@@ -205,7 +206,7 @@ def fetch_uploads_count(channel_id: str) -> int | None:
     uploads = "UU" + channel_id[2:]
     result = subprocess.run(
         [
-            sys.executable, "-m", "yt_dlp",
+            sys.executable, "-m", "yt_dlp", *YOUTUBE_SYSTEM_CERTS,
             "--flat-playlist", "-J", "-I", "1:1",
             f"https://www.youtube.com/playlist?list={uploads}",
         ],
@@ -789,9 +790,9 @@ def flat_settings_text(channel: str) -> str:
         f"CHANNEL={channel}\n"
         "\n"
         "# Browser whose authorized YouTube cookies yt-dlp should use.\n"
-        "# Close it completely before running the bat (Chrome locks its\n"
-        "# cookie DB while open).\n"
-        "COOKIES_FROM_BROWSER=chrome\n"
+        "# Close it completely before running the bat. Chrome does not\n"
+        "# work on this machine (yt-dlp cannot copy/decrypt its cookie DB).\n"
+        "COOKIES_FROM_BROWSER=firefox\n"
     )
 
 
@@ -812,9 +813,9 @@ def by_substr_settings_text(channel: str, substr: str) -> str:
         f"TITLE_SUBSTR={substr}\n"
         "\n"
         "# Browser whose authorized YouTube cookies yt-dlp should use.\n"
-        "# Close it completely before running the bat (Chrome locks its\n"
-        "# cookie DB while open).\n"
-        "COOKIES_FROM_BROWSER=chrome\n"
+        "# Close it completely before running the bat. Chrome does not\n"
+        "# work on this machine (yt-dlp cannot copy/decrypt its cookie DB).\n"
+        "COOKIES_FROM_BROWSER=firefox\n"
     )
 
 
@@ -833,9 +834,9 @@ def bypl_settings_text(channel: str, playlist: str) -> str:
         f"PLAYLIST={playlist}\n"
         "\n"
         "# Browser whose authorized YouTube cookies yt-dlp should use.\n"
-        "# Close it completely before running the bat (Chrome locks its\n"
-        "# cookie DB while open).\n"
-        "COOKIES_FROM_BROWSER=chrome\n"
+        "# Close it completely before running the bat. Chrome does not\n"
+        "# work on this machine (yt-dlp cannot copy/decrypt its cookie DB).\n"
+        "COOKIES_FROM_BROWSER=firefox\n"
     )
 
 

@@ -16,6 +16,7 @@ import argparse
 import re
 import subprocess
 import sys
+import urllib.parse
 import urllib.request
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -64,6 +65,7 @@ from shared.project_paths import (
     spell_out_tech_names,
 )
 from shared.settings_file import read_settings
+from shared.yt_dlp_opts import YOUTUBE_SYSTEM_CERTS
 from channels.range_args import (
     apply_resolved_range,
     numeric_required_to,
@@ -120,7 +122,7 @@ from channels.playlist_mapping import (
 
 
 def yt_dlp_run(args: argparse.Namespace, *extra: str) -> subprocess.CompletedProcess[str]:
-    cmd = [args.yt_dlp, *extra]
+    cmd = [args.yt_dlp, *YOUTUBE_SYSTEM_CERTS, *extra]
     if args.cookies_from_browser:
         cmd[1:1] = ["--cookies-from-browser", args.cookies_from_browser]
     return subprocess.run(
@@ -142,6 +144,16 @@ def normalize_handle(value: str) -> str:
 
 
 def fetch_youtube_page(url: str) -> str:
+    # A Cyrillic @handle makes the URL non-ASCII, which http.client cannot
+    # send raw; percent-encode the path the way a browser would.
+    parts = urllib.parse.urlsplit(url)
+    url = urllib.parse.urlunsplit((
+        parts.scheme,
+        parts.netloc,
+        urllib.parse.quote(parts.path, safe="/@"),
+        parts.query,
+        parts.fragment,
+    ))
     req = urllib.request.Request(
         url,
         headers={

@@ -20,6 +20,14 @@ def cookie_args(cookies: Path | None, browser: str | None) -> list[str]:
 YOUTUBE_REMOTE_COMPONENTS = ["--remote-components", "ejs:github"]
 
 
+# Use the Windows certificate store instead of certifi's Mozilla bundle.
+# Avast Web Shield intercepts HTTPS and re-signs every certificate with its
+# own root, which lives in the Windows store but not in certifi's bundle -
+# with certifi (yt-dlp's default when installed) every YouTube request dies
+# with CERTIFICATE_VERIFY_FAILED.
+YOUTUBE_SYSTEM_CERTS = ["--compat-options", "no-certifi"]
+
+
 # Metadata can still load while the default web client gets HTTP 403 on
 # the media URL itself (common for unlisted videos). The android client
 # keeps serving a downloadable stream without cookies.
@@ -38,6 +46,7 @@ def youtube_media_args(
     # mode leave client selection to yt-dlp so its web clients can use them.
     player_client = [] if cookies or browser else YOUTUBE_PLAYER_CLIENT
     return [
+        *YOUTUBE_SYSTEM_CERTS,
         *YOUTUBE_REMOTE_COMPONENTS,
         *player_client,
         *cookie_args(cookies, browser),

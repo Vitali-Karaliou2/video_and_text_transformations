@@ -24,6 +24,7 @@ from channels.channel_playlists import (  # noqa: E402
     sync_channel_playlists,
     validate_playlist_folders,
 )
+from shared.yt_dlp_opts import YOUTUBE_SYSTEM_CERTS  # noqa: E402
 from shared.project_paths import (  # noqa: E402
     WORKSPACE_ROOT,
     channel_playlists_dir,
@@ -85,7 +86,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def run_yt_dlp(args: argparse.Namespace, *extra: str) -> subprocess.CompletedProcess:
     return subprocess.run(
-        [args.yt_dlp, *extra],
+        [args.yt_dlp, *YOUTUBE_SYSTEM_CERTS, *extra],
         capture_output=True,
         text=True,
         encoding="utf-8",

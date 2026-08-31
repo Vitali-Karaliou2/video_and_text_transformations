@@ -66,7 +66,7 @@ from transcribe.transcribe_videos import (
     run_tool,
     watch_url,
 )
-from shared.yt_dlp_opts import cookie_args
+from shared.yt_dlp_opts import YOUTUBE_SYSTEM_CERTS, cookie_args
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -136,6 +136,7 @@ def fetch_comments(
     """(comments, YouTube demanded a sign-in) for one video, via yt-dlp."""
     result = run_tool([
         sys.executable, "-m", "yt_dlp",
+        *YOUTUBE_SYSTEM_CERTS,
         "-J",
         "--no-playlist",
         "--skip-download",
