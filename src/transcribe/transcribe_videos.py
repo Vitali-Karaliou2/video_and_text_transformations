@@ -67,6 +67,7 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
@@ -130,7 +131,7 @@ from shared.transcripts import (  # noqa: E402
     segments_to_srt,
 )
 from shared.transcription_pricing import get_transcription_rate  # noqa: E402
-from shared.yt_dlp_opts import youtube_media_args  # noqa: E402
+from shared.yt_dlp_opts import TRANSCRIBE_DOWNLOAD_FORMAT, youtube_media_args  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -632,19 +633,37 @@ def download_audio(
     cookies: Path | None = None,
     cookies_from_browser: str | None = None,
 ) -> Path:
-    """Download only the audio track of the video into tmp_dir."""
-    result = run_tool(
-        [
-            sys.executable, "-m", "yt_dlp",
-            "-f", "bestaudio/best",
-            "--no-playlist",
-            *youtube_media_args(cookies, cookies_from_browser),
-            "-o", str(tmp_dir / "audio.%(ext)s"),
-            url,
-        ]
+    """Download the smallest stream good enough to extract audio for Whisper."""
+    cmd = [
+        sys.executable, "-m", "yt_dlp",
+        "-f", TRANSCRIBE_DOWNLOAD_FORMAT,
+        "--no-playlist",
+        "--newline",
+        "--progress-delta", "5",
+        *youtube_media_args(cookies, cookies_from_browser),
+        "-o", str(tmp_dir / "audio.%(ext)s"),
+        url,
+    ]
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        bufsize=1,
     )
-    if result.returncode != 0:
-        err = (result.stderr or result.stdout or "").strip()
+    assert process.stdout is not None
+    output: list[str] = []
+    for line in process.stdout:
+        line = line.rstrip()
+        if not line:
+            continue
+        output.append(line)
+        if line.startswith("[download]") or line.startswith("[hlsnative]"):
+            print(f"    {line}", flush=True)
+    if process.wait() != 0:
+        err = "\n".join(output).strip()
         hint = ""
         if "403" in err or "Forbidden" in err:
             hint = (
@@ -652,7 +671,7 @@ def download_audio(
                 "--cookies-from-browser firefox (browser closed), "
                 "or --cookies path\\to\\cookies.txt."
             )
-        raise SystemExit(f"Audio download failed:\n{err}{hint}")
+        raise SystemExit(f"Audio download failed:\n{err[-2000:]}{hint}")
     for path in tmp_dir.iterdir():
         if path.is_file() and path.stem == "audio":
             return path

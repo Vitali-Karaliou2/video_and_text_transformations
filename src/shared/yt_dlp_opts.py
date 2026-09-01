@@ -28,6 +28,15 @@ YOUTUBE_REMOTE_COMPONENTS = ["--remote-components", "ejs:github"]
 YOUTUBE_SYSTEM_CERTS = ["--compat-options", "no-certifi"]
 
 
+# Smallest stream good enough for ffmpeg to extract audio. Prefer a dedicated
+# audio track; when cookies force the web client and YouTube serves only
+# combined streams, take progressive HTTPS up to 360p instead of HLS 1080p.
+TRANSCRIBE_DOWNLOAD_FORMAT = (
+    "bestaudio[ext=m4a]/bestaudio/"
+    "best[height<=360][protocol^=http]/best[height<=360]/best"
+)
+
+
 # Metadata can still load while the default web client gets HTTP 403 on
 # the media URL itself (common for unlisted videos). The android client
 # keeps serving a downloadable stream without cookies.
