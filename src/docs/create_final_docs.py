@@ -1284,6 +1284,14 @@ def edit_section(
                 flush=True,
             )
             issues = section_coverage(section, source, code)
+    removed = dedupe_section_stitches(section)
+    if removed:
+        print(
+            f"    Dedupe: removed {removed} overlapping word(s) from "
+            "restored or reordered paragraphs.",
+            flush=True,
+        )
+        issues = section_coverage(section, source, code)
     if not issues.clean:
         print(f"    WARNING: {issues.summary()} left:", flush=True)
         for gap in issues.dropped:
@@ -1955,6 +1963,127 @@ def restore_dropped_verbatim(
     return restored
 
 
+def paragraph_sentences(paragraph: str) -> list[str]:
+    return [
+        sentence.strip()
+        for sentence in SENTENCE_SPLIT_RE.split(paragraph)
+        if sentence.strip()
+    ]
+
+
+def collapse_redundant_sentences(paragraph: str) -> str:
+    """Drop consecutive sentences that repeat each other inside one paragraph.
+
+    Exact duplicates go; so does a shorter sentence that is only a prefix or
+    suffix of its neighbour (common after fragment restore stitches a gap
+    onto text the model had already kept).
+    """
+    sentences = paragraph_sentences(paragraph)
+    if not sentences:
+        return paragraph.strip()
+    kept: list[str] = []
+    for sentence in sentences:
+        words = coverage_words(sentence)
+        if not words:
+            continue
+        if kept:
+            previous = coverage_words(kept[-1])
+            if words == previous:
+                continue
+            long_enough = (
+                len(words) >= COVERAGE_MIN_REPEAT_WORDS
+                or len(previous) >= COVERAGE_MIN_REPEAT_WORDS
+            )
+            if long_enough and (
+                previous[-len(words) :] == words
+                or words[: len(previous)] == previous
+                or words[-len(previous) :] == previous
+                or previous[: len(words)] == words
+            ):
+                if len(words) > len(previous):
+                    kept[-1] = sentence
+                continue
+        kept.append(sentence)
+    return " ".join(kept)
+
+
+def trim_leading_paragraph_overlap(previous: str, current: str) -> str:
+    """Cut a leading run of `current` that already ends `previous`.
+
+    Fragment restore and spoken-order fixes often leave the seam as
+    "... bigger lesson. / Second, and this one's the bigger lesson. The
+    system..." - the second paragraph must lose its duplicated head.
+    """
+    prev_words = coverage_words(previous)
+    curr_words = coverage_words(current)
+    if not prev_words or not curr_words:
+        return current
+    best = 0
+    upper = min(len(prev_words), len(curr_words))
+    for size in range(upper, COVERAGE_MIN_REPEAT_WORDS - 1, -1):
+        if prev_words[-size:] == curr_words[:size]:
+            best = size
+            break
+    if best < COVERAGE_MIN_REPEAT_WORDS:
+        sentences = paragraph_sentences(current)
+        if not sentences:
+            return current
+        first = coverage_words(sentences[0])
+        if (
+            first
+            and len(first) >= COVERAGE_MIN_RUN_WORDS
+            and prev_words[-len(first) :] == first
+        ):
+            best = len(first)
+        else:
+            return current
+    sentences = paragraph_sentences(current)
+    dropped = 0
+    keep_from = 0
+    for index, sentence in enumerate(sentences):
+        size = len(coverage_words(sentence))
+        if dropped + size <= best:
+            dropped += size
+            keep_from = index + 1
+        else:
+            break
+    if keep_from == 0:
+        return current
+    return " ".join(sentences[keep_from:])
+
+
+def dedupe_paragraph_list(paragraphs: list[str]) -> list[str]:
+    cleaned: list[str] = []
+    for paragraph in paragraphs:
+        text = collapse_redundant_sentences(str(paragraph))
+        if not text.strip():
+            continue
+        if cleaned:
+            text = trim_leading_paragraph_overlap(cleaned[-1], text)
+            if not text.strip():
+                continue
+        cleaned.append(text)
+    return cleaned
+
+
+def dedupe_section_stitches(section: Section) -> int:
+    """Remove overlaps left by restore/reorder without another model call.
+
+    Returns how many comparable words were dropped.
+    """
+    before = after = 0
+    for container in [section.intro, *section.subsections]:
+        for key, value in list(container.items()):
+            if not isinstance(value, list):
+                continue
+            old = [str(paragraph) for paragraph in value]
+            before += sum(len(coverage_words(paragraph)) for paragraph in old)
+            new = dedupe_paragraph_list(old)
+            after += sum(len(coverage_words(paragraph)) for paragraph in new)
+            container[key] = new
+    return max(0, before - after)
+
+
 def restore_fragment(
     api_key: str,
     section: Section,
@@ -2225,7 +2354,6 @@ def edit_section_in_chunks(
     """Edit one long section chunk by chunk; the result is always flat."""
     ranges = split_section_ranges(section, segments.get(orig_code) or [], parts)
     intro: dict[str, list[str]] = {orig_code: [], "EN": []}
-    issues = Coverage([], [])
     heading_en = ""
     for index, (start, end) in enumerate(ranges, start=1):
         print(
@@ -2250,7 +2378,7 @@ def edit_section_in_chunks(
             if "EN" in segments
             else ""
         )
-        part_issues = edit_section(
+        edit_section(
             api_key,
             part,
             course=course,
@@ -2262,8 +2390,6 @@ def edit_section_in_chunks(
             usage=usage,
             part=(index, len(ranges)),
         )
-        issues.dropped.extend(part_issues.dropped)
-        issues.repeated.extend(part_issues.repeated)
         flatten_section(part)
         heading_en = heading_en or part.heading_en
         for code, paragraphs in part.intro.items():
@@ -2271,7 +2397,21 @@ def edit_section_in_chunks(
     section.heading_en = heading_en or section.heading
     section.intro = intro
     section.subsections = []
-    return issues
+    # Parts are coverage-clean on their own; stitching them (and any later
+    # spoken-order fix) can still leave seam duplicates across the join.
+    removed = dedupe_section_stitches(section)
+    if removed:
+        print(
+            f"    Dedupe: removed {removed} overlapping word(s) across "
+            "edited parts.",
+            flush=True,
+        )
+    source = (
+        section_text(segments[orig_code], section.start, section.end, pauses)
+        if orig_code != "EN"
+        else section_text(segments["EN"], section.start, section.end, pauses)
+    )
+    return section_coverage(section, source, coverage_code(orig_code))
 
 
 # What a hard section loses is not a fragment but its tail: the model
@@ -3611,11 +3751,17 @@ def process_video(
             section_from_cache(probe, entry)
             issues = section_coverage(probe, source, check_code)
             restored = restore_dropped_verbatim(probe, issues, check_code)
+            removed = dedupe_section_stitches(probe)
             repaired = section_coverage(probe, source, check_code)
-            if restored and repaired.clean:
+            if (restored or removed) and repaired.clean:
+                note = []
+                if restored:
+                    note.append(f"restored {restored} dropped word(s)")
+                if removed:
+                    note.append(f"removed {removed} overlapping word(s)")
                 print(
-                    f"  Restored {restored} dropped word(s) in "
-                    f"'{section.heading}' verbatim from the transcript.",
+                    f"  Offline fix in '{section.heading}': "
+                    + ", ".join(note) + ".",
                     flush=True,
                 )
                 cache[key] = section_to_cache(
@@ -3746,6 +3892,7 @@ def process_video(
             )
             section_from_cache(section, cache[key])
             keep_the_spoken_order(section, key)
+            dedupe_section_stitches(section)
             polish_section(section, check_code)
             continue
         print(
@@ -3806,9 +3953,21 @@ def process_video(
                     usage=usage,
                     pauses=pauses,
                 )
+        keep_the_spoken_order(section, key)
+        # Spoken-order can put a moved paragraph back next to a copy that
+        # restore already inserted; collapse those seams before we decide
+        # the section failed coverage and before we cache it.
+        source_text = en_text if orig_code == "EN" else orig_text
+        removed = dedupe_section_stitches(section)
+        if removed:
+            print(
+                f"    Dedupe: removed {removed} overlapping word(s) after "
+                "ordering.",
+                flush=True,
+            )
+            issues = section_coverage(section, source_text, check_code)
         if not issues.clean:
             incomplete.append(f"{section.heading}: {issues.summary()}")
-        keep_the_spoken_order(section, key)
         polish_section(section, check_code)
         # Persist after every section: a crash later in the run (e.g. during
         # the PDF stage) must not lose paid editing results.
