@@ -1,0 +1,12 @@
+# Settings of convert_next_pages.bat - edit them here and run the bat. Save
+# this file as UTF-8; a line opening with '#' is a comment, and of a repeated
+# setting the first line is the one that counts.
+
+# The book folder under _books\. Its input\ holds the source .djvu; the text
+# of its embedded OCR layer lands in pages_text\, one .md per book page.
+BOOK = Artificial_Intelligence_2006
+
+# How many next pages one run converts. The extraction is local and free
+# (no API calls), so the number is only about how much lands on the disk
+# per run. The book has 1409 pages.
+PAGES = 10

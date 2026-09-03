@@ -202,6 +202,18 @@ book_ocr_next_batch.bat page_016        BATCH_SIZE разворотов начи
 Другая книга — новая папка под `_books/` со своим `pages_expanded.txt`
 и флаг `--book <папка>` у обоих скриптов.
 
+Книга, пришедшая одним файлом, кладётся в `_books/<книга>/input/` и
+запускается из `_books/<книга>/_run_scripts/`:
+
+- **PDF** (учебник испанского) — `pdf_to_pages.py` рендерит развороты в
+  `pages_extracted/`, дальше обычный OCR: `ocr_next_portion.bat` берёт
+  очередной процент книги по настройкам из `ocr_next_portion.settings.txt`.
+- **DjVu со встроенным текстовым слоем** (Рассел–Норвиг) —
+  `djvu_to_text.py` извлекает готовый текст слоя в `pages_text/` локально
+  и бесплатно, без vision-модели: `convert_next_pages.bat` берёт очередные
+  `PAGES` страниц по настройкам из `convert_next_pages.settings.txt`.
+  Нужен DjVuLibre (`winget install DjVuLibre.DjView`).
+
 ## Скрипты в `scripts/`
 
 | Файл | Назначение |
