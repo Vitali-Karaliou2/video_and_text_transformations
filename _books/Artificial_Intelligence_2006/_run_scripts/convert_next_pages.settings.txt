@@ -9,4 +9,4 @@ BOOK = Artificial_Intelligence_2006
 # How many next pages one run converts. The extraction is local and free
 # (no API calls), so the number is only about how much lands on the disk
 # per run. The book has 1409 pages.
-PAGES = 10
+PAGES = 500

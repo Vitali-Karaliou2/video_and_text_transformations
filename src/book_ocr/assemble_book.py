@@ -1,13 +1,24 @@
 """
-Assemble OCR page Markdown into Book_PL.md / Book_PL.docx / Book_PL.pdf.
+Assemble page Markdown into OUTPUT/Book_*.md / .docx / .pdf.
 
-Reads _books/<book>/pages_text/ in pages_expanded.txt order, joins cross-page
-hyphenation, builds H2 sections (stories), inserts a generated Spis treści,
-and writes OUTPUT/Book_PL.*.
+Two modes:
+
+1. Single-volume (default for short books / one-level TOC), e.g. Wojna
+   Futbolowa: reads pages_text/ (via pages_expanded.txt when present), joins
+   cross-page hyphenation, builds H2 sections, inserts a generated TOC, and
+   writes OUTPUT/Book_<LANG>.*.
+
+2. Multi-volume for large books with a two-level TOC (Part → Chapter): when
+   _books/<book>/assemble.settings.txt is present, SPLIT_BY_PARTS is auto/yes
+   and the book has more than PART_PAGE_THRESHOLD pages, one set of files is
+   written per part: OUTPUT/Book_<N>_<LANG>.* (plus a final volume for
+   appendices when BACK_START is set).
 
 Usage (from workspace root):
   python src\\book_ocr\\assemble_book.py
   python src\\book_ocr\\assemble_book.py --book Wojna_Futbolowa --lang PL
+  python src\\book_ocr\\assemble_book.py --book Artificial_Intelligence_2006
+  python src\\book_ocr\\assemble_book.py --book Artificial_Intelligence_2006 --parts 1 9
 """
 
 from __future__ import annotations
@@ -438,8 +449,9 @@ def md_anchor(title: str) -> str:
         .replace("ź", "z")
         .replace("ż", "z")
     )
-    a = re.sub(r"[^a-z0-9]+", "-", a).strip("-")
-    return a
+    # Keep letters of any script (Cyrillic chapter titles etc.).
+    a = re.sub(r"[^\w]+", "-", a, flags=re.UNICODE).strip("-")
+    return a or "section"
 
 
 def format_body_paragraph(text: str, width: int) -> str:
@@ -450,7 +462,15 @@ def format_body_paragraph(text: str, width: int) -> str:
     return wrap_and_justify_paragraph(text, width)
 
 
-def write_markdown(path: Path, h1: str, sections: list[Section], width: int) -> None:
+def write_markdown(
+    path: Path,
+    h1: str,
+    sections: list[Section],
+    width: int,
+    *,
+    toc_title: str | None = None,
+) -> None:
+    toc_name = toc_title or TOC_TITLE
     lines: list[str] = [
         f"<!-- wrap_width: {width}; assembled from pages_text -->",
         "",
@@ -460,7 +480,7 @@ def write_markdown(path: Path, h1: str, sections: list[Section], width: int) -> 
     for sec in sections:
         lines.append(f"## {sec.title}")
         lines.append("")
-        if sec.title == TOC_TITLE:
+        if sec.title == toc_name:
             for title in sec.paragraphs:
                 lines.append(f"- [{title}](#{md_anchor(title)})")
             lines.append("")
@@ -696,17 +716,78 @@ def write_pdf(docx_path: Path, pdf_path: Path) -> Path:
     return written
 
 
+def write_volume(
+    out_dir: Path,
+    stem: str,
+    h1: str,
+    sections: list[Section],
+    wrap_width: int,
+    template: Path,
+    *,
+    no_pdf: bool,
+    toc_title: str | None = None,
+) -> int:
+    """Write md/docx/(pdf) for one volume. Returns 0 on success."""
+    md_path = out_dir / f"{stem}.md"
+    docx_path = out_dir / f"{stem}.docx"
+    pdf_path = out_dir / f"{stem}.pdf"
+
+    write_markdown(md_path, h1, sections, wrap_width, toc_title=toc_title)
+    print(f"Wrote {md_path}", flush=True)
+
+    docx_written = write_docx(
+        docx_path, template, h1, sections, toc_title=toc_title
+    )
+    print(f"Wrote {docx_written}", flush=True)
+
+    if not no_pdf:
+        try:
+            written_pdf = write_pdf(docx_written, pdf_path)
+            print(f"Wrote {written_pdf}", flush=True)
+        except Exception as exc:
+            print(f"PDF export failed for {stem}: {exc}", file=sys.stderr)
+            return 1
+    return 0
+
+
+def resolve_slugs(book: str, text_root: Path) -> list[str]:
+    """pages_expanded.txt when present; otherwise every page_*.md in order."""
+    pf = pages_file(book)
+    if pf.is_file():
+        return load_slugs(pf)
+    pages = []
+    for path in text_root.glob("page_*.md"):
+        m = re.fullmatch(r"page_(\d+)", path.stem)
+        if m:
+            pages.append((int(m.group(1)), path.stem))
+    pages.sort(key=lambda x: x[0])
+    return [stem for _, stem in pages]
+
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Assemble Book_XX.md/.docx/.pdf from OCR pages")
     p.add_argument("--book", default=DEFAULT_BOOK)
-    p.add_argument("--lang", default=DEFAULT_LANG, help="ISO 639-1 language code for filenames")
-    p.add_argument("--wrap-width", type=int, default=DEFAULT_WRAP + LINE_WIDTH_PAD)
+    p.add_argument("--lang", default=None, help="ISO 639-1 language code for filenames")
+    p.add_argument("--wrap-width", type=int, default=None)
     p.add_argument(
         "--template",
         type=Path,
         default=WORKSPACE_ROOT / "_books" / "sample_for_book_in_one_file.docx",
     )
     p.add_argument("--no-pdf", action="store_true")
+    p.add_argument(
+        "--parts",
+        nargs="+",
+        type=int,
+        default=None,
+        help="In multi-volume mode, assemble only these part numbers "
+             "(e.g. --parts 1 9). Default: all parts.",
+    )
+    p.add_argument(
+        "--force-single",
+        action="store_true",
+        help="Ignore assemble.settings.txt split and build one Book_LANG.*",
+    )
     return p.parse_args()
 
 
@@ -717,29 +798,66 @@ def main() -> int:
     out_dir = book_root / "OUTPUT"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    slugs = load_slugs(pages_file(args.book))
+    settings_path = book_root / "assemble.settings.txt"
+    if settings_path.is_file() and not args.force_single:
+        from assemble_structure import (  # local import avoids cycle at load
+            discover_page_files,
+            iter_volumes,
+            load_structure,
+        )
+
+        structure = load_structure(settings_path)
+        page_count = len(discover_page_files(text_root))
+        if structure.should_split(page_count):
+            lang = (args.lang or structure.lang).upper()
+            want = set(args.parts) if args.parts else None
+            rc = 0
+            built = 0
+            for num, h1, sections, width in iter_volumes(structure, text_root):
+                if want is not None and num not in want:
+                    continue
+                wrap = args.wrap_width if args.wrap_width is not None else width
+                stem = f"Book_{num}_{lang}"
+                print(f"=== volume {stem}: {h1.splitlines()[-1]} ===", flush=True)
+                step = write_volume(
+                    out_dir,
+                    stem,
+                    h1,
+                    sections,
+                    wrap,
+                    args.template,
+                    no_pdf=args.no_pdf,
+                    toc_title=structure.toc_title,
+                )
+                if step != 0:
+                    rc = step
+                built += 1
+            if built == 0:
+                print("Nothing to assemble: --parts matched no volumes.", flush=True)
+                return 2
+            print(
+                f"Done. volumes={built} pages_text={page_count} out={out_dir}",
+                flush=True,
+            )
+            print("API cost: $0 (local assembly).", flush=True)
+            return rc
+
+    # Single-volume path (Wojna Futbolowa and other one-level books).
+    lang = (args.lang or DEFAULT_LANG).upper()
+    wrap = (
+        args.wrap_width
+        if args.wrap_width is not None
+        else DEFAULT_WRAP + LINE_WIDTH_PAD
+    )
+    slugs = resolve_slugs(args.book, text_root)
+    if not slugs:
+        print(f"ERROR: no pages to assemble in {text_root}", file=sys.stderr)
+        return 2
     h1, sections = build_sections(slugs, text_root)
-
-    stem = f"Book_{args.lang.upper()}"
-    md_path = out_dir / f"{stem}.md"
-    docx_path = out_dir / f"{stem}.docx"
-    pdf_path = out_dir / f"{stem}.pdf"
-
-    write_markdown(md_path, h1, sections, args.wrap_width)
-    print(f"Wrote {md_path}", flush=True)
-
-    docx_written = write_docx(docx_path, args.template, h1, sections)
-    print(f"Wrote {docx_written}", flush=True)
-
-    if not args.no_pdf:
-        try:
-            written_pdf = write_pdf(docx_written, pdf_path)
-            print(f"Wrote {written_pdf}", flush=True)
-        except Exception as exc:
-            print(f"PDF export failed: {exc}", file=sys.stderr)
-            return 1
-
-    # Summary
+    stem = f"Book_{lang}"
+    rc = write_volume(
+        out_dir, stem, h1, sections, wrap, args.template, no_pdf=args.no_pdf
+    )
     story_count = sum(
         1
         for s in sections
@@ -747,11 +865,11 @@ def main() -> int:
     )
     print(
         f"Done. sections={len(sections)} stories={story_count} "
-        f"wrap_width={args.wrap_width} out={out_dir}",
+        f"wrap_width={wrap} out={out_dir}",
         flush=True,
     )
     print("API cost: $0 (local assembly).", flush=True)
-    return 0
+    return rc
 
 
 if __name__ == "__main__":

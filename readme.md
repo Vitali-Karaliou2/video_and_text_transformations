@@ -214,6 +214,14 @@ book_ocr_next_batch.bat page_016        BATCH_SIZE разворотов начи
   `PAGES` страниц по настройкам из `convert_next_pages.settings.txt`.
   Нужен DjVuLibre (`winget install DjVuLibre.DjView`).
 
+Сборка в `OUTPUT/` — `assemble_book.py` (для этой книги —
+`_run_scripts\assemble_book.bat`). Если в папке книги есть
+`assemble.settings.txt` с двухуровневым оглавлением (PART → CHAPTER) и
+книга длиннее `PART_PAGE_THRESHOLD` (по умолчанию 500 страниц), в
+`OUTPUT/` пишется по комплекту `Book_<N>_<LANG>.md/.docx/.pdf` на каждую
+часть, плюс отдельный том для приложений (`BACK_START`). Короткие книги
+с одноуровневым оглавлением по-прежнему собираются в один `Book_<LANG>.*`.
+
 ## Скрипты в `scripts/`
 
 | Файл | Назначение |
