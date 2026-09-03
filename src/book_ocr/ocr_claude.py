@@ -28,6 +28,17 @@ import sys
 import time
 from pathlib import Path
 
+try:
+    # Verify TLS against the Windows certificate store. Avast Web Shield
+    # re-signs every HTTPS connection with its own root, which lives in the
+    # Windows store but not in certifi's bundle, so without this every API
+    # call can die with CERTIFICATE_VERIFY_FAILED.
+    import truststore
+
+    truststore.inject_into_ssl()
+except ImportError:
+    pass
+
 from anthropic import Anthropic, APIError
 
 from book_paths import (

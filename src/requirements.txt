@@ -4,5 +4,8 @@ pymorphy3>=2.0.6
 # Book scanning/OCR module (src/book_ocr/): Archive.org capture + Claude vision.
 playwright>=1.40.0
 anthropic>=0.40.0
+# TLS against the Windows cert store: Avast Web Shield re-signs HTTPS and its
+# root is missing from certifi's bundle (CERTIFICATE_VERIFY_FAILED otherwise).
+truststore>=0.9.0
 # Rendering the spreads of a book that arrived as a single PDF (pdf_to_pages.py).
 pymupdf>=1.24.0
