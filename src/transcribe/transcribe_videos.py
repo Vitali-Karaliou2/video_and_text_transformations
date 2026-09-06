@@ -1158,7 +1158,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         metavar="FILE",
         type=Path,
         help=(
-            "Text file with CHANNEL / PLAYLIST / TITLE_SUBSTR / "
+            "Text file with CHANNEL / PLAYLIST / TITLE_SUBSTR / NEXT / "
             "COOKIES_FROM_BROWSER / COOKIES; this is how the channel bats "
             "pass values that cmd.exe cannot carry itself. Command-line "
             "values win over it"
@@ -1171,13 +1171,14 @@ SETTINGS_KEYS = (
     "CHANNEL",
     "PLAYLIST",
     "TITLE_SUBSTR",
+    "NEXT",
     "COOKIES_FROM_BROWSER",
     "COOKIES",
 )
 
 
 def apply_run_settings(args: argparse.Namespace) -> None:
-    """Fill channel / playlist / title filter from the bat's settings file."""
+    """Fill channel / playlist / title filter / session size from settings."""
     if not args.settings:
         if not (args.channel_folder or "").strip():
             raise SystemExit(
@@ -1198,6 +1199,11 @@ def apply_run_settings(args: argparse.Namespace) -> None:
     if not args.title_substr:
         substr = settings.get("TITLE_SUBSTR", "")
         args.title_substr = substr or None
+    # argparse default is the string "1"; an explicit CLI --next keeps it.
+    if str(args.next_count) == "1":
+        next_raw = settings.get("NEXT", "").strip()
+        if next_raw:
+            args.next_count = next_raw
     if args.cookies is None:
         cookies = settings.get("COOKIES", "").strip()
         if cookies:
